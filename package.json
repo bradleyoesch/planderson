@@ -1,6 +1,6 @@
 {
     "name": "planderson",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "type": "module",
     "main": "app/src/cli.ts",
     "scripts": {
