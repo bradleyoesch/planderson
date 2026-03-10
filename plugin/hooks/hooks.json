@@ -1,0 +1,17 @@
+{
+    "description": "Intercepts ExitPlanMode to open interactive plan review TUI",
+    "hooks": {
+        "PermissionRequest": [
+            {
+                "matcher": "ExitPlanMode",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "planderson hook",
+                        "timeout": 900
+                    }
+                ]
+            }
+        ]
+    }
+}

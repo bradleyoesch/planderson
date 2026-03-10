@@ -1,0 +1,292 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`Plan snapshots Multi-Line Selection snapshot: multi-line selection (3 lines selected) 1`] = `
+"\x1B[48;2;80;80;80mStep 1: Initialize\x1B[49m
+\x1B[48;2;80;80;80mStep 2: Process\x1B[49m
+\x1B[48;2;80;80;80mStep 3: Complete\x1B[49m
+Step 4: Cleanup"
+`;
+
+exports[`Plan snapshots Multi-Line Selection snapshot: multi-line selection with comment on selected lines 1`] = `
+"\x1B[3m\x1B[38;2;96;96;96m💬 Fix this section\x1B[39m\x1B[23m
+\x1B[48;2;80;80;80mLine 1: First\x1B[49m
+\x1B[48;2;80;80;80mLine 2: Second\x1B[49m
+\x1B[48;2;80;80;80mLine 3: Third\x1B[49m
+Line 4: Fourth"
+`;
+
+exports[`Plan snapshots Multi-Line Selection snapshot: multi-line selection with deletions 1`] = `
+"\x1B[9m\x1B[38;2;102;102;102m\x1B[48;2;80;80;80mRemove this line\x1B[49m\x1B[39m\x1B[29m
+\x1B[9m\x1B[38;2;102;102;102m\x1B[48;2;80;80;80mRemove this too\x1B[49m\x1B[39m\x1B[29m
+\x1B[9m\x1B[38;2;102;102;102m\x1B[48;2;80;80;80mAnd this one\x1B[49m\x1B[39m\x1B[29m
+Keep this line"
+`;
+
+exports[`Plan snapshots Multi-Line Selection snapshot: multi-line selection with both comments and deletions 1`] = `
+"\x1B[3m\x1B[38;2;96;96;96m💬 These lines need work\x1B[39m\x1B[23m
+\x1B[48;2;80;80;80mLine A\x1B[49m
+\x1B[48;2;80;80;80mLine B\x1B[49m
+\x1B[9m\x1B[38;2;102;102;102m\x1B[48;2;80;80;80mLine C\x1B[49m\x1B[39m\x1B[29m
+Line D"
+`;
+
+exports[`Plan snapshots Multi-Line Selection snapshot: multiple separate comments (no duplication) 1`] = `
+"\x1B[3m\x1B[38;2;96;96;96m💬 First issue\x1B[39m\x1B[23m
+\x1B[48;2;80;80;80mLine 1\x1B[49m
+Line 2
+Line 3
+Line 4
+\x1B[3m\x1B[38;2;96;96;96m💬 Second issue\x1B[39m\x1B[23m
+Line 5
+Line 6"
+`;
+
+exports[`Plan snapshots Multi-Line Selection snapshot: reversed selection (anchor > cursor) 1`] = `
+"\x1B[48;2;80;80;80mFirst\x1B[49m
+\x1B[48;2;80;80;80mSecond\x1B[49m
+\x1B[48;2;80;80;80mThird\x1B[49m
+\x1B[48;2;80;80;80mFourth\x1B[49m"
+`;
+
+exports[`Plan snapshots Delete Behavior Visual States snapshot: single line not deleted 1`] = `
+"Line 1
+\x1B[48;2;80;80;80mLine 2\x1B[49m
+Line 3
+Line 4"
+`;
+
+exports[`Plan snapshots Delete Behavior Visual States snapshot: single line deleted 1`] = `
+"Line 1
+\x1B[9m\x1B[38;2;102;102;102m\x1B[48;2;80;80;80mLine 2\x1B[49m\x1B[39m\x1B[29m
+Line 3
+Line 4"
+`;
+
+exports[`Plan snapshots Delete Behavior Visual States snapshot: multi-line all not deleted (before delete action) 1`] = `
+"\x1B[48;2;80;80;80mLine 1\x1B[49m
+\x1B[48;2;80;80;80mLine 2\x1B[49m
+\x1B[48;2;80;80;80mLine 3\x1B[49m
+Line 4"
+`;
+
+exports[`Plan snapshots Delete Behavior Visual States snapshot: multi-line all deleted (before undelete action) 1`] = `
+"\x1B[9m\x1B[38;2;102;102;102m\x1B[48;2;80;80;80mLine 1\x1B[49m\x1B[39m\x1B[29m
+\x1B[9m\x1B[38;2;102;102;102m\x1B[48;2;80;80;80mLine 2\x1B[49m\x1B[39m\x1B[29m
+\x1B[9m\x1B[38;2;102;102;102m\x1B[48;2;80;80;80mLine 3\x1B[49m\x1B[39m\x1B[29m
+Line 4"
+`;
+
+exports[`Plan snapshots Delete Behavior Visual States snapshot: multi-line mixed state - starting line deleted (lines 1-3, start on 2) 1`] = `
+"\x1B[9m\x1B[38;2;102;102;102mLine 1\x1B[39m\x1B[29m
+\x1B[9m\x1B[38;2;102;102;102m\x1B[48;2;80;80;80mLine 2\x1B[49m\x1B[39m\x1B[29m
+\x1B[9m\x1B[38;2;102;102;102m\x1B[48;2;80;80;80mLine 3\x1B[49m\x1B[39m\x1B[29m
+\x1B[48;2;80;80;80mLine 4\x1B[49m"
+`;
+
+exports[`Plan snapshots Delete Behavior Visual States snapshot: multi-line mixed state - starting line not deleted (lines 2-4, start on 4) 1`] = `
+"\x1B[9m\x1B[38;2;102;102;102mLine 1\x1B[39m\x1B[29m
+\x1B[9m\x1B[38;2;102;102;102m\x1B[48;2;80;80;80mLine 2\x1B[49m\x1B[39m\x1B[29m
+\x1B[9m\x1B[38;2;102;102;102m\x1B[48;2;80;80;80mLine 3\x1B[49m\x1B[39m\x1B[29m
+\x1B[48;2;80;80;80mLine 4\x1B[49m"
+`;
+
+exports[`Plan snapshots Delete Behavior Visual States snapshot: multi-line some deleted some not (lines 1-4, lines 2-3 deleted) 1`] = `
+"\x1B[48;2;80;80;80mLine 1\x1B[49m
+\x1B[9m\x1B[38;2;102;102;102m\x1B[48;2;80;80;80mLine 2\x1B[49m\x1B[39m\x1B[29m
+\x1B[9m\x1B[38;2;102;102;102m\x1B[48;2;80;80;80mLine 3\x1B[49m\x1B[39m\x1B[29m
+\x1B[48;2;80;80;80mLine 4\x1B[49m"
+`;
+
+exports[`Plan snapshots Simple Content snapshot: renders at 40 columns 1`] = `
+"\x1B[48;2;80;80;80mLine 1\x1B[49m
+Line 2
+Line 3"
+`;
+
+exports[`Plan snapshots Simple Content snapshot: renders at 80 columns 1`] = `
+"\x1B[48;2;80;80;80mLine 1\x1B[49m
+Line 2
+Line 3"
+`;
+
+exports[`Plan snapshots With Comments and Deletions renders with feedback at 40 columns 1`] = `
+"\x1B[48;2;80;80;80mFirst line\x1B[49m
+\x1B[3m\x1B[38;2;96;96;96m💬 This needs improvement\x1B[39m\x1B[23m
+Second line needs fix
+\x1B[9m\x1B[38;2;102;102;102mThird line\x1B[39m\x1B[29m"
+`;
+
+exports[`Plan snapshots With Comments and Deletions renders with feedback at 80 columns 1`] = `
+"\x1B[48;2;80;80;80mFirst line\x1B[49m
+\x1B[3m\x1B[38;2;96;96;96m💬 This needs improvement\x1B[39m\x1B[23m
+Second line needs fix
+\x1B[9m\x1B[38;2;102;102;102mThird line\x1B[39m\x1B[29m"
+`;
+
+exports[`Plan snapshots Long Lines (Wrapping) handles long lines at 40 columns 1`] = `
+"\x1B[48;2;80;80;80mThis is a very long line that will\x1B[49m
+\x1B[48;2;80;80;80mdefinitely wrap on narrow terminals\x1B[49m
+\x1B[48;2;80;80;80mand test text overflow behavior\x1B[49m
+Normal line
+Another extremely long line with lots
+of content that triggers wrapping"
+`;
+
+exports[`Plan snapshots Long Lines (Wrapping) handles long lines at 80 columns 1`] = `
+"\x1B[48;2;80;80;80mThis is a very long line that will definitely wrap on narrow terminals and\x1B[49m
+\x1B[48;2;80;80;80mtest text overflow behavior\x1B[49m
+Normal line
+Another extremely long line with lots of content that triggers wrapping"
+`;
+
+exports[`Plan snapshots Empty Content handles empty content at 40 columns 1`] = `
+"\x1B[48;2;80;80;80mline 1\x1B[49m
+line 2
+line 3"
+`;
+
+exports[`Plan snapshots Empty Content handles empty content at 80 columns 1`] = `
+"\x1B[48;2;80;80;80mline 1\x1B[49m
+line 2
+line 3"
+`;
+
+exports[`Plan snapshots Special Characters handles special characters at 40 columns 1`] = `
+"\x1B[3m\x1B[38;2;96;96;96m💬 Special: <>&"\x1B[39m\x1B[23m
+\x1B[48;2;80;80;80m<tag>\x1B[49m
+"quotes"
+it's
+├─ tree
+🎉 emoji"
+`;
+
+exports[`Plan snapshots Special Characters handles special characters at 80 columns 1`] = `
+"\x1B[3m\x1B[38;2;96;96;96m💬 Special: <>&"\x1B[39m\x1B[23m
+\x1B[48;2;80;80;80m<tag>\x1B[49m
+"quotes"
+it's
+├─ tree
+🎉 emoji"
+`;
+
+exports[`Plan snapshots Line Wrapping snapshot: wraps long comment with consistent styling at narrow width 1`] = `
+"\x1B[3m\x1B[38;2;96;96;96m💬\x1B[39m\x1B[23m
+\x1B[3m\x1B[38;2;96;96;96mAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\x1B[39m\x1B[23m
+\x1B[3m\x1B[38;2;96;96;96mAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\x1B[39m\x1B[23m
+\x1B[3m\x1B[38;2;96;96;96mAAAAAAAAAAAAAAAAAAAAAAAA\x1B[39m\x1B[23m
+\x1B[48;2;80;80;80mShort line\x1B[49m"
+`;
+
+exports[`Plan snapshots Line Wrapping snapshot: wraps long question with consistent styling at narrow width 1`] = `
+"\x1B[3m\x1B[38;2;255;217;61m❓\x1B[39m\x1B[23m
+\x1B[3m\x1B[38;2;255;217;61mBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\x1B[39m\x1B[23m
+\x1B[3m\x1B[38;2;255;217;61mBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\x1B[39m\x1B[23m
+\x1B[3m\x1B[38;2;255;217;61mBBBBBBBBBBBBBBBBBBBBBBBB\x1B[39m\x1B[23m
+\x1B[48;2;80;80;80mShort line\x1B[49m"
+`;
+
+exports[`Plan snapshots Layout Invariants snapshot: maintains proper content rendering 1`] = `
+"\x1B[48;2;80;80;80mline 1\x1B[49m
+line 2
+line 3"
+`;
+
+exports[`Plan snapshots Layout Invariants snapshot: maintains proper content rendering 2`] = `
+"\x1B[48;2;80;80;80mline 1\x1B[49m
+line 2
+line 3"
+`;
+
+exports[`Plan snapshots Small Plan (Smaller than Viewport) snapshot: 3-line plan in 24-line viewport at 80 columns 1`] = `
+"\x1B[48;2;80;80;80mTask 1\x1B[49m
+Task 2
+Task 3"
+`;
+
+exports[`Plan snapshots Small Plan (Smaller than Viewport) snapshot: 3-line plan in 24-line viewport at 40 columns 1`] = `
+"\x1B[48;2;80;80;80mTask 1\x1B[49m
+Task 2
+Task 3"
+`;
+
+exports[`Plan snapshots Markdown Rendering renders markdown with bold, italic, and code blocks at 40 columns 1`] = `
+"\x1B[4m\x1B[3m\x1B[1m\x1B[38;2;139;139;139m\x1B[48;2;80;80;80mHeading Level 1\x1B[49m\x1B[39m\x1B[22m\x1B[23m\x1B[24m
+\x1B[1mHeading Level 2\x1B[22m
+
+This is \x1B[1mbold text\x1B[22m and \x1B[3mitalic text\x1B[23m and
+\x1B[9mstrikethrough text\x1B[29m.
+Here is \x1B[38;2;174;184;253minline code\x1B[39m in a sentence.
+
+Check out \x1B[38;2;32;127;230mthis link\x1B[39m for more info.
+
+\x1B[38;2;96;96;96m│ This is a blockquote.\x1B[39m
+\x1B[38;2;96;96;96m│ It can span multiple lines.\x1B[39m
+
+\x1B[38;2;96;96;96m──────────────────────────────────────\x1B[39m
+
+\x1B[2m\`\`\`typescript\x1B[22m
+\x1B[38;2;0;135;255mfunction\x1B[38;2;255;255;255m hello() {\x1B[39m
+\x1B[38;2;255;255;255m  \x1B[38;2;0;135;255mreturn\x1B[38;2;255;255;255m \x1B[38;2;255;255;0m"world"\x1B[38;2;255;255;255m;\x1B[39m
+\x1B[38;2;255;255;255m}\x1B[39m
+\x1B[2m\`\`\`\x1B[22m
+
+Plain text after code block."
+`;
+
+exports[`Plan snapshots Markdown Rendering renders markdown with bold, italic, and code blocks at 80 columns 1`] = `
+"\x1B[4m\x1B[3m\x1B[1m\x1B[38;2;139;139;139m\x1B[48;2;80;80;80mHeading Level 1\x1B[49m\x1B[39m\x1B[22m\x1B[23m\x1B[24m
+\x1B[1mHeading Level 2\x1B[22m
+
+This is \x1B[1mbold text\x1B[22m and \x1B[3mitalic text\x1B[23m and \x1B[9mstrikethrough text\x1B[29m.
+Here is \x1B[38;2;174;184;253minline code\x1B[39m in a sentence.
+
+Check out \x1B[38;2;32;127;230mthis link\x1B[39m for more info.
+
+\x1B[38;2;96;96;96m│ This is a blockquote.\x1B[39m
+\x1B[38;2;96;96;96m│ It can span multiple lines.\x1B[39m
+
+\x1B[38;2;96;96;96m──────────────────────────────────────────────────────────────────────────────\x1B[39m
+
+\x1B[2m\`\`\`typescript\x1B[22m
+\x1B[38;2;0;135;255mfunction\x1B[38;2;255;255;255m hello() {\x1B[39m
+\x1B[38;2;255;255;255m  \x1B[38;2;0;135;255mreturn\x1B[38;2;255;255;255m \x1B[38;2;255;255;0m"world"\x1B[38;2;255;255;255m;\x1B[39m
+\x1B[38;2;255;255;255m}\x1B[39m
+\x1B[2m\`\`\`\x1B[22m
+
+Plain text after code block."
+`;
+
+exports[`Plan snapshots Code Block Blank Lines snapshot: code block with blank lines (single space per blank line) 1`] = `
+"Before
+\x1B[2m\`\`\`python\x1B[22m
+\x1B[38;2;0;135;255mdef\x1B[38;2;255;255;255m test():\x1B[39m
+\x1B[38;2;255;255;255m    x = \x1B[38;2;166;226;46m1\x1B[39m
+\x1B[48;2;80;80;80m \x1B[49m
+\x1B[38;2;255;255;255m    y = \x1B[38;2;166;226;46m2\x1B[39m
+\x1B[2m\`\`\`\x1B[22m
+After"
+`;
+
+exports[`Plan snapshots Code Block Deletion Styling snapshot: deleted multi-line code block (no syntax highlighting) 1`] = `
+"Before code block
+\x1B[9m\x1B[38;2;102;102;102m\x1B[2m\`\`\`typescript\x1B[22m\x1B[39m\x1B[29m
+\x1B[9m\x1B[38;2;102;102;102m\x1B[48;2;80;80;80mfunction hello() {\x1B[49m\x1B[39m\x1B[29m
+\x1B[9m\x1B[38;2;102;102;102m  return "world";\x1B[39m\x1B[29m
+\x1B[9m\x1B[38;2;102;102;102m}\x1B[39m\x1B[29m
+\x1B[9m\x1B[38;2;102;102;102m\x1B[2m\`\`\`\x1B[22m\x1B[39m\x1B[29m
+After code block"
+`;
+
+exports[`Plan snapshots Code Block Deletion Styling snapshot: deleted line with inline code 1`] = `
+"Regular line
+\x1B[9m\x1B[38;2;102;102;102m\x1B[48;2;80;80;80mThis line has inline code in it\x1B[49m\x1B[39m\x1B[29m
+Another line"
+`;
+
+exports[`Plan snapshots Code Block Deletion Styling snapshot: partial code block deletion (only some lines deleted) 1`] = `
+"\x1B[2m\`\`\`typescript\x1B[22m
+\x1B[38;2;0;135;255mconst\x1B[38;2;255;255;255m x = \x1B[38;2;166;226;46m1\x1B[38;2;255;255;255m;\x1B[39m
+\x1B[9m\x1B[38;2;102;102;102m\x1B[48;2;80;80;80mconst y = 2;\x1B[49m\x1B[39m\x1B[29m
+\x1B[38;2;0;135;255mconst\x1B[38;2;255;255;255m z = \x1B[38;2;166;226;46m3\x1B[38;2;255;255;255m;\x1B[39m
+\x1B[2m\`\`\`\x1B[22m"
+`;

@@ -1,0 +1,85 @@
+{
+    "name": "planderson",
+    "version": "0.0.1",
+    "type": "module",
+    "main": "app/src/cli.ts",
+    "scripts": {
+        "build": "bun run build:tui && bun run build:settings && bun run build:cli",
+        "build:cli": "mkdir -p build && bun build app/src/cli.ts --compile --outfile build/planderson",
+        "build:install": "bun run build && ./dev/install.sh",
+        "build:settings": "mkdir -p build && bun build app/src/commands/settings.ts --compile --outfile build/planderson-settings",
+        "build:tui": "mkdir -p build && bun build app/src/commands/tui.tsx --compile --outfile build/planderson-tui",
+        "clean": "bun run clean:build && bun run clean:sockets",
+        "clean:build": "rm -rf build",
+        "clean:sockets": "rm -rf ./sockets",
+        "dev": "bun run app/src/commands/tui.tsx",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "lint": "eslint . --ext .ts,.tsx",
+        "lint:fix": "eslint . --ext .ts,.tsx --fix",
+        "dev:set": "bash dev/set.sh",
+        "dev:reset": "bash dev/reset.sh",
+        "prepare": "husky",
+        "version": "perl -i -pe 's/\"version\": \"[^\"]*\"/\"version\": \"'$npm_package_version'\"/' plugin/.claude-plugin/plugin.json && git add plugin/.claude-plugin/plugin.json",
+        "release:major": "npm version major && git push --follow-tags",
+        "release:minor": "npm version minor && git push --follow-tags",
+        "release:patch": "npm version patch && git push --follow-tags",
+        "render-tui": "FORCE_COLOR=1 bun run dev/render-tui.tsx",
+        "test": "bun test ./app/src ./app/lib ./integrations ./dev",
+        "test:coverage": "FORCE_COLOR=1 bun test --coverage ./app/src ./app/lib ./integrations 2>&1 | grep -v 'test-utils/'",
+        "test:integration": "bun test app/tests/integration",
+        "test:snapshots": "bun test $(find app/src -name '*.snapshot.test.tsx')",
+        "test:snapshots:update": "bun test -u $(find app/src -name '*.snapshot.test.tsx') && bun test -u app/tests/integration",
+        "type-check": "tsc --noEmit"
+    },
+    "dependencies": {
+        "ink": "^5.0.1",
+        "lowlight": "^3.3.0",
+        "react": "^18.3.1",
+        "remark-gfm": "^4.0.1",
+        "remark-parse": "^11.0.0",
+        "unified": "^11.0.5"
+    },
+    "devDependencies": {
+        "@commitlint/cli": "^20.4.2",
+        "@commitlint/config-conventional": "^20.4.2",
+        "@sinonjs/fake-timers": "^15.1.0",
+        "@testing-library/react": "^16.3.2",
+        "@types/node": "^22.0.0",
+        "@types/react": "^18.3.0",
+        "@types/sinonjs__fake-timers": "^15.0.1",
+        "@typescript-eslint/eslint-plugin": "^8.54.0",
+        "@typescript-eslint/parser": "^8.54.0",
+        "bun-types": "^1.1.0",
+        "eslint": "^9.39.2",
+        "eslint-config-google": "^0.14.0",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-plugin-local-rules": "^3.0.2",
+        "eslint-plugin-react": "^7.37.5",
+        "eslint-plugin-react-hooks": "^7.0.1",
+        "eslint-plugin-simple-import-sort": "^12.1.1",
+        "eslint-plugin-unicorn": "^63.0.0",
+        "globals": "^17.3.0",
+        "happy-dom": "^20.4.0",
+        "husky": "^9.1.7",
+        "ink-testing-library": "^4.0.0",
+        "lint-staged": "^16.2.7",
+        "prettier": "^3.8.1",
+        "react-devtools-core": "^7.0.1",
+        "react-dom": "^18.3.1",
+        "typescript": "^5.6.0"
+    },
+    "lint-staged": {
+        "*.{ts,tsx}": [
+            "prettier --write",
+            "eslint --fix",
+            "bash -c 'bun run type-check'"
+        ],
+        "*.json": [
+            "prettier --write"
+        ],
+        "*.md": [
+            "prettier --write"
+        ]
+    }
+}

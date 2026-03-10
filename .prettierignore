@@ -1,0 +1,10 @@
+*.log
+.git
+.planderson
+build
+bun.lockb
+dist
+logs
+node_modules
+dev/**/*.md
+.claude/**/*.md

@@ -1,0 +1,11 @@
+{
+    "name": "planderson",
+    "owner": { "name": "bradleyoesch" },
+    "plugins": [
+        {
+            "name": "planderson",
+            "source": "./plugin",
+            "description": "Interactive plan review TUI — iterate on Claude's plans in the terminal before implementation begins."
+        }
+    ]
+}
