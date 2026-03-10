@@ -1,0 +1,1 @@
+export { InlineView } from './InlineView';

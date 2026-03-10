@@ -1,0 +1,38 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`WrappedLine snapshots snapshot: horizontal rule at 80 columns 1`] = `"\x1B[38;2;96;96;96m──────────────────────────────────────────────────────────────────────────────\x1B[39m"`;
+
+exports[`WrappedLine snapshots snapshot: blockquote with formatting 1`] = `"\x1B[38;2;96;96;96m│ This is a quote with \x1B[1mbold\x1B[22m and \x1B[3mitalic\x1B[23m\x1B[39m"`;
+
+exports[`WrappedLine snapshots snapshot: nested blockquote depth 1 1`] = `"\x1B[38;2;96;96;96m│ Level 1\x1B[39m"`;
+
+exports[`WrappedLine snapshots snapshot: nested blockquote depth 2 1`] = `"\x1B[38;2;96;96;96m│ │ Level 2\x1B[39m"`;
+
+exports[`WrappedLine snapshots snapshot: nested blockquote depth 3 1`] = `"\x1B[38;2;96;96;96m│ │ │ Level 3\x1B[39m"`;
+
+exports[`WrappedLine snapshots snapshot: nested blockquote depth 4 1`] = `"\x1B[38;2;96;96;96m│ │ │ │ Level 4\x1B[39m"`;
+
+exports[`WrappedLine snapshots snapshot: nested blockquote depth 5 1`] = `"\x1B[38;2;96;96;96m│ │ │ │ │ Level 5\x1B[39m"`;
+
+exports[`WrappedLine snapshots snapshot: nested blockquote with mixed formatting 1`] = `"\x1B[38;2;96;96;96m│ │ │ Quote with \x1B[1mbold\x1B[22m and \x1B[3mitalic\x1B[23m\x1B[39m"`;
+
+exports[`WrappedLine snapshots snapshot: H1 heading 1`] = `"\x1B[4m\x1B[3m\x1B[1m\x1B[38;2;139;139;139mMain Title\x1B[39m\x1B[22m\x1B[23m\x1B[24m"`;
+
+exports[`WrappedLine snapshots snapshot: normal text with mixed formatting 1`] = `
+"Text with
+\x1B[1mbold\x1B[22m
+,
+\x1B[3mitalic\x1B[23m
+, and
+\x1B[38;2;174;184;253mcode\x1B[39m"
+`;
+
+exports[`WrappedLine snapshots snapshot: wrapped comment feedback 1`] = `
+"\x1B[3m\x1B[38;2;96;96;96mThis is a long comment that should wrap across\x1B[39m\x1B[23m
+\x1B[3m\x1B[38;2;96;96;96mmultiple lines to test the wrapping behavior\x1B[39m\x1B[23m"
+`;
+
+exports[`WrappedLine snapshots snapshot: wrapped question feedback 1`] = `
+"\x1B[3m\x1B[38;2;255;217;61mWhy does this implementation use this approach\x1B[39m\x1B[23m
+\x1B[3m\x1B[38;2;255;217;61minstead of a simpler alternative?\x1B[39m\x1B[23m"
+`;

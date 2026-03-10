@@ -1,0 +1,9 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`CommandInput snapshots snapshot: single-line command text 1`] = `"\x1B[37m:wq█\x1B[39m"`;
+
+exports[`CommandInput snapshots snapshot: command text wraps to multiple lines at narrow terminal width 1`] = `
+"\x1B[37m:\x1B[39m
+\x1B[37maaaaaaaaaaaaaaaaaaaa\x1B[39m
+\x1B[37m█\x1B[39m"
+`;

@@ -1,0 +1,11 @@
+{
+    "name": "planderson",
+    "version": "0.0.1",
+    "description": "Interactive plan review TUI — iterate on Claude's plans in the terminal before implementation begins.",
+    "author": {
+        "name": "bradleyoesch"
+    },
+    "license": "MIT",
+    "repository": "https://github.com/bradleyoesch/planderson",
+    "keywords": ["approve", "deny", "ExitPlanMode", "iterate", "plan", "plan mode", "planning", "review", "tmux", "tui"]
+}

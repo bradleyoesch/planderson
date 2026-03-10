@@ -1,0 +1,109 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`ErrorView snapshots snapshot: simple error message 1`] = `
+"\x1B[38;2;27;152;140m────────────────────────────────────────────────────────────────────────────────\x1B[39m
+ \x1B[1m\x1B[38;2;255;107;107mError\x1B[39m\x1B[22m
+\x1B[38;2;96;96;96m--------------------------------------------------------------------------------\x1B[39m
+ \x1B[31mConnection failed\x1B[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ \x1B[3m\x1B[38;2;96;96;96mPress any key to exit\x1B[39m\x1B[23m"
+`;
+
+exports[`ErrorView snapshots snapshot: multi-line error message 1`] = `
+"\x1B[38;2;27;152;140m────────────────────────────────────────────────────────────────────────────────\x1B[39m
+ \x1B[1m\x1B[38;2;255;107;107mError\x1B[39m\x1B[22m
+\x1B[38;2;96;96;96m--------------------------------------------------------------------------------\x1B[39m
+ \x1B[31mSocket connection failed\x1B[39m
+ \x1B[31mReason: ECONNREFUSED\x1B[39m
+ \x1B[31mPort: 8080\x1B[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ \x1B[3m\x1B[38;2;96;96;96mPress any key to exit\x1B[39m\x1B[23m"
+`;
+
+exports[`ErrorView snapshots snapshot: error with special characters 1`] = `
+"\x1B[38;2;27;152;140m────────────────────────────────────────────────────────────────────────────────\x1B[39m
+ \x1B[1m\x1B[38;2;255;107;107mError\x1B[39m\x1B[22m
+\x1B[38;2;96;96;96m--------------------------------------------------------------------------------\x1B[39m
+ \x1B[31mParsing failed: unexpected characters "~!@#$%^&*()[]{}|\\/<>?'" 你好 🚀✨❌\x1B[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ \x1B[3m\x1B[38;2;96;96;96mPress any key to exit\x1B[39m\x1B[23m"
+`;
+
+exports[`ErrorView snapshots snapshot: empty error message 1`] = `
+"\x1B[38;2;27;152;140m────────────────────────────────────────────────────────────────────────────────\x1B[39m
+ \x1B[1m\x1B[38;2;255;107;107mError\x1B[39m\x1B[22m
+\x1B[38;2;96;96;96m--------------------------------------------------------------------------------\x1B[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ \x1B[3m\x1B[38;2;96;96;96mPress any key to exit\x1B[39m\x1B[23m"
+`;

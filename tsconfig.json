@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "jsx": "react",
+        "strict": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "types": ["bun-types", "node"],
+        "baseUrl": ".",
+        "paths": {
+            "~/*": ["app/src/*"],
+            "~/lib/*": ["app/lib/*"],
+            "~/test-utils/*": ["app/test-utils/*"]
+        }
+    },
+    "include": [".claude/**/*", "app/**/*", "integrations/**/*", "dev/**/*"],
+    "exclude": ["node_modules"]
+}

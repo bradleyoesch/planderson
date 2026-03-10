@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+
+# Build artifacts
+build/
+dist/
+
+# Local development
+.planderson/
+dev/planderson
+integrations/tmux/.tmux.local.conf
+registry/
+settings.json
+sockets/
+
+# Logs
+logs/
+
+# Worktrees
+.worktrees/
+
+# TypeScript
+*.tsbuildinfo
+
+# Environment
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+*.swo
+*.swp
+*~
+.idea/
+.vscode/
+
+# Logs
+*.log
+npm-debug.log*
