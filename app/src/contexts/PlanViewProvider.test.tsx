@@ -106,6 +106,19 @@ describe('PlanViewProvider', () => {
             expect(result.current.state.deletedLines.size).toBe(0);
         });
 
+        test('initial viewportHeight is calculated from terminal height', () => {
+            const wrapper = ({ children }: { children: React.ReactNode }) => (
+                <TerminalProvider terminalWidth={80} terminalHeight={24}>
+                    <PlanViewProvider {...defaultProps}>{children}</PlanViewProvider>
+                </TerminalProvider>
+            );
+
+            const { result } = renderHook(() => usePlanViewDynamicContext(), { wrapper });
+
+            // calculateViewportHeight('plan', 24) = 24 - 3 (header) - 1 (footer) = 20
+            expect(result.current.state.viewportHeight).toBe(20);
+        });
+
         test('dispatch function is provided', () => {
             const wrapper = ({ children }: { children: React.ReactNode }) => (
                 <TerminalProvider terminalWidth={80} terminalHeight={24}>

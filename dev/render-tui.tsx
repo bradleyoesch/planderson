@@ -232,7 +232,13 @@ const main = async (): Promise<void> => {
 
     const frames = await renderScenario({ filepath, keys, width, height });
 
-    const output = frames.map((frame) => `\n--- Frame: ${frame.label} ---\n${frame.content}\n`).join('');
+    const output = frames
+        .map((frame) => {
+            const lineCount = frame.content.split('\n').length;
+            const stats = `[lines: ${lineCount}, height: ${height}, delta: ${lineCount - height}]`;
+            return `\n--- Frame: ${frame.label} ${stats} ---\n${frame.content}\n`;
+        })
+        .join('');
 
     if (outputFile) {
         fs.writeFileSync(outputFile, output, 'utf-8');
