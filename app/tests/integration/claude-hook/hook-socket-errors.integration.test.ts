@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test';
 import * as fs from 'fs';
 import * as net from 'net';
 
-import { useTestSocket } from '~/test-utils/fixtures';
+import { useTestSocket, waitForSocket } from '~/test-utils/fixtures';
 
 import { readStream, spawnHook } from './helpers';
 
@@ -117,17 +117,16 @@ describe('claude-hook hook-socket-errors integration', () => {
             hookProcess.stdin.end();
 
             // Connect, start reading, then disconnect
-            setTimeout(() => {
-                const client = net.connect(TEST_SOCKET_PATH);
-                client.on('connect', () => {
-                    client.write(`${JSON.stringify({ type: 'get_plan' })}\n`);
-                    // Disconnect after brief delay
-                    setTimeout(() => client.destroy(), 50);
-                });
-                client.on('error', () => {
-                    // Suppress error
-                });
-            }, 200);
+            await waitForSocket(TEST_SOCKET_PATH);
+            const client = net.connect(TEST_SOCKET_PATH);
+            client.on('connect', () => {
+                client.write(`${JSON.stringify({ type: 'get_plan' })}\n`);
+                // Disconnect after brief delay
+                setTimeout(() => client.destroy(), 50);
+            });
+            client.on('error', () => {
+                // Suppress error
+            });
 
             const stdout = await readStream(hookProcess.stdout);
             const response = JSON.parse(stdout);
@@ -155,23 +154,22 @@ describe('claude-hook hook-socket-errors integration', () => {
             hookProcess.stdin.end();
 
             // Send invalid JSON
-            setTimeout(() => {
-                const client = net.connect(TEST_SOCKET_PATH);
-                client.on('connect', () => {
-                    client.write('{ invalid json }\n');
-                    // Wait a bit then send valid response
-                    setTimeout(() => {
-                        client.write(`${JSON.stringify({ type: 'get_plan' })}\n`);
-                        client.on('data', () => {
-                            client.write(`${JSON.stringify({ type: 'decision', decision: 'accept' })}\n`);
-                            client.end();
-                        });
-                    }, 100);
-                });
-                client.on('error', () => {
-                    // Suppress error
-                });
-            }, 200);
+            await waitForSocket(TEST_SOCKET_PATH);
+            const client = net.connect(TEST_SOCKET_PATH);
+            client.on('connect', () => {
+                client.write('{ invalid json }\n');
+                // Wait a bit then send valid response
+                setTimeout(() => {
+                    client.write(`${JSON.stringify({ type: 'get_plan' })}\n`);
+                    client.on('data', () => {
+                        client.write(`${JSON.stringify({ type: 'decision', decision: 'accept' })}\n`);
+                        client.end();
+                    });
+                }, 100);
+            });
+            client.on('error', () => {
+                // Suppress error
+            });
 
             const stdout = await readStream(hookProcess.stdout);
             const response = JSON.parse(stdout);
@@ -197,23 +195,22 @@ describe('claude-hook hook-socket-errors integration', () => {
             hookProcess.stdin.end();
 
             // Send wrong message type
-            setTimeout(() => {
-                const client = net.connect(TEST_SOCKET_PATH);
-                client.on('connect', () => {
-                    client.write(`${JSON.stringify({ type: 'unknown_type' })}\n`);
-                    // Wait then send proper request
-                    setTimeout(() => {
-                        client.write(`${JSON.stringify({ type: 'get_plan' })}\n`);
-                        client.on('data', () => {
-                            client.write(`${JSON.stringify({ type: 'decision', decision: 'accept' })}\n`);
-                            client.end();
-                        });
-                    }, 100);
-                });
-                client.on('error', () => {
-                    // Suppress error
-                });
-            }, 200);
+            await waitForSocket(TEST_SOCKET_PATH);
+            const client = net.connect(TEST_SOCKET_PATH);
+            client.on('connect', () => {
+                client.write(`${JSON.stringify({ type: 'unknown_type' })}\n`);
+                // Wait then send proper request
+                setTimeout(() => {
+                    client.write(`${JSON.stringify({ type: 'get_plan' })}\n`);
+                    client.on('data', () => {
+                        client.write(`${JSON.stringify({ type: 'decision', decision: 'accept' })}\n`);
+                        client.end();
+                    });
+                }, 100);
+            });
+            client.on('error', () => {
+                // Suppress error
+            });
 
             const stdout = await readStream(hookProcess.stdout);
             const response = JSON.parse(stdout);
@@ -391,19 +388,18 @@ describe('claude-hook hook-socket-errors integration', () => {
             hookProcess.stdin.end();
 
             // Should clean up old file and create new socket
-            setTimeout(() => {
-                const client = net.connect(TEST_SOCKET_PATH);
-                client.on('connect', () => {
-                    client.write(`${JSON.stringify({ type: 'get_plan' })}\n`);
-                    client.on('data', () => {
-                        client.write(`${JSON.stringify({ type: 'decision', decision: 'accept' })}\n`);
-                        client.end();
-                    });
+            await waitForSocket(TEST_SOCKET_PATH);
+            const client = net.connect(TEST_SOCKET_PATH);
+            client.on('connect', () => {
+                client.write(`${JSON.stringify({ type: 'get_plan' })}\n`);
+                client.on('data', () => {
+                    client.write(`${JSON.stringify({ type: 'decision', decision: 'accept' })}\n`);
+                    client.end();
                 });
-                client.on('error', () => {
-                    // Suppress error
-                });
-            }, 200);
+            });
+            client.on('error', () => {
+                // Suppress error
+            });
 
             const stdout = await readStream(hookProcess.stdout);
             const response = JSON.parse(stdout);

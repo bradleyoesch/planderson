@@ -79,6 +79,7 @@ export class PlandersonSocketServer {
     private decisionResolve: ((value: SocketMessage) => void) | null = null;
     private activeSocket: net.Socket | null = null;
     private connectionTimeout: ReturnType<typeof setTimeout> | null = null;
+    private sessionEngaged: boolean = false; // true once get_plan received
     private readonly CONNECTION_TIMEOUT_MS = 30000; // 30 seconds
 
     constructor(socketPath: string) {
@@ -168,6 +169,9 @@ export class PlandersonSocketServer {
                         this.connectionTimeout = null;
                     }
 
+                    // Mark session as engaged so disconnect handler knows this was a real TUI
+                    this.sessionEngaged = true;
+
                     // TUI requesting plan content
                     const response: SocketMessage = {
                         type: 'plan',
@@ -178,6 +182,7 @@ export class PlandersonSocketServer {
                     // TUI sending decision
                     if (this.decisionResolve !== null) {
                         this.decisionResolve(message);
+                        this.decisionResolve = null;
                     }
                     socket.end();
                 } else if (message.type === 'error') {
@@ -189,6 +194,12 @@ export class PlandersonSocketServer {
 
         socket.on('error', (err) => {
             logRawError('Socket error', err);
+
+            if (this.activeSocket !== socket) {
+                socket.destroy();
+                return;
+            }
+
             // Clear connection timeout on error
             if (this.connectionTimeout !== null) {
                 clearTimeout(this.connectionTimeout);
@@ -200,12 +211,20 @@ export class PlandersonSocketServer {
                     type: 'error',
                     error: err.message,
                 });
+                this.decisionResolve = null;
             }
             // Force close socket on error to prevent leak
             socket.destroy();
         });
 
         socket.on('close', () => {
+            // Only run cleanup for the currently active socket.
+            // Probe connections (e.g. waitForSocket polling) may have been replaced by the
+            // time their async close event fires — their events must not affect the active session.
+            if (this.activeSocket !== socket) {
+                return;
+            }
+
             // Clear connection timeout on close
             if (this.connectionTimeout !== null) {
                 clearTimeout(this.connectionTimeout);
@@ -214,6 +233,17 @@ export class PlandersonSocketServer {
 
             // Clear active socket when connection closes
             this.activeSocket = null;
+
+            // Resolve with error only if the TUI had engaged (sent get_plan)
+            // Probe connections that disconnect immediately have sessionEngaged=false
+            if (this.sessionEngaged && this.decisionResolve !== null) {
+                this.decisionResolve({
+                    type: 'error',
+                    error: 'TUI disconnected without sending a decision',
+                });
+                this.decisionResolve = null;
+            }
+            this.sessionEngaged = false;
         });
     }
 

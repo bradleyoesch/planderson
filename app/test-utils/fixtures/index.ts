@@ -16,5 +16,5 @@
  * ```
  */
 
-export { useTestSocket } from './sockets';
+export { useTestSocket, waitForSocket } from './sockets';
 export { useTempDir, useTempPlanFile } from './temp-dirs';
