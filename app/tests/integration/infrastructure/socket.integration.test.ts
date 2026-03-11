@@ -221,12 +221,12 @@ describe('infrastructure socket integration', () => {
                 await server.close();
             });
 
-            test('should timeout when client disconnects without decision', async () => {
+            test('should resolve as error when client disconnects without decision', async () => {
                 const socketInfo = useTestSocket('ipc-decision-timeout');
                 const server = new PlandersonSocketServer(socketInfo.path);
                 await server.start('test plan');
 
-                const decisionPromise = server.waitForDecision(1); // 1 second timeout
+                const decisionPromise = server.waitForDecision(5); // 5 second timeout
 
                 const client = net.connect(socketInfo.path);
                 await new Promise((resolve) => client.on('connect', resolve));
@@ -240,7 +240,7 @@ describe('infrastructure socket integration', () => {
                 const decision = await decisionPromise;
                 expect(decision.type).toBe('error');
                 if (decision.type === 'error') {
-                    expect(decision.error).toContain('Timeout');
+                    expect(decision.error).toContain('disconnected');
                 }
 
                 await server.close();

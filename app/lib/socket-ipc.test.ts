@@ -644,6 +644,40 @@ describe('lib socket-ipc', () => {
     });
 
     describe('PlandersonSocketServer.waitForDecision()', () => {
+        describe('Client disconnect', () => {
+            test('resolves as error when connected TUI closes without sending decision', async () => {
+                const { PlandersonSocketServer } = await import('./socket-ipc');
+                const socketPath = `/tmp/planderson-test-disconnect-${Date.now()}.sock`;
+                const server = new PlandersonSocketServer(socketPath);
+
+                try {
+                    await server.start('test plan content');
+
+                    // Connect a socket, send get_plan to receive the plan, then destroy without sending decision
+                    await new Promise<void>((resolve, reject) => {
+                        const client = net.connect(socketPath);
+                        client.once('error', reject);
+                        client.once('connect', () => {
+                            client.write(`${JSON.stringify({ type: 'get_plan' })}\n`);
+                            client.once('data', () => {
+                                // Received plan — now destroy without sending decision
+                                client.destroy();
+                                resolve();
+                            });
+                        });
+                    });
+
+                    const result = await server.waitForDecision(5);
+                    expect(result.type).toBe('error');
+                    if (result.type === 'error') {
+                        expect(result.error).toContain('disconnected');
+                    }
+                } finally {
+                    await server.close();
+                }
+            });
+        });
+
         describe('Timeout cleanup', () => {
             test('should clear timeout when decision arrives first', async () => {
                 const { PlandersonSocketServer } = await import('./socket-ipc');
