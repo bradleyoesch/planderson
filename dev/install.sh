@@ -8,6 +8,7 @@ set -e
 INSTALL_DIR="$HOME/.planderson"
 BIN_DIR="${XDG_DATA_HOME:-$HOME/.local}/bin"
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+BUILD_DIR="${PLANDERSON_BUILD_DIR:-$PROJECT_ROOT/build}"
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -34,8 +35,8 @@ fi
 echo -e "${GREEN}✓${NC} ${GREY}bun found: $(command -v bun)${NC}"
 
 # Check if unified binary is built
-if [ ! -f "$PROJECT_ROOT/build/planderson" ]; then
-    echo -e "${RED}✗ Error: Binary not found at $PROJECT_ROOT/build/planderson${NC}"
+if [ ! -f "$BUILD_DIR/planderson" ]; then
+    echo -e "${RED}✗ Error: Binary not found at $BUILD_DIR/planderson${NC}"
     echo ""
     echo "Build first:"
     echo -e "  ${CYAN}cd $PROJECT_ROOT${NC}"
@@ -43,7 +44,7 @@ if [ ! -f "$PROJECT_ROOT/build/planderson" ]; then
     echo ""
     exit 1
 fi
-echo -e "${GREEN}✓${NC} ${GREY}Binary found: $PROJECT_ROOT/build/planderson ($(du -h "$PROJECT_ROOT/build/planderson" | cut -f1 | xargs))${NC}"
+echo -e "${GREEN}✓${NC} ${GREY}Binary found: $BUILD_DIR/planderson ($(du -h "$BUILD_DIR/planderson" | cut -f1 | xargs))${NC}"
 
 # Clean runtime directories (sockets, registry)
 echo -e "${GREY}Cleaning runtime directories...${NC}"
@@ -72,7 +73,7 @@ echo -e "${GREEN}✓${NC} ${GREY}Log files initialized${NC}"
 
 # Install unified binary
 echo -e "${GREY}Installing binary...${NC}"
-cp "$PROJECT_ROOT/build/planderson" "$INSTALL_DIR/planderson"
+cp "$BUILD_DIR/planderson" "$INSTALL_DIR/planderson"
 chmod +x "$INSTALL_DIR/planderson"
 echo -e "${GREEN}✓${NC} ${GREY}Binary installed to $INSTALL_DIR/planderson${NC}"
 

@@ -1,4 +1,4 @@
-import { afterEach, beforeAll, beforeEach, describe, expect, test } from 'bun:test';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test } from 'bun:test';
 import { execSync } from 'child_process';
 import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'fs';
 import { tmpdir } from 'os';
@@ -17,6 +17,7 @@ describe('installation global-install integration', () => {
     const PROJECT_ROOT = join(__dirname, '../../../..');
     let TEST_HOME: string;
     let originalHome: string;
+    let SUITE_BUILD_DIR: string;
 
     beforeAll(() => {
         // Build binary once per test run (skip if already built)
@@ -27,6 +28,18 @@ describe('installation global-install integration', () => {
                 console.error('Failed to build binaries:', error);
                 throw error;
             }
+        }
+
+        // Copy build artifacts to a unique per-suite temp dir.
+        // This prevents the "binaries not built" test from racing with concurrent
+        // test suites that call install.sh (which reads from $BUILD_DIR/planderson).
+        SUITE_BUILD_DIR = mkdtempSync(join(tmpdir(), 'planderson-test-build-'));
+        execSync(`cp ${join(PROJECT_ROOT, 'build', 'planderson')} ${SUITE_BUILD_DIR}/planderson`);
+    });
+
+    afterAll(() => {
+        if (SUITE_BUILD_DIR) {
+            rmSync(SUITE_BUILD_DIR, { recursive: true, force: true });
         }
     });
 
@@ -45,7 +58,7 @@ describe('installation global-install integration', () => {
     test('run install script -> creates all required directories and files', () => {
         execSync(`${join(PROJECT_ROOT, 'dev/install.sh')}`, {
             cwd: PROJECT_ROOT,
-            env: getSafeTestEnv({ HOME: TEST_HOME, XDG_DATA_HOME: undefined }),
+            env: getSafeTestEnv({ HOME: TEST_HOME, XDG_DATA_HOME: undefined, PLANDERSON_BUILD_DIR: SUITE_BUILD_DIR }),
             stdio: 'pipe',
         });
 
@@ -74,7 +87,7 @@ describe('installation global-install integration', () => {
 
         execSync(`${join(PROJECT_ROOT, 'dev/install.sh')}`, {
             cwd: PROJECT_ROOT,
-            env: getSafeTestEnv({ HOME: TEST_HOME, XDG_DATA_HOME: undefined }),
+            env: getSafeTestEnv({ HOME: TEST_HOME, XDG_DATA_HOME: undefined, PLANDERSON_BUILD_DIR: SUITE_BUILD_DIR }),
             stdio: 'pipe',
         });
 
@@ -91,7 +104,7 @@ describe('installation global-install integration', () => {
 
         execSync(`${join(PROJECT_ROOT, 'dev/install.sh')}`, {
             cwd: PROJECT_ROOT,
-            env: getSafeTestEnv({ HOME: TEST_HOME, XDG_DATA_HOME: undefined }),
+            env: getSafeTestEnv({ HOME: TEST_HOME, XDG_DATA_HOME: undefined, PLANDERSON_BUILD_DIR: SUITE_BUILD_DIR }),
             stdio: 'pipe',
         });
 
@@ -104,7 +117,7 @@ describe('installation global-install integration', () => {
     test('installed binary -> executes hook and returns allow for non-ExitPlanMode', () => {
         execSync(`${join(PROJECT_ROOT, 'dev/install.sh')}`, {
             cwd: PROJECT_ROOT,
-            env: getSafeTestEnv({ HOME: TEST_HOME, XDG_DATA_HOME: undefined }),
+            env: getSafeTestEnv({ HOME: TEST_HOME, XDG_DATA_HOME: undefined, PLANDERSON_BUILD_DIR: SUITE_BUILD_DIR }),
             stdio: 'pipe',
         });
 
@@ -132,7 +145,7 @@ describe('installation global-install integration', () => {
     test('installed binary -> returns version via --version flag', () => {
         execSync(`${join(PROJECT_ROOT, 'dev/install.sh')}`, {
             cwd: PROJECT_ROOT,
-            env: getSafeTestEnv({ HOME: TEST_HOME, XDG_DATA_HOME: undefined }),
+            env: getSafeTestEnv({ HOME: TEST_HOME, XDG_DATA_HOME: undefined, PLANDERSON_BUILD_DIR: SUITE_BUILD_DIR }),
             stdio: 'pipe',
         });
 
@@ -149,7 +162,7 @@ describe('installation global-install integration', () => {
     test('log files are created and writable', () => {
         execSync(`${join(PROJECT_ROOT, 'dev/install.sh')}`, {
             cwd: PROJECT_ROOT,
-            env: getSafeTestEnv({ HOME: TEST_HOME, XDG_DATA_HOME: undefined }),
+            env: getSafeTestEnv({ HOME: TEST_HOME, XDG_DATA_HOME: undefined, PLANDERSON_BUILD_DIR: SUITE_BUILD_DIR }),
             stdio: 'pipe',
         });
 
@@ -184,17 +197,10 @@ describe('installation global-install integration', () => {
         });
 
         test('binaries not built -> fails with clear error', () => {
-            const buildDir = join(PROJECT_ROOT, 'build');
-            const buildBackup = join(PROJECT_ROOT, 'build-backup');
-
-            if (existsSync(buildDir)) {
-                execSync(`mv ${buildDir} ${buildBackup}`, { cwd: PROJECT_ROOT });
-            }
-
             try {
                 execSync(`${join(PROJECT_ROOT, 'dev/install.sh')}`, {
                     cwd: PROJECT_ROOT,
-                    env: getSafeTestEnv({ HOME: TEST_HOME }),
+                    env: getSafeTestEnv({ HOME: TEST_HOME, PLANDERSON_BUILD_DIR: '/nonexistent' }),
                     stdio: 'pipe',
                     encoding: 'utf-8',
                 });
@@ -203,10 +209,6 @@ describe('installation global-install integration', () => {
                 expect(error.status).toBeGreaterThan(0);
                 const output = error.stdout + error.stderr;
                 expect(output).toContain('Binary not found');
-            } finally {
-                if (existsSync(buildBackup)) {
-                    execSync(`mv ${buildBackup} ${buildDir}`, { cwd: PROJECT_ROOT });
-                }
             }
         });
     });
