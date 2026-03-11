@@ -63,7 +63,7 @@ describe('e2e content-stability integration', () => {
         test('entering command mode does not shift plan content', async () => {
             const file = useTempPlanFile('Line 1\nLine 2\nLine 3\nLine 4\nLine 5', 'cmd-stability-1.md');
             const { lastFrame, stdin } = render(<App {...DEFAULT_APP_PROPS} filepath={file} />);
-            await waitFor(() => expect(lastFrame()).toContain('Line 1'), 10000);
+            await waitFor(() => expect(lastFrame()).toContain('Line 1'));
 
             // Capture state before entering command mode
             const beforeFrame = lastFrame()!;
@@ -101,7 +101,7 @@ describe('e2e content-stability integration', () => {
         test('exiting command mode restores original content position', async () => {
             const file = useTempPlanFile('Line 1\nLine 2\nLine 3\nLine 4\nLine 5', 'cmd-stability-2.md');
             const { lastFrame, stdin } = render(<App {...DEFAULT_APP_PROPS} filepath={file} />);
-            await waitFor(() => expect(lastFrame()).toContain('Line 1'), 10000);
+            await waitFor(() => expect(lastFrame()).toContain('Line 1'));
 
             // Capture original state
             const originalFrame = lastFrame()!;
@@ -132,7 +132,7 @@ describe('e2e content-stability integration', () => {
         test('entering comment mode does not shift plan content', async () => {
             const file = useTempPlanFile('Line 1\nLine 2\nLine 3\nLine 4\nLine 5', 'comment-stability-1.md');
             const { lastFrame, stdin } = render(<App {...DEFAULT_APP_PROPS} filepath={file} />);
-            await waitFor(() => expect(lastFrame()).toContain('Line 1'), 10000);
+            await waitFor(() => expect(lastFrame()).toContain('Line 1'));
 
             // Capture state before entering comment mode
             const beforeFrame = lastFrame()!;
@@ -161,7 +161,7 @@ describe('e2e content-stability integration', () => {
         test('exiting comment mode restores original content position', async () => {
             const file = useTempPlanFile('Line 1\nLine 2\nLine 3\nLine 4\nLine 5', 'comment-stability-2.md');
             const { lastFrame, stdin } = render(<App {...DEFAULT_APP_PROPS} filepath={file} />);
-            await waitFor(() => expect(lastFrame()).toContain('Line 1'), 10000);
+            await waitFor(() => expect(lastFrame()).toContain('Line 1'));
 
             // Capture original state
             const originalFrame = lastFrame()!;
@@ -192,7 +192,7 @@ describe('e2e content-stability integration', () => {
         test('entering question mode does not shift plan content', async () => {
             const file = useTempPlanFile('Line 1\nLine 2\nLine 3\nLine 4\nLine 5', 'question-stability-1.md');
             const { lastFrame, stdin } = render(<App {...DEFAULT_APP_PROPS} filepath={file} />);
-            await waitFor(() => expect(lastFrame()).toContain('Line 1'), 10000);
+            await waitFor(() => expect(lastFrame()).toContain('Line 1'));
 
             // Capture state before entering question mode
             const beforeFrame = lastFrame()!;
@@ -221,7 +221,7 @@ describe('e2e content-stability integration', () => {
         test('exiting question mode restores original content position', async () => {
             const file = useTempPlanFile('Line 1\nLine 2\nLine 3\nLine 4\nLine 5', 'question-stability-2.md');
             const { lastFrame, stdin } = render(<App {...DEFAULT_APP_PROPS} filepath={file} />);
-            await waitFor(() => expect(lastFrame()).toContain('Line 1'), 10000);
+            await waitFor(() => expect(lastFrame()).toContain('Line 1'));
 
             // Capture original state
             const originalFrame = lastFrame()!;
@@ -252,7 +252,7 @@ describe('e2e content-stability integration', () => {
         test('toggling delete does not shift plan content', async () => {
             const file = useTempPlanFile('Line 1\nLine 2\nLine 3\nLine 4\nLine 5', 'delete-stability-1.md');
             const { lastFrame, stdin } = render(<App {...DEFAULT_APP_PROPS} filepath={file} />);
-            await waitFor(() => expect(lastFrame()).toContain('Line 1'), 10000);
+            await waitFor(() => expect(lastFrame()).toContain('Line 1'));
 
             // Capture state before deleting
             const beforeFrame = lastFrame()!;
@@ -286,7 +286,7 @@ describe('e2e content-stability integration', () => {
         test('entering approve confirmation does not shift plan content', async () => {
             const file = useTempPlanFile('Line 1\nLine 2\nLine 3\nLine 4\nLine 5', 'approve-stability-1.md');
             const { lastFrame, stdin } = render(<App {...DEFAULT_APP_PROPS} filepath={file} />);
-            await waitFor(() => expect(lastFrame()).toContain('Line 1'), 10000);
+            await waitFor(() => expect(lastFrame()).toContain('Line 1'));
 
             // Capture state before entering confirmation
             const beforeFrame = lastFrame()!;
@@ -312,7 +312,7 @@ describe('e2e content-stability integration', () => {
         test('exiting approve confirmation restores original content position', async () => {
             const file = useTempPlanFile('Line 1\nLine 2\nLine 3\nLine 4\nLine 5', 'approve-stability-2.md');
             const { lastFrame, stdin } = render(<App {...DEFAULT_APP_PROPS} filepath={file} />);
-            await waitFor(() => expect(lastFrame()).toContain('Line 1'), 10000);
+            await waitFor(() => expect(lastFrame()).toContain('Line 1'));
 
             // Capture original state
             const originalFrame = lastFrame()!;
@@ -344,7 +344,7 @@ describe('e2e content-stability integration', () => {
             const lines = Array.from({ length: 50 }, (_, i) => `Line ${i + 1}`).join('\n');
             const file = useTempPlanFile(lines, 'scroll-cmd-stability.md');
             const { lastFrame, stdin } = render(<App {...DEFAULT_APP_PROPS} filepath={file} />);
-            await waitFor(() => expect(lastFrame()).toContain('Line 1'), 10000);
+            await waitFor(() => expect(lastFrame()).toContain('Line 1'));
 
             // Scroll down to middle of content
             await Array.from({ length: 20 }).reduce(async (promise) => {
@@ -367,7 +367,7 @@ describe('e2e content-stability integration', () => {
 
             // Enter command mode
             await typeKey(stdin, ':');
-            await waitFor(() => expect(isInCommandMode(lastFrame()!)).toBe(true), 10000);
+            await waitFor(() => expect(isInCommandMode(lastFrame()!)).toBe(true));
 
             // Verify scroll position maintained AND header still visible
             const afterCommandFrame = lastFrame()!;

@@ -6,6 +6,7 @@ import { planViewReducer } from '~/state/planViewReducer';
 import { createInitialState, PlanViewState } from '~/state/planViewState';
 import { LineMetadata, wrapContentWithFormatting } from '~/utils/rendering/line-wrapping';
 import { parseMarkdownDocument } from '~/utils/rendering/markdown/document-parser';
+import { calculateViewportHeight } from '~/utils/rendering/viewport';
 
 /**
  * Static context for PlanView - data that never changes during a session
@@ -80,8 +81,11 @@ export const PlanViewProvider: React.FC<PlanViewProviderProps> = ({
     onDeny,
     onCancel,
 }) => {
-    const [state, dispatch] = React.useReducer(planViewReducer, createInitialState());
-    const { terminalWidth } = useTerminal();
+    const { terminalWidth, terminalHeight } = useTerminal();
+    const [state, dispatch] = React.useReducer(planViewReducer, terminalHeight, (height) => ({
+        ...createInitialState(),
+        viewportHeight: calculateViewportHeight('plan', height),
+    }));
 
     // Memoize static context - recalculates when content or terminal width changes
     const staticValue: PlanViewStaticContextValue = React.useMemo(() => {

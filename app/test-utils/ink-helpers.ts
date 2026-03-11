@@ -146,6 +146,7 @@ export const waitFor = async (
     while (true) {
         try {
             await assertion();
+            await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
             return;
         } catch (e) {
             if (Date.now() - startTime > timeoutMs) {
