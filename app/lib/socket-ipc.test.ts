@@ -645,7 +645,7 @@ describe('lib socket-ipc', () => {
 
     describe('PlandersonSocketServer.waitForDecision()', () => {
         describe('Client disconnect', () => {
-            test('resolves as error when connected TUI closes without sending decision', async () => {
+            test('resolves as no-op when connected TUI closes without sending decision', async () => {
                 const { PlandersonSocketServer } = await import('./socket-ipc');
                 const socketPath = `/tmp/planderson-test-disconnect-${Date.now()}.sock`;
                 const server = new PlandersonSocketServer(socketPath);
@@ -668,10 +668,7 @@ describe('lib socket-ipc', () => {
                     });
 
                     const result = await server.waitForDecision(5);
-                    expect(result.type).toBe('error');
-                    if (result.type === 'error') {
-                        expect(result.error).toContain('disconnected');
-                    }
+                    expect(result.type).toBe('no-op');
                 } finally {
                     await server.close();
                 }

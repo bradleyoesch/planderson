@@ -93,10 +93,10 @@ describe('claude-hook hook-socket-errors integration', () => {
             }, 200);
 
             const stdout = await readStream(hookProcess.stdout);
+            // No-op: hook exits without JSON output (empty stdout = allow in Claude Code)
+            if (stdout.trim() === '') return;
             const response = JSON.parse(stdout);
-
-            // Should timeout or return error
-            expect(response.hookSpecificOutput.decision.behavior).toBe('deny');
+            expect(response.hookSpecificOutput.decision.behavior).toBe('allow');
         }, 10000);
 
         test('handles TUI disconnecting during plan transmission', async () => {
@@ -129,10 +129,46 @@ describe('claude-hook hook-socket-errors integration', () => {
             });
 
             const stdout = await readStream(hookProcess.stdout);
+            // No-op: hook exits without JSON output (empty stdout = allow in Claude Code)
+            if (stdout.trim() === '') return;
             const response = JSON.parse(stdout);
+            expect(response.hookSpecificOutput.decision.behavior).toBe('allow');
+        }, 10000);
 
-            // Should handle gracefully
-            expect(response.hookSpecificOutput.decision.behavior).toBe('deny');
+        test('handles TUI exiting via signal (no decision sent)', async () => {
+            const { path: TEST_SOCKET_PATH } = useTestSocket('hook-socket-errors');
+            const hookInput = {
+                tool_name: 'ExitPlanMode',
+                tool_input: { plan: 'Test plan' },
+                hook_event_name: 'PermissionRequest',
+            };
+
+            const hookProcess = spawnHook({
+                PLANDERSON_SOCKET_PATH: TEST_SOCKET_PATH,
+                PLANDERSON_TIMEOUT_SECONDS: '3',
+            });
+
+            hookProcess.stdin.write(JSON.stringify(hookInput));
+            hookProcess.stdin.end();
+
+            // Connect, get plan, then destroy without sending decision (simulates signal exit)
+            await waitForSocket(TEST_SOCKET_PATH);
+            const client = net.connect(TEST_SOCKET_PATH);
+            client.on('connect', () => {
+                client.write(`${JSON.stringify({ type: 'get_plan' })}\n`);
+                client.on('data', () => {
+                    client.destroy();
+                });
+            });
+            client.on('error', () => {
+                // Suppress error
+            });
+
+            const stdout = await readStream(hookProcess.stdout);
+            // No-op: hook exits without JSON output (empty stdout = allow in Claude Code)
+            if (stdout.trim() === '') return;
+            const response = JSON.parse(stdout);
+            expect(response.hookSpecificOutput.decision.behavior).toBe('allow');
         }, 10000);
     });
 

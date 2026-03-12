@@ -82,15 +82,8 @@ export const AppInner: React.FC<AppInnerProps> = ({
     // Signal handlers: Clean shutdown on Ctrl+C (SIGINT) or SIGTERM
     useEffect(() => {
         const handleSignal = (signal: string): void => {
-            try {
-                // Send cancel decision to hook if in socket mode
-                sendDecisionViaSocket(sessionId, socketClient, mode, 'deny', 'Cancelled by user (signal)');
-                logEvent(__filename, sessionId, 'process.signal', signal);
-            } catch (err) {
-                logError(__filename, sessionId, 'signal.errored', err as Error, 'failed to send cancel');
-            } finally {
-                exit();
-            }
+            logEvent(__filename, sessionId, 'process.signal', signal);
+            exit();
         };
 
         // Register signal handlers

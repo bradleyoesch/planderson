@@ -199,7 +199,7 @@ const waitForDecisionViaSocket = async function (
     sessionId: string,
     planContent: string,
     timeoutSeconds: number = DEFAULT_TIMEOUT_SECONDS,
-): Promise<PlandersonResponse | 'timeout'> {
+): Promise<PlandersonResponse | 'timeout' | 'no-op'> {
     // Create socket path unique to this run (with env var override for testing)
     const socketId = getSocketId(sessionId);
     const socketPath =
@@ -293,6 +293,9 @@ const waitForDecisionViaSocket = async function (
                 decision: result.decision,
                 message: result.message,
             };
+        } else if (result.type === 'no-op') {
+            logEvent(__filename, sessionId, 'socket.server.noop', 'TUI exited without decision');
+            return 'no-op';
         } else if (result.type === 'error') {
             logError(__filename, sessionId, 'socket.server.errored', new Error(result.error));
 
@@ -385,6 +388,11 @@ const main = async function (): Promise<void> {
 
         // Wait for Planderson decision via Unix socket (blocks until TUI responds)
         const result = await waitForDecisionViaSocket(sessionId, planContent);
+
+        if (result === 'no-op') {
+            logEvent(__filename, sessionId, 'hook.ended', 'behavior=no-op');
+            process.exit(0); // No JSON output = allow in Claude Code
+        }
 
         // Map socket result to hook response
         const { behavior, message } = mapSocketResultToHookResponse(result, DEFAULT_TIMEOUT_SECONDS);
