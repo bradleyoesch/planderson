@@ -221,7 +221,7 @@ describe('infrastructure socket integration', () => {
                 await server.close();
             });
 
-            test('should resolve as error when client disconnects without decision', async () => {
+            test('should resolve as no-op when client disconnects without decision', async () => {
                 const socketInfo = useTestSocket('ipc-decision-timeout');
                 const server = new PlandersonSocketServer(socketInfo.path);
                 await server.start('test plan');
@@ -238,10 +238,7 @@ describe('infrastructure socket integration', () => {
                 client.destroy();
 
                 const decision = await decisionPromise;
-                expect(decision.type).toBe('error');
-                if (decision.type === 'error') {
-                    expect(decision.error).toContain('disconnected');
-                }
+                expect(decision.type).toBe('no-op');
 
                 await server.close();
             });

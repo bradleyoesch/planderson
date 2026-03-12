@@ -13,6 +13,7 @@ export type SocketMessage =
     | { type: 'get_plan' }
     | { type: 'plan'; content: string }
     | { type: 'decision'; decision: 'accept' | 'deny'; message?: string }
+    | { type: 'no-op' }
     | { type: 'error'; error: string };
 
 /**
@@ -234,13 +235,10 @@ export class PlandersonSocketServer {
             // Clear active socket when connection closes
             this.activeSocket = null;
 
-            // Resolve with error only if the TUI had engaged (sent get_plan)
-            // Probe connections that disconnect immediately have sessionEngaged=false
-            if (this.sessionEngaged && this.decisionResolve !== null) {
-                this.decisionResolve({
-                    type: 'error',
-                    error: 'TUI disconnected without sending a decision',
-                });
+            // Any TUI disconnect without a prior decision is a no-op.
+            // This covers crashes before get_plan, crashes after, and signal exits.
+            if (this.decisionResolve !== null) {
+                this.decisionResolve({ type: 'no-op' });
                 this.decisionResolve = null;
             }
             this.sessionEngaged = false;
