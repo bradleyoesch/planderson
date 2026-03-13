@@ -81,31 +81,26 @@ export const PlanView: React.FC<PlanViewProps> = ({ sessionId, content, onShowHe
             [state.questions, terminalWidth, paddingX],
         );
 
-        // Calculate visible lines accounting for feedback items
-        // Feedback items (comments/questions) render as extra lines above content lines
-        // We need to reduce the number of content lines shown to fit within viewportHeight
+        // Calculate visible lines accounting for feedback items and line wrapping.
+        // Forward scan: add lines one at a time until adding the next would exceed viewportHeight.
+        // This avoids a unit mismatch where excess (terminal rows) was subtracted from endLine
+        // (a logical line index), causing massive overcorrection on wrapped content.
         const startLine = state.scrollOffset;
-        let endLine = Math.min(state.scrollOffset + viewportHeight, wrappedLines.length);
-
-        // Iteratively adjust endLine to account for feedback lines
-        // We may need multiple iterations if reducing endLine reveals new feedback
-        let prevEndLine = -1;
-        while (endLine !== prevEndLine) {
-            // Count feedback lines using pre-wrapped feedback (avoids re-wrapping)
-            const feedbackCount = countFeedbackLines(startLine, endLine, wrappedComments, wrappedQuestions);
-            // Count terminal lines (accounts for wrapping) instead of logical lines
-            const terminalLinesForContent = countTerminalLinesInRange(wrappedLines, startLine, endLine - 1);
+        let endLine = startLine;
+        while (endLine < wrappedLines.length) {
+            const feedbackCount = countFeedbackLines(startLine, endLine + 1, wrappedComments, wrappedQuestions);
+            const terminalLinesForContent = countTerminalLinesInRange(wrappedLines, startLine, endLine);
             const totalLinesNeeded = terminalLinesForContent + feedbackCount;
 
             if (totalLinesNeeded > viewportHeight) {
-                // Too many lines, reduce content lines
-                const excess = totalLinesNeeded - viewportHeight;
-                prevEndLine = endLine;
-                endLine = Math.max(startLine + 1, endLine - excess);
-            } else {
-                // Fits within viewport
                 break;
             }
+            endLine++;
+        }
+
+        // Always show at least 1 line even if it overflows viewport height
+        if (endLine === startLine) {
+            endLine = startLine + 1;
         }
 
         const visibleLines = wrappedLines.slice(startLine, endLine);

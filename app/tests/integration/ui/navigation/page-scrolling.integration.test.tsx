@@ -539,4 +539,40 @@ describe('navigation page-scrolling integration', () => {
         // With the fix, Content Line 2 must still be visible after 20 presses
         await waitFor(() => expect(lastFrame()!).toMatch(/Content Line 2\n/));
     });
+
+    /**
+     * Scenario 18: Initial Load With Wrapped Lines Fills Viewport
+     * REQUIREMENT: When a plan opens with a long wrapped line at the top, short lines
+     * that follow it should be visible — viewport must be filled, not just show 1 line.
+     *
+     * Regression test for the endLine overcorrection bug: the old backward-subtract
+     * set endLine = 1 when a long wrapped line consumed many terminal rows, hiding
+     * all subsequent lines even though they easily fit in the remaining space.
+     */
+    test('initial load with wrapped lines fills viewport correctly (regression for endLine overcorrection)', async () => {
+        // 5 short lines (1 row each) followed by 15 long lines (3 rows each at 78-col effective width).
+        // Total logical lines = 20, total terminal rows = 5 + 45 = 50 >> viewportHeight(20).
+        //
+        // Bug (backward-subtract): initial endLine=20, excess=50-20=30, endLine=max(1,20-30)=1
+        //   → only 'Short 1' visible; 'Short 2'-'Short 5' cut off even though they fit.
+        // Fix (forward scan): endLine advances to 10 (5 short + 5 long = 20 rows = viewport)
+        //   → 'Short 1'-'Short 5' all visible.
+        const shortLines = Array.from({ length: 5 }, (_, i) => `Short ${i + 1}`);
+        const longLines = Array.from({ length: 15 }, () => 'W'.repeat(200));
+        const content = [...shortLines, ...longLines].join('\n');
+        const file = useTempPlanFile(content, 'scrolling-wrapped-fills-viewport.md');
+
+        const { lastFrame } = render(<App {...DEFAULT_APP_PROPS} filepath={file} />);
+
+        // Wait for initial render — first short line is present
+        await waitFor(() => expect(lastFrame()!).toContain('Short 1'));
+
+        // All 5 short lines must be visible on initial load.
+        // They each take 1 terminal row; 5 rows easily fit alongside the first 5 long lines.
+        // Bug: endLine overcorrection sets endLine=1, hiding Short 2-5.
+        expect(lastFrame()!).toContain('Short 2');
+        expect(lastFrame()!).toContain('Short 3');
+        expect(lastFrame()!).toContain('Short 4');
+        expect(lastFrame()!).toContain('Short 5');
+    });
 });
