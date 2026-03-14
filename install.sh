@@ -20,19 +20,12 @@ esac
 platform="${os}-${arch}"
 binary_name="planderson-${platform}"
 
-echo "Fetching latest version..."
-latest_tag=$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" | grep '"tag_name"' | cut -d'"' -f4)
-
-if [ -z "$latest_tag" ]; then
-    echo "Failed to fetch latest version" >&2
-    exit 1
-fi
-
-echo "Installing planderson ${latest_tag}..."
-
-binary_url="https://github.com/${REPO}/releases/download/${latest_tag}/${binary_name}"
+base_url="https://github.com/${REPO}/releases/latest/download"
+binary_url="${base_url}/${binary_name}"
 checksum_url="${binary_url}.sha256"
-tmux_url="https://github.com/${REPO}/releases/download/${latest_tag}/planderson-tmux.tar.gz"
+tmux_url="${base_url}/planderson-tmux.tar.gz"
+
+echo "Installing planderson..."
 
 mkdir -p "$PLANDERSON_DIR"
 mkdir -p "$PLANDERSON_DIR/integrations/tmux"
@@ -76,7 +69,7 @@ touch "$PLANDERSON_DIR/logs/activity.log"
 touch "$PLANDERSON_DIR/logs/error.log"
 
 echo ""
-echo "planderson ${latest_tag} installed to ${PLANDERSON_DIR}/planderson"
+echo "planderson installed to ${PLANDERSON_DIR}/planderson"
 echo "Symlinked to ${BIN_DIR}/planderson"
 
 if ! echo "$PATH" | tr ':' '\n' | grep -qx "$BIN_DIR"; then
