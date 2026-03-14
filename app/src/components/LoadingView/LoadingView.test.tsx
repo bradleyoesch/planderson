@@ -6,6 +6,10 @@ import { renderWithTerminalProvider as render } from '~/test-utils/render-helper
 
 import { LoadingView } from './LoadingView';
 
+// Capture real setTimeout before fake-timers installs — used to flush React's
+// MessageChannel-scheduled renders after clock.tickAsync() in React 19.
+const originalSetTimeout = globalThis.setTimeout;
+
 describe('LoadingView', () => {
     let clock: InstalledClock;
 
@@ -27,6 +31,7 @@ describe('LoadingView', () => {
             const { lastFrame } = render(<LoadingView mode="socket" filepath={null} />);
 
             await clock.tickAsync(1000);
+            await new Promise<void>((r) => originalSetTimeout(r, 0));
 
             expect(lastFrame()).toContain('Loading Plan...');
         });
@@ -47,6 +52,7 @@ describe('LoadingView', () => {
             const { lastFrame } = render(<LoadingView mode="socket" filepath={null} />);
 
             await clock.tickAsync(1000);
+            await new Promise<void>((r) => originalSetTimeout(r, 0));
 
             const frame = lastFrame();
             expect(frame).toContain('Connecting to Claude Code hook via socket');
@@ -60,6 +66,7 @@ describe('LoadingView', () => {
             const { lastFrame } = render(<LoadingView mode="file" filepath="test.md" />);
 
             await clock.tickAsync(1000);
+            await new Promise<void>((r) => originalSetTimeout(r, 0));
 
             expect(lastFrame()).toContain('Reading from file: test.md');
         });
@@ -69,6 +76,7 @@ describe('LoadingView', () => {
             const { lastFrame } = render(<LoadingView mode="file" filepath={longPath} />);
 
             await clock.tickAsync(1000);
+            await new Promise<void>((r) => originalSetTimeout(r, 0));
 
             expect(lastFrame()).toContain(longPath);
         });
@@ -78,6 +86,7 @@ describe('LoadingView', () => {
             const { lastFrame } = render(<LoadingView mode="file" filepath={specialFile} />);
 
             await clock.tickAsync(1000);
+            await new Promise<void>((r) => originalSetTimeout(r, 0));
 
             expect(lastFrame()).toContain(specialFile);
         });
