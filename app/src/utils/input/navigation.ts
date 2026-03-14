@@ -73,15 +73,12 @@ export const handleInputNavigation = (
     }
 
     // Line navigation
-    // Note: HOME/END keys are not supported because Ink's useInput Key type
-    // doesn't expose key.home or key.end properties (TypeScript compilation error).
-    // Ctrl+A and Ctrl+E serve as the standard terminal alternatives.
-    if (input === 'a' && key.ctrl) {
+    if (key.home || (input === 'a' && key.ctrl)) {
         dispatch({ type: 'MOVE_INPUT_CURSOR_TO_START' });
         return true;
     }
 
-    if (input === 'e' && key.ctrl) {
+    if (key.end || (input === 'e' && key.ctrl)) {
         dispatch({ type: 'MOVE_INPUT_CURSOR_TO_END' });
         return true;
     }
