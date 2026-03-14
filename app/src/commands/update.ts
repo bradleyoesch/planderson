@@ -6,9 +6,12 @@ export const stripVersionPrefix = (tag: string): string => tag.replace(/^v/, '')
 
 export const runUpdate = async (): Promise<void> => {
     try {
-        const res = await fetch('https://api.github.com/repos/bradleyoesch/planderson/releases/latest');
-        const { tag_name: tagName } = (await res.json()) as { tag_name: string };
-        const latest = stripVersionPrefix(tagName);
+        const res = await fetch('https://github.com/bradleyoesch/planderson/releases/latest');
+        const tag = res.url.split('/').pop();
+        if (!tag) {
+            throw new Error('Could not determine latest version from release URL');
+        }
+        const latest = stripVersionPrefix(tag);
 
         if (latest === currentVersion) {
             console.log(`Already on latest version (v${currentVersion})`);
