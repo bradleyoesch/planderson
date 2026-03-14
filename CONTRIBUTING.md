@@ -2,12 +2,14 @@
 
 Development guide for working on Planderson locally.
 
+By contributing, you agree to abide by the [Code of Conduct](CODE_OF_CONDUCT.md).
+
 ## Development Setup
 
 ### Clone and Install
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/bradleyoesch/planderson.git
 cd planderson
 bun install
 ```

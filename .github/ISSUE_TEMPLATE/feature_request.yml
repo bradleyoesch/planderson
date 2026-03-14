@@ -1,0 +1,30 @@
+name: Feature Request
+description: Propose a new feature or improvement
+labels: ['new feature']
+body:
+    - type: textarea
+      id: problem
+      attributes:
+          label: Problem
+          description: What problem does this solve? What's the current pain point?
+      validations:
+          required: true
+
+    - type: textarea
+      id: user_stories
+      attributes:
+          label: Functional Requirements
+          description: User stories describing the desired behavior.
+          placeholder: |
+              - As a user, I want to ... so that ...
+              - As a user, I want to ... so that ...
+      validations:
+          required: true
+
+    - type: textarea
+      id: solution
+      attributes:
+          label: Proposed Solution
+          description: How do you envision this working?
+      validations:
+          required: false

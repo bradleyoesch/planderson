@@ -80,6 +80,9 @@
         ],
         "*.md": [
             "prettier --write"
+        ],
+        "*.{yml,yaml}": [
+            "prettier --write"
         ]
     }
 }
