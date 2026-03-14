@@ -73,6 +73,7 @@
         "*.{ts,tsx}": [
             "prettier --write",
             "eslint --fix",
+            "eslint",
             "bash -c 'bun run type-check'"
         ],
         "*.json": [
