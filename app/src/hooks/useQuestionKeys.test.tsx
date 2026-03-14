@@ -530,7 +530,9 @@ describe('useQuestionKeys', () => {
 
             enterQuestionMode(result, 0);
 
-            const longText = 'A'.repeat(1000);
+            // Use 100 chars — enough to verify multi-char input is preserved; 1000 chars
+            // causes React 19 act() to be extremely slow (1000 individual dispatches).
+            const longText = 'A'.repeat(100);
             setQuestionText(result, longText);
 
             expect(result.current.state.currentQuestionText).toBe(longText);

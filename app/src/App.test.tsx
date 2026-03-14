@@ -10,6 +10,10 @@ import { TerminalProvider } from '~/contexts/TerminalContext';
 import { PlandersonSocketClient } from '~/lib/socket-ipc';
 import { DEFAULT_SETTINGS } from '~/utils/config/settings';
 import { resetWriteFunction, setWriteFunction } from '~/utils/io/logger';
+
+// Capture real setTimeout before fake-timers installs — used to flush React's
+// MessageChannel-scheduled renders after clock.tickAsync() in React 19.
+const originalSetTimeout = globalThis.setTimeout;
 // No mock.module() calls needed:
 // - Keyboard hooks (useNavigationKeys, etc.) use Ink's useInput which is a no-op in test environments
 // - usePlanLoader is replaced by the planLoader prop on AppInner
@@ -73,6 +77,7 @@ describe('App', () => {
         test('should render LoadingView in socket mode', async () => {
             const { lastFrame } = renderAppInner({ ...defaultAppInnerProps, planLoader: defaultPlanLoader });
             await clock.tickAsync(1000);
+            await new Promise<void>((r) => originalSetTimeout(r, 0));
 
             expect(lastFrame()).toContain('Loading Plan...');
             expect(lastFrame()).toContain('socket');
@@ -86,6 +91,7 @@ describe('App', () => {
                 planLoader: defaultPlanLoader,
             });
             await clock.tickAsync(1000);
+            await new Promise<void>((r) => originalSetTimeout(r, 0));
 
             expect(lastFrame()).toContain('Loading Plan...');
             expect(lastFrame()).toContain('test.md');
@@ -141,6 +147,7 @@ describe('App', () => {
                 planLoader: defaultPlanLoader,
             });
             await clock.tickAsync(1000);
+            await new Promise<void>((r) => originalSetTimeout(r, 0));
 
             expect(lastFrame()).toContain('Loading Plan...');
 
@@ -175,6 +182,7 @@ describe('App', () => {
                 planLoader: defaultPlanLoader,
             });
             await clock.tickAsync(1000);
+            await new Promise<void>((r) => originalSetTimeout(r, 0));
 
             expect(lastFrame()).toContain('Loading Plan...');
 
@@ -230,6 +238,7 @@ describe('App', () => {
 
             renderAppInner({ ...defaultAppInnerProps, planLoader: defaultPlanLoader });
             await clock.tickAsync(1000);
+            await new Promise<void>((r) => originalSetTimeout(r, 0));
 
             const startupEvents = logs.filter((log) => log.includes('tui.process.loaded'));
             expect(startupEvents.length).toBe(0);

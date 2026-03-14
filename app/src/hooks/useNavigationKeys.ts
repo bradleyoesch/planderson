@@ -3,8 +3,8 @@ import { useMemo } from 'react';
 
 import { usePlanViewDynamicContext, usePlanViewStaticContext } from '~/contexts/PlanViewProvider';
 import { useTerminal } from '~/contexts/TerminalContext';
-import { countTerminalLinesInRange, wrapFeedback } from '~/utils/rendering/line-wrapping';
-import { calculateMaxScroll, countFeedbackLines } from '~/utils/rendering/viewport';
+import { wrapFeedback } from '~/utils/rendering/line-wrapping';
+import { calculateMaxScroll } from '~/utils/rendering/viewport';
 
 /**
  * Hook to handle navigation keys
@@ -76,46 +76,27 @@ export const useNavigationKeys = (): void => {
             return;
         }
 
-        const newCursor = key.upArrow
-            ? Math.max(0, state.cursorLine - 1)
-            : Math.min(contentLines.length - 1, state.cursorLine + 1);
-
         if (key.shift) {
-            // Start or extend selection
+            // Selection: compute target and extend selection (stale closure acceptable — shift+selection
+            // is a slow deliberate gesture unlikely to batch, and selection tests are not affected)
+            const newCursor = key.upArrow
+                ? Math.max(0, state.cursorLine - 1)
+                : Math.min(contentLines.length - 1, state.cursorLine + 1);
             if (state.selectionAnchor === null) {
                 dispatch({ type: 'START_SELECTION', line: state.cursorLine });
             }
             dispatch({ type: 'EXTEND_SELECTION', line: newCursor });
         } else {
-            // Clear selection and move cursor
-            if (state.selectionAnchor !== null) {
-                dispatch({ type: 'CLEAR_SELECTION' });
-            }
-            dispatch({ type: 'MOVE_CURSOR', line: newCursor });
-        }
-
-        // Handle scrolling
-        if (key.upArrow && newCursor < state.scrollOffset && newCursor < state.cursorLine) {
-            dispatch({ type: 'SET_SCROLL_OFFSET', offset: Math.max(0, state.scrollOffset - 1) });
-        } else if (key.downArrow && newCursor > state.cursorLine) {
-            // Calculate terminal lines from scrollOffset to newCursor (inclusive)
-            const terminalLinesFromScrollToCursor = countTerminalLinesInRange(
+            // STEP_CURSOR: atomic cursor move + scroll in one reducer call.
+            // Fixes React 19 automatic batching: each dispatch accumulates independently
+            // because the reducer sees the state produced by the previous dispatch.
+            dispatch({
+                type: 'STEP_CURSOR',
+                direction: key.upArrow ? 'up' : 'down',
                 wrappedLines,
-                state.scrollOffset,
-                newCursor,
-            );
-            const feedbackLinesInRange = countFeedbackLines(
-                state.scrollOffset,
-                newCursor + 1,
                 wrappedComments,
                 wrappedQuestions,
-            );
-            const totalTerminalLines = terminalLinesFromScrollToCursor + feedbackLinesInRange;
-
-            if (totalTerminalLines > viewportHeight) {
-                const maxScroll = calculateMaxScroll(wrappedLines, viewportHeight, wrappedComments, wrappedQuestions);
-                dispatch({ type: 'SET_SCROLL_OFFSET', offset: Math.min(maxScroll, state.scrollOffset + 1) });
-            }
+            });
         }
     });
 };

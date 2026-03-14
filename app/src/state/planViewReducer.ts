@@ -1,5 +1,5 @@
 import { PlanViewMode } from '~/utils/config/constants';
-import { countInputVisualLines } from '~/utils/rendering/line-wrapping';
+import { countInputVisualLines, countTerminalLinesInRange } from '~/utils/rendering/line-wrapping';
 import {
     findCurrentLineEnd,
     findCurrentLineStart,
@@ -9,7 +9,7 @@ import {
     findPrevWordStart,
     findWordDeleteStart,
 } from '~/utils/rendering/text-navigation';
-import { calculateViewportHeight } from '~/utils/rendering/viewport';
+import { calculateMaxScroll, calculateViewportHeight, countFeedbackLines } from '~/utils/rendering/viewport';
 
 import { PlanViewAction } from './planViewActions';
 import { PlanViewState } from './planViewState';
@@ -134,6 +134,51 @@ export const planViewReducer = (state: PlanViewState, action: PlanViewAction): P
                 cursorLine: targetLine,
                 scrollOffset: newScrollOffset,
                 selectionAnchor: null, // Clear selection on jump
+            };
+        }
+
+        case 'STEP_CURSOR': {
+            const { direction, wrappedLines, wrappedComments, wrappedQuestions } = action;
+            const contentLength = wrappedLines.length;
+            const { viewportHeight } = state;
+
+            const newCursor =
+                direction === 'up'
+                    ? Math.max(0, state.cursorLine - 1)
+                    : Math.min(contentLength - 1, state.cursorLine + 1);
+
+            if (newCursor === state.cursorLine) {
+                return state;
+            }
+
+            let newScrollOffset = state.scrollOffset;
+
+            if (direction === 'up' && newCursor < state.scrollOffset) {
+                newScrollOffset = Math.max(0, state.scrollOffset - 1);
+            } else if (direction === 'down') {
+                const terminalLines = countTerminalLinesInRange(wrappedLines, state.scrollOffset, newCursor);
+                const feedbackLines = countFeedbackLines(
+                    state.scrollOffset,
+                    newCursor + 1,
+                    wrappedComments,
+                    wrappedQuestions,
+                );
+                if (terminalLines + feedbackLines > viewportHeight) {
+                    const maxScroll = calculateMaxScroll(
+                        wrappedLines,
+                        viewportHeight,
+                        wrappedComments,
+                        wrappedQuestions,
+                    );
+                    newScrollOffset = Math.min(maxScroll, state.scrollOffset + 1);
+                }
+            }
+
+            return {
+                ...state,
+                cursorLine: newCursor,
+                selectionAnchor: null,
+                scrollOffset: newScrollOffset,
             };
         }
 

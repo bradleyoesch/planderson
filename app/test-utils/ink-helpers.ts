@@ -84,6 +84,8 @@ export const typeText = async function (
     }, Promise.resolve());
 
     if (enter) {
+        // Wait to ensure prior text dispatches have flushed through React before Enter is processed
+        await new Promise((resolve) => setTimeout(resolve, 50));
         stdin.write(Keys.ENTER);
         await new Promise((resolve) => setTimeout(resolve, 50));
     }

@@ -31,6 +31,12 @@ describe('input navigation', () => {
         backspace: false,
         delete: false,
         meta: false,
+        home: false,
+        end: false,
+        super: false,
+        hyper: false,
+        capsLock: false,
+        numLock: false,
         ...overrides,
     });
 

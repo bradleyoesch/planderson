@@ -1,4 +1,5 @@
 import { PlanViewMode } from '~/utils/config/constants';
+import { FeedbackMetadata, LineMetadata } from '~/utils/rendering/line-wrapping';
 
 /**
  * Action types for PlanView state management
@@ -40,6 +41,21 @@ export type JumpToLineAction = {
     type: 'JUMP_TO_LINE';
     targetLine: number; // 0-based target index
     viewportHeight: number; // Needed for scroll calculation
+};
+
+/**
+ * Atomic cursor step + scroll update.
+ * Passes all data the reducer needs so it can compute both the new cursor position
+ * and the new scroll offset in one reducer call. This ensures correctness under
+ * React 19 automatic batching: each dispatched action accumulates independently
+ * because the reducer sees the state produced by the previous action.
+ */
+export type StepCursorAction = {
+    type: 'STEP_CURSOR';
+    direction: 'up' | 'down';
+    wrappedLines: LineMetadata[];
+    wrappedComments: FeedbackMetadata[];
+    wrappedQuestions: FeedbackMetadata[];
 };
 
 // Feedback actions
@@ -223,6 +239,7 @@ export type PlanViewAction =
     | ClearSelectionAction
     | SetScrollOffsetAction
     | JumpToLineAction
+    | StepCursorAction
     | AddCommentAction
     | RemoveCommentAction
     | ToggleDeleteLinesAction
