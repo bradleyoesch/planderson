@@ -20,6 +20,7 @@ import { App } from '~/App';
 import { useTempPlanFile } from '~/test-utils/fixtures';
 import { Keys, typeKey, typeKeys, typeText, waitFor } from '~/test-utils/ink-helpers';
 import { DEFAULT_APP_PROPS } from '~/test-utils/integration-defaults';
+import { getCursorLine, hasCursorHighlight } from '~/test-utils/visual-assertions';
 
 describe('navigation page-scrolling integration', () => {
     afterEach(() => {
@@ -512,6 +513,37 @@ describe('navigation page-scrolling integration', () => {
         expect(afterFinalScroll).not.toMatch(/^\s*Line 2\s*$/m);
         // Verify cursor moved to line 20 (Line 21 in display)
         expect(afterFinalScroll).toContain('Line 21');
+    });
+
+    /**
+     * Scenario 18: Single-Line Document - DOWN Arrow Cursor Boundary
+     * BUG: DOWN_ARROW in a single-line document moves cursor to a ghost trailing empty line.
+     * REQUIREMENT: Cursor must stay on the only content line; DOWN is a no-op at document end.
+     *
+     * Confirmed via render-tui: after DOWN_ARROW the content line loses cursor highlight and
+     * a highlighted blank space appears below it (the ghost trailing line from the document parser).
+     */
+    test('cursor stays on content line when pressing DOWN in single-line document', async () => {
+        // File ends with \n — standard for any editor-created file.
+        // Without the fix, content.split('\n') yields ['This is the only line', ''],
+        // so contentLines.length === 2 and DOWN_ARROW moves cursor to the ghost empty line.
+        const lineText = 'This is the only line';
+        const file = useTempPlanFile(`${lineText}\n`, 'single-line-down.md');
+        const { stdin, lastFrame } = render(<App {...DEFAULT_APP_PROPS} filepath={file} />);
+
+        await waitFor(() => expect(hasCursorHighlight(lastFrame()!, lineText)).toBe(true));
+
+        // Press DOWN — should be a no-op at the end of a single-line document
+        await typeKey(stdin, Keys.DOWN_ARROW);
+
+        await waitFor(() => {
+            const frame = lastFrame()!;
+            // EXPECTED: cursor remains on the content line
+            // BUG: cursor moves to ghost trailing empty line; content line loses highlight
+            expect(hasCursorHighlight(frame, lineText)).toBe(true);
+            // The cursor line text should be the content, not an empty string
+            expect(getCursorLine(frame)).toBe(lineText);
+        });
     });
 
     /**

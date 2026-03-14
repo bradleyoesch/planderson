@@ -69,9 +69,10 @@ describe('PlanViewProvider', () => {
 
             const { result } = renderHook(() => usePlanViewStaticContext(), { wrapper });
 
-            // String.split('\n') on "A\nB\nC\n" produces ['A', 'B', 'C', '']
-            expect(result.current.contentLines).toEqual(['A', 'B', 'C', '']);
-            expect(result.current.contentLines.length).toBe(4);
+            // Trailing \n is stripped before splitting so files ending with a newline
+            // (standard for editor-created files) don't produce a ghost empty line.
+            expect(result.current.contentLines).toEqual(['A', 'B', 'C']);
+            expect(result.current.contentLines.length).toBe(3);
         });
 
         test('provides wrappedLines from markdown parsing and line wrapping', () => {
