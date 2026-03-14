@@ -184,6 +184,24 @@ describe('input navigation', () => {
             expect(getLastAction()).toEqual({ type: 'MOVE_INPUT_CURSOR_TO_END' });
         });
 
+        test('returns true and dispatches MOVE_INPUT_CURSOR_TO_START for Home', () => {
+            const { dispatch, getLastAction } = createMockDispatch();
+
+            const result = handleInputNavigation('', createKey({ home: true }), dispatch, 80, 30);
+
+            expect(result).toBe(true);
+            expect(getLastAction()).toEqual({ type: 'MOVE_INPUT_CURSOR_TO_START' });
+        });
+
+        test('returns true and dispatches MOVE_INPUT_CURSOR_TO_END for End', () => {
+            const { dispatch, getLastAction } = createMockDispatch();
+
+            const result = handleInputNavigation('', createKey({ end: true }), dispatch, 80, 30);
+
+            expect(result).toBe(true);
+            expect(getLastAction()).toEqual({ type: 'MOVE_INPUT_CURSOR_TO_END' });
+        });
+
         test('returns false for regular "a" without ctrl', () => {
             const { dispatch, getLastAction } = createMockDispatch();
 
