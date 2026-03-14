@@ -90,9 +90,12 @@ export const PlanViewProvider: React.FC<PlanViewProviderProps> = ({
     // Memoize static context - recalculates when content or terminal width changes
     const staticValue: PlanViewStaticContextValue = React.useMemo(() => {
         const paddingX = 1;
-        const contentLines = content.split('\n');
+        // Strip a single trailing newline so files ending with \n (standard for editors)
+        // don't produce a ghost empty line that the cursor can navigate to.
+        const normalizedContent = content.replace(/\n$/, '');
+        const contentLines = normalizedContent.split('\n');
         // Parse entire document as markdown (supports code blocks)
-        const lineFormattings = parseMarkdownDocument(content);
+        const lineFormattings = parseMarkdownDocument(normalizedContent);
         // Wrap with markdown formatting
         const wrappedLines = wrapContentWithFormatting(lineFormattings, terminalWidth, paddingX);
         return {
