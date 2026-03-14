@@ -26,8 +26,9 @@ export const withTimeout = <T>(
     timeoutError: Error | (() => Error),
 ): Promise<T> => {
     let timeoutId: ReturnType<typeof setTimeout>;
-    // Clamp negative timeouts to 0 to avoid runtime warnings
-    const normalizedTimeout = Math.max(0, timeoutMs);
+    // Clamp negative and NaN timeouts to 0 to avoid runtime warnings
+    // Note: Math.max(0, NaN) === NaN, so NaN must be handled explicitly
+    const normalizedTimeout = Number.isNaN(timeoutMs) ? 0 : Math.max(0, timeoutMs);
 
     const timeoutPromise = new Promise<T>((_, reject) => {
         timeoutId = setTimeout(() => {
@@ -65,8 +66,9 @@ export const withTimeoutValue = <T, U = T>(
     timeoutValue: U | (() => U),
 ): Promise<T | U> => {
     let timeoutId: ReturnType<typeof setTimeout>;
-    // Clamp negative timeouts to 0 to avoid runtime warnings
-    const normalizedTimeout = Math.max(0, timeoutMs);
+    // Clamp negative and NaN timeouts to 0 to avoid runtime warnings
+    // Note: Math.max(0, NaN) === NaN, so NaN must be handled explicitly
+    const normalizedTimeout = Number.isNaN(timeoutMs) ? 0 : Math.max(0, timeoutMs);
 
     const timeoutPromise = new Promise<U>((resolve) => {
         timeoutId = setTimeout(() => {
