@@ -82,6 +82,12 @@ describe('lib timeout-utils', () => {
 
             await expect(withTimeout(promise, -1, new Error('Negative timeout'))).rejects.toThrow('Negative timeout');
         });
+
+        test('should handle NaN timeout as immediate timeout', async () => {
+            const promise = new Promise((resolve) => setTimeout(resolve, 100));
+
+            await expect(withTimeout(promise, Number.NaN, new Error('NaN timeout'))).rejects.toThrow('NaN timeout');
+        });
     });
 
     describe('withTimeoutValue', () => {
@@ -156,6 +162,14 @@ describe('lib timeout-utils', () => {
             const result = await withTimeoutValue(promise, -1, 'negative');
 
             expect(result).toBe('negative');
+        });
+
+        test('should handle NaN timeout as immediate timeout', async () => {
+            const promise = new Promise((resolve) => setTimeout(resolve, 100));
+
+            const result = await withTimeoutValue(promise, Number.NaN, 'nan');
+
+            expect(result).toBe('nan');
         });
     });
 });
