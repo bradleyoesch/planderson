@@ -4,7 +4,7 @@ import React from 'react';
 
 import { App } from '~/App';
 import { useTempPlanFile } from '~/test-utils/fixtures';
-import { Keys, typeKey, typeText, waitFor } from '~/test-utils/ink-helpers';
+import { Keys, typeKey, typeKeys, typeText, waitFor } from '~/test-utils/ink-helpers';
 import { DEFAULT_APP_PROPS } from '~/test-utils/integration-defaults';
 import { isInCommandMode, isInPlanView } from '~/test-utils/view-assertions';
 import { isInCommentMode, isInQuestionMode } from '~/test-utils/visual-assertions';
@@ -18,7 +18,7 @@ import { isInCommentMode, isInQuestionMode } from '~/test-utils/visual-assertion
  * Critical requirement: Users expect the content to stay static when entering modes.
  * If content shifts, it's disorienting and makes the UI feel unstable.
  */
-describe('e2e content-stability integration', () => {
+describe('content content-stability integration', () => {
     afterEach(() => {
         // Ink rendering accumulates handlers across tests, must cleanup for test isolation
         cleanup();
@@ -347,10 +347,7 @@ describe('e2e content-stability integration', () => {
             await waitFor(() => expect(lastFrame()).toContain('Line 1'));
 
             // Scroll down to middle of content
-            await Array.from({ length: 20 }).reduce(async (promise) => {
-                await promise;
-                await typeKey(stdin, Keys.DOWN_ARROW);
-            }, Promise.resolve());
+            await typeKeys(stdin, Keys.DOWN_ARROW, 20);
 
             await waitFor(() => {
                 const frame = lastFrame()!;
