@@ -13,7 +13,7 @@ import { getSafeTestEnv } from '~/test-utils/safe-env';
  * in an isolated environment (temp HOME, cleared TMUX vars) to prevent
  * interference with actual ~/.planderson/ installation or development tmux session.
  */
-describe('installation global-install integration', () => {
+describe('infrastructure global-install integration', () => {
     const PROJECT_ROOT = join(__dirname, '../../../..');
     let TEST_HOME: string;
     let originalHome: string;
@@ -188,7 +188,7 @@ describe('installation global-install integration', () => {
                     stdio: 'pipe',
                     encoding: 'utf-8',
                 });
-                expect(true).toBe(false); // Should not reach here
+                expect.unreachable('install.sh should have failed');
             } catch (error: any) {
                 expect(error.status).toBeGreaterThan(0);
                 const output = error.stdout + error.stderr;
@@ -204,7 +204,7 @@ describe('installation global-install integration', () => {
                     stdio: 'pipe',
                     encoding: 'utf-8',
                 });
-                expect(true).toBe(false); // Should not reach here
+                expect.unreachable('install.sh should have failed');
             } catch (error: any) {
                 expect(error.status).toBeGreaterThan(0);
                 const output = error.stdout + error.stderr;
