@@ -155,6 +155,81 @@ describe('claude-hook hook-happy-path integration', () => {
         }, 15000);
     });
 
+    describe('Formatted Feedback Messages', () => {
+        test('hook passes formatted comments section through to output', async () => {
+            const { path: TEST_SOCKET_PATH } = useTestSocket('hook-happy');
+            const hookInput = {
+                tool_name: 'ExitPlanMode',
+                tool_input: { plan: 'Step 1\nStep 2\nStep 3' },
+                hook_event_name: 'PermissionRequest',
+            };
+
+            const formattedMessage = 'Comments on the plan:\nLine 1: "Step 1"\nneeds more detail';
+
+            const hookProcess = spawnHook({ PLANDERSON_SOCKET_PATH: TEST_SOCKET_PATH });
+            hookProcess.stdin.write(JSON.stringify(hookInput));
+            hookProcess.stdin.end();
+
+            const clientPromise = connectAndRespond(TEST_SOCKET_PATH, 'deny', formattedMessage, 500);
+            const [stdout] = await Promise.all([readStream(hookProcess.stdout), clientPromise]);
+            const response = JSON.parse(stdout);
+
+            expect(response.hookSpecificOutput.decision.behavior).toBe('deny');
+            expect(response.hookSpecificOutput.decision.message).toContain('Comments on the plan:');
+            expect(response.hookSpecificOutput.decision.message).toContain('Line 1: "Step 1"');
+            expect(response.hookSpecificOutput.decision.message).toContain('needs more detail');
+        }, 10000);
+
+        test('hook passes formatted questions section with LLM instructions through to output', async () => {
+            const { path: TEST_SOCKET_PATH } = useTestSocket('hook-happy');
+            const hookInput = {
+                tool_name: 'ExitPlanMode',
+                tool_input: { plan: 'Step 1\nStep 2\nStep 3' },
+                hook_event_name: 'PermissionRequest',
+            };
+
+            const formattedMessage =
+                'Questions about the plan:\nLine 1: "Step 1"\nwhat is the timeline?\n\n' +
+                'Please answer these questions. Do NOT call ExitPlanMode in this response — ' +
+                'just answer the questions with plain text and stop.';
+
+            const hookProcess = spawnHook({ PLANDERSON_SOCKET_PATH: TEST_SOCKET_PATH });
+            hookProcess.stdin.write(JSON.stringify(hookInput));
+            hookProcess.stdin.end();
+
+            const clientPromise = connectAndRespond(TEST_SOCKET_PATH, 'deny', formattedMessage, 500);
+            const [stdout] = await Promise.all([readStream(hookProcess.stdout), clientPromise]);
+            const response = JSON.parse(stdout);
+
+            expect(response.hookSpecificOutput.decision.behavior).toBe('deny');
+            expect(response.hookSpecificOutput.decision.message).toContain('Questions about the plan:');
+            expect(response.hookSpecificOutput.decision.message).toContain('Do NOT call ExitPlanMode');
+        }, 10000);
+
+        test('hook passes formatted deletions section through to output', async () => {
+            const { path: TEST_SOCKET_PATH } = useTestSocket('hook-happy');
+            const hookInput = {
+                tool_name: 'ExitPlanMode',
+                tool_input: { plan: 'Step 1\nStep 2\nStep 3' },
+                hook_event_name: 'PermissionRequest',
+            };
+
+            const formattedMessage = 'Delete lines:\nLine 2: "Step 2"';
+
+            const hookProcess = spawnHook({ PLANDERSON_SOCKET_PATH: TEST_SOCKET_PATH });
+            hookProcess.stdin.write(JSON.stringify(hookInput));
+            hookProcess.stdin.end();
+
+            const clientPromise = connectAndRespond(TEST_SOCKET_PATH, 'deny', formattedMessage, 500);
+            const [stdout] = await Promise.all([readStream(hookProcess.stdout), clientPromise]);
+            const response = JSON.parse(stdout);
+
+            expect(response.hookSpecificOutput.decision.behavior).toBe('deny');
+            expect(response.hookSpecificOutput.decision.message).toContain('Delete lines:');
+            expect(response.hookSpecificOutput.decision.message).toContain('Line 2: "Step 2"');
+        }, 10000);
+    });
+
     describe('Special Characters', () => {
         test('handles unicode characters in plan', async () => {
             const { path: TEST_SOCKET_PATH } = useTestSocket('hook-happy');
