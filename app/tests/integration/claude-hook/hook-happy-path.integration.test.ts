@@ -37,7 +37,7 @@ describe('claude-hook hook-happy-path integration', () => {
             expect(response.hookSpecificOutput.decision.message).toBeUndefined();
         }, 10000);
 
-        test('denies plan with feedback message', async () => {
+        test('deny decision includes message in output', async () => {
             const { path: TEST_SOCKET_PATH } = useTestSocket('hook-happy');
             const hookInput = {
                 tool_name: 'ExitPlanMode',
@@ -45,14 +45,14 @@ describe('claude-hook hook-happy-path integration', () => {
                 hook_event_name: 'PermissionRequest',
             };
 
-            const feedbackMessage = 'This needs more detail on line 5';
+            const message = 'This needs more detail on line 5';
 
             const hookProcess = spawnHook({ PLANDERSON_SOCKET_PATH: TEST_SOCKET_PATH });
 
             hookProcess.stdin.write(JSON.stringify(hookInput));
             hookProcess.stdin.end();
 
-            const clientPromise = connectAndRespond(TEST_SOCKET_PATH, 'deny', feedbackMessage, 500);
+            const clientPromise = connectAndRespond(TEST_SOCKET_PATH, 'deny', message, 500);
 
             const [stdout] = await Promise.all([readStream(hookProcess.stdout), clientPromise]);
 
@@ -60,7 +60,7 @@ describe('claude-hook hook-happy-path integration', () => {
 
             expect(response.hookSpecificOutput.decision.behavior).toBe('deny');
             expect(response.hookSpecificOutput.decision.message).toContain('Plan denied:');
-            expect(response.hookSpecificOutput.decision.message).toContain(feedbackMessage);
+            expect(response.hookSpecificOutput.decision.message).toContain(message);
         }, 10000);
 
         test('denies plan without message', async () => {
@@ -178,7 +178,7 @@ describe('claude-hook hook-happy-path integration', () => {
             expect(response.hookSpecificOutput.decision.behavior).toBe('allow');
         }, 10000);
 
-        test('handles newlines in feedback message', async () => {
+        test('deny message with newlines passes through unchanged', async () => {
             const { path: TEST_SOCKET_PATH } = useTestSocket('hook-happy');
             const hookInput = {
                 tool_name: 'ExitPlanMode',
@@ -186,20 +186,20 @@ describe('claude-hook hook-happy-path integration', () => {
                 hook_event_name: 'PermissionRequest',
             };
 
-            const feedbackMessage = 'Comments:\nLine 1: Issue here\nLine 5: Another issue';
+            const message = 'Comments:\nLine 1: Issue here\nLine 5: Another issue';
 
             const hookProcess = spawnHook({ PLANDERSON_SOCKET_PATH: TEST_SOCKET_PATH });
 
             hookProcess.stdin.write(JSON.stringify(hookInput));
             hookProcess.stdin.end();
 
-            const clientPromise = connectAndRespond(TEST_SOCKET_PATH, 'deny', feedbackMessage, 500);
+            const clientPromise = connectAndRespond(TEST_SOCKET_PATH, 'deny', message, 500);
 
             const [stdout] = await Promise.all([readStream(hookProcess.stdout), clientPromise]);
 
             const response = JSON.parse(stdout);
 
-            expect(response.hookSpecificOutput.decision.message).toContain(feedbackMessage);
+            expect(response.hookSpecificOutput.decision.message).toContain(message);
         }, 10000);
     });
 });
