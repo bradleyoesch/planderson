@@ -207,6 +207,24 @@ describe('config settings', () => {
             const result = settings.loadSettings(testSessionId);
             expect(result).toEqual(DEFAULT_SETTINGS);
         });
+
+        test('saves settings to dev.json baseDir when dev.json exists', () => {
+            const customBase = path.join(tempHomeDir, 'custom-worktree');
+            fs.mkdirSync(customBase, { recursive: true });
+            fs.writeFileSync(
+                path.join(tempHomeDir, '.planderson', 'dev.json'),
+                JSON.stringify({ baseDir: customBase }),
+            );
+
+            settings.saveSettings(testSessionId, { launchMode: 'auto-tmux' });
+
+            // written to dev.json baseDir
+            const customSettingsPath = path.join(customBase, 'settings.json');
+            expect(fs.existsSync(customSettingsPath)).toBe(true);
+            expect(JSON.parse(fs.readFileSync(customSettingsPath, 'utf-8')).launchMode).toBe('auto-tmux');
+            // not written to ~/.planderson/settings.json
+            expect(fs.existsSync(settingsPath)).toBe(false);
+        });
     });
 
     describe('launchMode setting', () => {
