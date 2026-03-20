@@ -118,7 +118,7 @@ echo '       }'
 echo '   }'
 echo -e "${NC}"
 echo -e "${BOLD}2. For recommended setup and next steps, see:${NC}"
-echo -e "   ${CYAN}README.md#recommended-setup${NC}"
+echo -e "   ${YELLOW}./README.md#recommended-setup${NC}"
 echo ""
 
 if ! echo "$PATH" | tr ':' '\n' | grep -qx "$BIN_DIR"; then
@@ -134,4 +134,4 @@ if ! echo "$PATH" | tr ':' '\n' | grep -qx "$BIN_DIR"; then
     echo ""
 fi
 
-echo -e "For more details, see: ${YELLOW}$PROJECT_ROOT/dev/INSTALL.md${NC}"
+echo -e "For more details, see: ${YELLOW}./dev/INSTALL.md${NC}"
