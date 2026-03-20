@@ -97,8 +97,8 @@ Pane-swap makes Planderson appear to replace your current view temporarily, pres
 
 ### Two-Script Design
 
-- **`init.sh [--filepath /path/to/plan.md]`** - Runs in original shell context (before swap). Accepts `--filepath` flag for file mode (dev mode only).
-- **`run-and-restore.sh`** - Runs in respawned pane (after swap). Receives mode flag from init script.
+- **`init.sh [--filepath /path/to/plan.md] [--session <id>]`** - Runs in original shell context (before swap). Accepts `--filepath` for file mode and `--session` to pass a pre-generated session id.
+- **`run-and-restore.sh`** - Runs in respawned pane (after swap). Receives all restore context (session id, dirs, command, pane ids, window, title) as positional arguments from init script.
 
 They execute in different processes - the swap mechanism requires this separation.
 
