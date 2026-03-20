@@ -14,8 +14,8 @@ The goal is to provide a lightweight TUI to bridge the gap between "pure" termin
 
 ## Prerequisites
 
-- **tmux 3.2+**
 - **macOS or Linux**
+- **tmux 3.2+** (optional, for tmux integration)
 
 ## Installation
 

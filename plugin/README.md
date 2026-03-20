@@ -5,7 +5,7 @@ A terminal user interface (TUI) for reviewing Claude's plans before implementati
 ## Prerequisites
 
 - **macOS or Linux** (has not been tested on Windows)
-- **tmux 3.2+**
+- **tmux 3.2+** (optional, for tmux integration)
 
 ## Installation
 
