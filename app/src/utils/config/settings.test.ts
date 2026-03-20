@@ -179,51 +179,6 @@ describe('config settings', () => {
         });
     });
 
-    describe('PLANDERSON_BASE_DIR settings', () => {
-        afterEach(() => {
-            delete process.env.PLANDERSON_BASE_DIR;
-        });
-
-        test('loads settings from PLANDERSON_BASE_DIR/settings.json when PLANDERSON_BASE_DIR is set', () => {
-            const customBase = path.join(tempHomeDir, 'custom-base');
-            fs.mkdirSync(customBase, { recursive: true });
-            fs.writeFileSync(path.join(customBase, 'settings.json'), JSON.stringify({ launchMode: 'auto-tmux' }));
-            process.env.PLANDERSON_BASE_DIR = customBase;
-
-            const result = settings.loadSettings(testSessionId);
-            expect(result.launchMode).toBe('auto-tmux');
-        });
-
-        test('loads settings from ~/.planderson/settings.json when PLANDERSON_BASE_DIR not set', () => {
-            fs.writeFileSync(settingsPath, JSON.stringify({ launchMode: 'manual' }));
-
-            const result = settings.loadSettings(testSessionId);
-            expect(result.launchMode).toBe('manual');
-        });
-
-        test('reads from PLANDERSON_BASE_DIR, not ~/.planderson, when PLANDERSON_BASE_DIR is set', () => {
-            // prod path has different value
-            fs.writeFileSync(settingsPath, JSON.stringify({ launchMode: 'auto-tmux' }));
-
-            const customBase = path.join(tempHomeDir, 'custom-base');
-            fs.mkdirSync(customBase, { recursive: true });
-            fs.writeFileSync(path.join(customBase, 'settings.json'), JSON.stringify({ launchMode: 'manual' }));
-            process.env.PLANDERSON_BASE_DIR = customBase;
-
-            const result = settings.loadSettings(testSessionId);
-            expect(result.launchMode).toBe('manual');
-        });
-
-        test('returns defaults when PLANDERSON_BASE_DIR settings file does not exist', () => {
-            const customBase = path.join(tempHomeDir, 'empty-base');
-            fs.mkdirSync(customBase, { recursive: true });
-            process.env.PLANDERSON_BASE_DIR = customBase;
-
-            const result = settings.loadSettings(testSessionId);
-            expect(result).toEqual(DEFAULT_SETTINGS);
-        });
-    });
-
     describe('launchMode setting', () => {
         test('defaults to manual when not specified', () => {
             fs.writeFileSync(settingsPath, JSON.stringify({}));
@@ -269,10 +224,6 @@ describe('config settings', () => {
     });
 
     describe('saveSettings', () => {
-        afterEach(() => {
-            delete process.env.PLANDERSON_BASE_DIR;
-        });
-
         test('creates file when none exists', () => {
             const result = settings.saveSettings(testSessionId, { launchMode: 'auto-tmux' });
 
@@ -319,19 +270,6 @@ describe('config settings', () => {
             const result = settings.saveSettings(testSessionId, { approveAction: 'exit' });
 
             expect(result).toMatchObject({ approveAction: 'exit', launchMode: 'manual' });
-        });
-
-        test('writes to PLANDERSON_BASE_DIR/settings.json when PLANDERSON_BASE_DIR is set', () => {
-            const customBase = path.join(tempHomeDir, 'custom-base');
-            fs.mkdirSync(customBase, { recursive: true });
-            process.env.PLANDERSON_BASE_DIR = customBase;
-
-            settings.saveSettings(testSessionId, { launchMode: 'auto-tmux' });
-
-            const customSettingsPath = path.join(customBase, 'settings.json');
-            expect(fs.existsSync(customSettingsPath)).toBe(true);
-            const saved = JSON.parse(fs.readFileSync(customSettingsPath, 'utf-8'));
-            expect(saved.launchMode).toBe('auto-tmux');
         });
     });
 

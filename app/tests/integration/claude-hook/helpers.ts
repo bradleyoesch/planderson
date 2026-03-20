@@ -30,13 +30,22 @@ export const spawnHook = (extraEnv: Record<string, string | undefined> = {}): Ho
             fs.rmSync(fakeHome, { recursive: true, force: true });
         }
     });
+
+    // PLANDERSON_BASE_DIR is no longer supported as an env var; translate it to dev.json
+    const { PLANDERSON_BASE_DIR: baseDir, ...cleanEnv } = extraEnv;
+    if (baseDir) {
+        const plandersonDir = path.join(fakeHome, '.planderson');
+        fs.mkdirSync(plandersonDir, { recursive: true });
+        fs.writeFileSync(path.join(plandersonDir, 'dev.json'), JSON.stringify({ baseDir }));
+    }
+
     return spawn('bun', [HOOK_PATH], {
         env: {
             ...process.env,
             HOME: fakeHome,
             TMUX: undefined,
             TMUX_PANE: undefined,
-            ...extraEnv,
+            ...cleanEnv,
         },
     }) as HookProcess;
 };

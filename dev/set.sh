@@ -13,9 +13,12 @@ BIN_DIR="${XDG_DATA_HOME:-$HOME/.local}/bin"
 WRAPPER="$SCRIPT_DIR/planderson"
 
 # Create wrapper script that forwards all args to bun run src/cli.ts
+# Use full path to bun so the wrapper works even in environments with restricted PATH
+# (e.g. Claude Code hook subprocesses that don't inherit ~/.bun/bin)
+BUN_PATH="$(which bun)"
 cat > "$WRAPPER" << EOF
 #!/bin/bash
-PLANDERSON_BASE_DIR="$REPO_ROOT" exec bun run "$REPO_ROOT/app/src/cli.ts" "\$@"
+exec "$BUN_PATH" run "$REPO_ROOT/app/src/cli.ts" "\$@"
 EOF
 chmod +x "$WRAPPER"
 echo "✓ Created $WRAPPER"
@@ -24,6 +27,11 @@ echo "✓ Created $WRAPPER"
 mkdir -p "$BIN_DIR"
 ln -sf "$WRAPPER" "$BIN_DIR/planderson"
 echo "✓ Symlinked $BIN_DIR/planderson → $WRAPPER"
+
+# Write dev config so getPlandersonBaseDir() uses this worktree regardless of which binary runs
+mkdir -p "$HOME/.planderson"
+printf '{\n    "baseDir": "%s"\n}\n' "$REPO_ROOT" > "$HOME/.planderson/dev.json"
+echo "✓ Created $HOME/.planderson/dev.json"
 
 # Create local settings.json if it doesn't exist
 if [ ! -f "$SETTINGS_FILE" ]; then
