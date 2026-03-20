@@ -248,7 +248,7 @@ const waitForDecisionViaSocket = async function (
         await server.start(planContent);
         logEvent(__filename, sessionId, 'socket.server.started', `waiting for TUI (${timeoutSeconds}s timeout)`);
 
-        // Load settings — path driven by getPlandersonBaseDir() (PLANDERSON_BASE_DIR env var or ~/.planderson)
+        // Load settings — path driven by getPlandersonBaseDir() (dev.json override or ~/.planderson)
         const settings = loadSettings(sessionId);
 
         // Log waiting message to stderr (stdout is for JSON response only)

@@ -52,7 +52,7 @@ export const SETTINGS_DOCS: Record<
 };
 
 /**
- * Get path to settings file — uses getPlandersonBaseDir() so it follows PLANDERSON_BASE_DIR in dev mode,
+ * Get path to settings file — uses getPlandersonBaseDir() so it follows dev.json in dev mode,
  * ~/.planderson in prod.
  */
 export const getSettingsPath = (): string => {
