@@ -14,8 +14,8 @@ The goal is to provide a lightweight TUI to bridge the gap between "pure" termin
 
 ## Prerequisites
 
-- **macOS or Linux**
-- **tmux 3.2+** (optional, for tmux integration)
+- **macOS or Linux** (has not been tested on Windows)
+- **tmux 3.0+** (optional, for [tmux integration](./integrations/tmux/README.md))
 
 ## Installation
 
@@ -49,7 +49,7 @@ When the TUI launches, use these controls:
 | **Esc**            | Deny plan                      |
 | **?**              | Show full keybinding reference |
 
-For details, run `planderson help`.
+For details and more keybindings, run `planderson help`.
 
 ## Manual usage
 
@@ -61,73 +61,25 @@ planderson tui
 
 This will open the latest plan in the TUI.
 
-For more control and seamless integration, see [Optional: tmux integration](#optional-tmux-integration) below.
+## Recommended usage
 
-## Optional: tmux integration
+### Tmux integration
 
-Integrate with tmux to open the TUI in the Claude tmux pane.
+For more control and seamless integration, setup with tmux: [integrations/tmux/README.md](./integrations/tmux/README.md).
 
-This also enables more control over multiple Claude sessions and plans executing at once.
+### Approve and clear context
 
-### Manual launch
+Claude does not currently support programmatically approving a plan and clearing context, e.g. "Yes, clear context and auto-accept edits".
 
-Add to `~/.tmux.conf` to open Planderson manually via keybinding of your choice.
+If you'd like to avoid accidentally approving a plan without clearing context, you may change the default action on approve to simply exit so you can trigger that manually. You may also exit as usual with other keybindings.
 
-```bash
-# Example with bind-key g to mirror Claude Code's ctrl-g to edit plan in editor
-bind-key g run-shell "planderson tmux"
-```
-
-Then reload: `tmux source-file ~/.tmux.conf`
-
-### Auto launch
-
-Set `launchMode` setting to `auto-tmux` to automatically launch TUI in tmux pane when a plan is ready.
+Set `approveAction` setting to `exit`:
 
 ```bash
-planderson settings --launchMode auto-tmux
+planderson settings --approveAction exit
 ```
 
-For details, run `planderson settings --launchMode`
-
-## Optional: tmux mouse and scroll
-
-Enable mouse support and proper scroll behavior inside Planderson.
-
-Planderson navigates through lines with up/down keys.
-
-```conf
-# Enable mouse interactions
-set -g mouse on
-```
-
-If you have a more specific setup for different scrolling, you may benefit from a more complex setup.
-For example, the below configuration enables copy mode scrolling on claude and normal shell instances, but sends up/down otherwise.
-
-```conf
-# Send arrow keys to Planderson instead of entering copy mode
-bind -n WheelUpPane {
-  if -F '#{==:#{pane_title},planderson}' {
-    send Up
-  } {
-    if -F '#{||:#{m:*claude*,#{pane_current_command}},#{m:*bash*,#{pane_current_command}},#{m:*zsh*,#{pane_current_command}}}' {
-      copy-mode -e
-    } {
-      send Up
-    }
-  }
-}
-bind -n WheelDownPane {
-  if -F '#{==:#{pane_title},planderson}' {
-    send Down
-  } {
-    if -F '#{||:#{m:*claude*,#{pane_current_command}},#{m:*bash*,#{pane_current_command}},#{m:*zsh*,#{pane_current_command}}}' {
-    } {
-      send Down
-    }
-  }
-}
-```
+For details, run `planderson settings --approveAction`
 
 ## Development
 

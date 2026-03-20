@@ -2,10 +2,14 @@
 
 A terminal user interface (TUI) for reviewing Claude's plans before implementation. When Claude exits plan mode, Planderson intercepts the request and displays the plan fullscreen in terminal — accept, deny, or provide feedback.
 
+The default plan mode in Claude involves scrolling up/down and copy/pasting parts of the plan to provide feedback in a small text input. This plugin enables a more interactive and user-friendly way to provide inline feedback and approve/deny plans to iterate until satisfied.
+
+The goal is to provide a lightweight TUI to bridge the gap between "pure" terminal interactions and complex external user interfaces to support seamless plan iteration with Claude.
+
 ## Prerequisites
 
 - **macOS or Linux** (has not been tested on Windows)
-- **tmux 3.2+** (optional, for tmux integration)
+- **tmux 3.0+** (optional, for tmux integration)
 
 ## Installation
 

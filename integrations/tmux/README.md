@@ -1,8 +1,86 @@
 # tmux Integration for Planderson
 
-Planderson uses a **pane-swap mechanism** to display plans while preserving running processes (vim, htop, etc.) in your terminal.
+Planderson uses a **pane-swap mechanism** to display the plan TUI in the Claude tmux pane so that all Claude planning and iteration is done in one place. This also enables more control over multiple Claude sessions and plans executing at once.
 
-## How It Works
+## Setup
+
+### Requirements
+
+- **tmux 3.0+** - For `swap-pane` support
+
+### Installation
+
+### Manual launch
+
+After installing planderson, add to your `~/.tmux.conf`:
+
+```bash
+# Example with bind-key g to mirror Claude Code's ctrl-g to edit plan in editor
+bind-key g run-shell 'planderson tmux'
+```
+
+Reload tmux config:
+
+```bash
+tmux source-file ~/.tmux.conf
+```
+
+When Claude presents a plan in plan mode, use the bind-key to open tht TUI in that pane.
+
+### Auto launch
+
+This also supports automatically launching the TUI in the tmux pane when a plan is ready.
+
+Set `launchMode` setting to `auto-tmux`:
+
+```bash
+planderson settings --launchMode auto-tmux
+```
+
+For details, run `planderson settings --launchMode`
+
+## Optional: tmux mouse and scroll
+
+Like many things in tmux, this becomes less obvious, more opinionated, and more dependent on your local setup. Below are some potential options to set up mouse support and proper scroll behavior inside Planderson.
+
+_If you believe you have a somewhat standard mouse/scroll tmux setup and got it working outside of these options_
+
+### Basic mouse interactions
+
+Planderson navigates through lines with up/down keys. Enable basic mouse interactions in tmux with:
+
+```conf
+set -g mouse on
+```
+
+### Only send up/down keys in specific cases
+
+You may have a more complex setup, e.g. the [Send `Up` and `Down` keys for the mouse wheel](https://github.com/tmux/tmux/wiki/Recipes#send-up-and-down-keys-for-the-mouse-wheel) recipe. You may require more specific changes.
+
+If you have a more specific setup for different scrolling, you may benefit from a more complex setup.
+For example, the below configuration enables copy mode scrolling on claude and normal shell instances, but sends up/down otherwise.
+
+```conf
+# use scroll through copy mode just for claude and terminal,
+# map to up/down keys otherwise for native scrolling
+# https://github.com/tmux/tmux/wiki/Recipes#send-up-and-down-keys-for-the-mouse-wheel
+# planderson is bash so we have to exclude it manually to map like this
+bind -n WheelUpPane {
+  if -F '#{&&:#{||:#{m:*claude*,#{pane_current_command}},#{m:*bash*,#{pane_current_command}},#{m:*zsh*,#{pane_current_command}}},#{!=:#{pane_title},planderson}}' {
+    copy-mode -e
+  } {
+    send Up
+  }
+}
+bind -n WheelDownPane {
+  if -F '#{&&:#{||:#{m:*claude*,#{pane_current_command}},#{m:*bash*,#{pane_current_command}},#{m:*zsh*,#{pane_current_command}}},#{!=:#{pane_title},planderson}}' {
+  } {
+    send Down
+  }
+}
+```
+
+## How the Integration Works
 
 Planderson uses a **pane-swap mechanism** instead of a simple popup to preserve running processes (vim, htop, long-running commands) while displaying the plan viewer.
 
@@ -29,78 +107,6 @@ Pane-swap makes Planderson appear to replace your current view temporarily, pres
 
 They execute in different processes - the swap mechanism requires this separation.
 
-## Setup
-
-### Requirements
-
-- **tmux 3.0+** - For `swap-pane` support
-- **bun** - To run Planderson TUI
-- **Planderson project** - Must have `app/src/commands/tui.tsx` in parent directory
-
-### Global Installation (Recommended for Users)
-
-After installing planderson, add to your `~/.tmux.conf`:
-
-```bash
-bind-key g run-shell "planderson tmux"
-```
-
-Reload tmux config:
-
-```bash
-tmux source-file ~/.tmux.conf
-```
-
-### Dev Mode (Recommended for Contributors)
-
-When developing Planderson locally, use:
-
-```bash
-bun run dev:set
-```
-
-This generates a local configuration that points to your current directory's code. The script auto-detects whether you're in the main repo or a worktree.
-
-### Resetting to Main Repository
-
-To revert back to using the main repository's code:
-
-```bash
-bun run dev:reset
-```
-
-This:
-
-- Removes `dev/planderson` wrapper script
-- Restores `~/.local/bin/planderson` symlink to `~/.planderson/planderson`
-- Sets `launchMode: "manual"` in local `settings.json`
-- Sources `~/.tmux.conf` (restores global keybindings)
-
-### Testing the Integration
-
-**Test production mode:** Open vim, press `bind-key g`, Planderson appears (requires Claude Code waiting), press `Esc`, vim returns unchanged.
-
-**Test file mode (dev mode only):** Run `bun run dev:set` first (sets up `bind-key t` with `--filepath dev/plan-test.md`), then press `bind-key t`, Planderson appears with test plan, press `Esc`, returns unchanged.
-
-### How It Works
-
-- **Global mode**: `planderson tmux` runs `~/.planderson/integrations/tmux/init.sh`
-- **Dev mode**: when `PLANDERSON_BASE_DIR` is set (via `dev/planderson` wrapper), `planderson tmux` runs `./integrations/tmux/init.sh` from the repo root and isolates sockets/settings to the repo
-- `bun run dev:set` symlinks `planderson` to a local wrapper and configures tmux keybindings
-- `bun run dev:reset` fully restores global state (symlink, settings, tmux keybindings)
-
-## Keybindings
-
-The default keybinding is:
-
-- **bind-key then g** - Socket mode (requires Claude Code with pending plan approval via socket)
-
-The 'g' key aligns with Claude Code's Ctrl+g (edit plan in vim).
-
-Dev mode adds `bind-key t` for file mode (with `--filepath dev/plan-test.md`) — run `bun run dev:set` to set this up.
-
-To use a different key, edit `~/.tmux.conf` and reload. For dev mode, run `bun run dev:set`.
-
 ## Troubleshooting
 
 **Pane doesn't restore:**
@@ -112,19 +118,3 @@ tmux kill-window -t planderson-temp-XXXXX  # Kill leftover temp window
 ```
 
 **"Not running in a tmux session":** Run `tmux` first before using the keybinding.
-
-**Scripts not executable:** `chmod +x integrations/tmux/init.sh integrations/tmux/run-and-restore.sh`
-
-**Worktree changes not showing:**
-
-Make sure you've run `bun run dev:set` from the worktree directory to override the keybindings (or `bun run dev:reset` to go back to global). Check which config is active:
-
-```bash
-tmux show-options -g | grep planderson
-```
-
-To reset to main repo, reload your default config:
-
-```bash
-tmux source-file ~/.tmux.conf
-```
