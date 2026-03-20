@@ -21,7 +21,8 @@ bun install
 Run directly from source with a test plan file:
 
 ```bash
-PLANDERSON_BASE_DIR=. bun run app/src/commands/tui.tsx dev/plan-test.md
+bun run dev:set
+bun run app/src/commands/tui.tsx dev/plan-test.md
 ```
 
 ### Socket Mode

@@ -1,7 +1,9 @@
-import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
+import { afterEach, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test';
 import fs from 'fs';
-import os from 'os';
+import * as os from 'os';
 import path from 'path';
+
+import { useTempDir } from '~/test-utils/fixtures';
 
 import { getPlandersonBaseDir } from './paths';
 import {
@@ -24,38 +26,25 @@ describe('io sockets', () => {
     let testRegistryDir: string;
 
     beforeEach(() => {
-        // Use temp directories for testing
-        const tempBase = path.join(os.tmpdir(), `planderson-test-socket-paths-${Date.now()}`);
-        testSocketDir = path.join(tempBase, 'sockets');
-        testRegistryDir = path.join(tempBase, 'registry');
+        const tempHomeDir = useTempDir();
+        spyOn(os, 'homedir').mockReturnValue(tempHomeDir);
 
-        // Override base directory for all socket-path functions
-        process.env.PLANDERSON_BASE_DIR = tempBase;
+        // No dev.json → getPlandersonBaseDir() falls back to tempHomeDir/.planderson
+        const plandersonDir = path.join(tempHomeDir, '.planderson');
+        testSocketDir = path.join(plandersonDir, 'sockets');
+        testRegistryDir = path.join(plandersonDir, 'registry');
 
-        // Create test directories
         fs.mkdirSync(testSocketDir, { recursive: true });
         fs.mkdirSync(testRegistryDir, { recursive: true });
+        fs.mkdirSync(path.join(plandersonDir, 'logs'), { recursive: true });
     });
 
     afterEach(() => {
-        // Reset environment variable override
-        delete process.env.PLANDERSON_BASE_DIR;
-
-        // Clean up test directories
-        const tempBase = path.dirname(testSocketDir);
-        if (fs.existsSync(tempBase)) {
-            fs.rmSync(tempBase, { recursive: true, force: true });
-        }
+        mock.restore();
     });
 
     describe('getPlandersonBaseDir', () => {
-        test('returns PLANDERSON_BASE_DIR when set', () => {
-            const baseDir = getPlandersonBaseDir();
-            expect(baseDir).toBe(process.env.PLANDERSON_BASE_DIR!);
-        });
-
-        test('returns ~/.planderson when PLANDERSON_BASE_DIR not set', () => {
-            delete process.env.PLANDERSON_BASE_DIR;
+        test('returns ~/.planderson when no dev.json exists', () => {
             const baseDir = getPlandersonBaseDir();
             expect(baseDir).toBe(path.join(os.homedir(), '.planderson'));
         });
@@ -134,10 +123,7 @@ describe('io sockets', () => {
             fs.writeFileSync(socketPath, '');
 
             const result = findActiveSocket();
-            // Will return null because we're using testSocketDir, not real socket dir
-            // This test validates the structure but can't test findActiveSocket directly
-            // since it uses getSocketDir() which returns the real path
-            expect(result).toBeDefined();
+            expect(result).not.toBeNull();
         });
 
         test('ignores files without .sock extension', () => {

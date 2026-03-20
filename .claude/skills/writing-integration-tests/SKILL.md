@@ -228,12 +228,13 @@ const hookProcess = spawn('bun', [HOOK_PATH], {
 });
 ```
 
-**When testing file logging** (activity.log, error.log), pass `PLANDERSON_BASE_DIR` via `useTempDir()` to redirect log output to a known, isolated location:
+**When testing file logging** (activity.log, error.log), pass `baseDir` as the second arg to `spawnHook()` to redirect log output to a known, isolated location. `spawnHook` writes `dev.json` in the subprocess's fake HOME pointing at `baseDir`:
 
 ```typescript
 // GOOD: useTempDir() registers its own afterEach cleanup
 const base = useTempDir('planderson-test-log-');
-const hookProcess = spawnHook({ PLANDERSON_SOCKET_PATH: TEST_SOCKET_PATH, PLANDERSON_BASE_DIR: base });
+const hookProcess = spawnHook({ PLANDERSON_SOCKET_PATH: TEST_SOCKET_PATH }, base);
+// spawnHook writes ~/.planderson/dev.json with { baseDir: base } so logs go to base/logs/
 // ... then assert on path.join(base, 'logs', 'activity.log')
 
 // BAD: module-level let + manual afterEach — this is shared mutable state

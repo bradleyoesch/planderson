@@ -26,6 +26,10 @@ else
     echo "⚠ Global binary not found at $GLOBAL_BINARY - symlink not restored"
 fi
 
+# Remove dev config so getPlandersonBaseDir() falls back to ~/.planderson
+rm -f "$HOME/.planderson/dev.json"
+echo "✓ Removed $HOME/.planderson/dev.json"
+
 # Ensure launchMode is set to manual in settings.json
 if [ -f "$SETTINGS_FILE" ]; then
     if command -v jq >/dev/null 2>&1; then

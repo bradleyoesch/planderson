@@ -1,14 +1,14 @@
 
 # Architecture: Local vs. Prod Environments
 
-`PLANDERSON_BASE_DIR` env var is the single source of truth for all path decisions. The `dev/planderson` wrapper (created by `bun run dev:set`) sets `PLANDERSON_BASE_DIR="$REPO_ROOT"` — this isolates all paths to the repo:
+`~/.planderson/dev.json` is the mechanism for dev mode path isolation. `bun run dev:set` writes this file with `{ "baseDir": "<worktree>" }` — `getPlandersonBaseDir()` reads it at runtime and uses the worktree path for all file operations:
 
-- Sockets: `$PLANDERSON_BASE_DIR/sockets/` (vs `~/.planderson/sockets/`) — keeps dev sessions from colliding with a running global install
-- Settings: `$PLANDERSON_BASE_DIR/settings.json` (vs `~/.planderson/settings.json`) — separate dev settings from prod
-- `planderson tmux`: uses `$PLANDERSON_BASE_DIR/integrations/tmux/init.sh` (vs `~/.planderson/integrations/tmux/init.sh`)
+- Sockets: `<worktree>/sockets/` (vs `~/.planderson/sockets/`) — keeps dev sessions from colliding with a running global install
+- Settings: `<worktree>/settings.json` (vs `~/.planderson/settings.json`) — separate dev settings from prod
+- `planderson tmux`: uses `<worktree>/integrations/tmux/init.sh` (vs `~/.planderson/integrations/tmux/init.sh`)
 
-Prod binary never sets `PLANDERSON_BASE_DIR`, so `getPlandersonBaseDir()` falls back to `~/.planderson/` automatically.
+`bun run dev:reset` removes `dev.json`, so `getPlandersonBaseDir()` falls back to `~/.planderson/` automatically.
 
-**Hook is also routed through `dev/planderson`:** The Claude Code hook is configured as `"command": "planderson hook"` in `~/.claude/settings.json` (global, not local). In dev mode, `planderson` on PATH resolves to the `dev/planderson` wrapper, so `PLANDERSON_BASE_DIR` is set for hook invocations too — no separate hook configuration needed.
+**Hook resolution:** The Claude Code hook is configured as `"command": "planderson hook"` in the plugin's hooks.json. Claude Code caches the resolved binary at startup. In dev mode, since `dev.json` is read at runtime by `getPlandersonBaseDir()`, the hook uses the correct worktree path regardless of which binary Claude cached — no restart required after running `bun run dev:set`.
 
 **Warning:** Enabling `launchMode: "auto-tmux"` in both local and prod settings simultaneously causes both to trigger.

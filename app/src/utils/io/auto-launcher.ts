@@ -19,7 +19,7 @@ export const tryAutoLaunch = (sessionId: string): boolean => {
         logEvent(__filename, sessionId, 'autolaunch.spawn.starting', `script=${scriptPath} args=${args.join(' ')}`);
 
         // Fire-and-forget spawn
-        // Child inherits environment (TMUX, PATH, HOME, PLANDERSON_BASE_DIR, etc.) from parent automatically
+        // Child inherits environment (TMUX, PATH, HOME, etc.) from parent automatically
         const child = spawn(scriptPath, args, {
             detached: true, // Don't wait for child
             stdio: 'ignore', // Don't pipe stdio (prevents blocking)

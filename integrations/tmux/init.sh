@@ -61,10 +61,15 @@ fi
 PLANDERSON_COMMAND=""
 PLANDERSON_DIR=""
 
-# Check 1: PLANDERSON_BASE_DIR set? (dev mode via dev/planderson wrapper)
-if [ -n "$PLANDERSON_BASE_DIR" ]; then
-    # Dev mode: PLANDERSON_BASE_DIR set by dev/planderson wrapper
-    PLANDERSON_DIR="$PLANDERSON_BASE_DIR"
+# Check 1: dev.json exists? (dev mode - written by 'bun run dev:set')
+DEV_JSON="$HOME/.planderson/dev.json"
+DEV_BASE_DIR=""
+if [ -f "$DEV_JSON" ]; then
+    DEV_BASE_DIR=$(awk -F'"' '/"baseDir"/{print $4}' "$DEV_JSON")
+fi
+
+if [ -n "$DEV_BASE_DIR" ]; then
+    PLANDERSON_DIR="$DEV_BASE_DIR"
     PLANDERSON_COMMAND="planderson tui"
 
 # Check 2: Does legacy prod binary exist at ~/.planderson/bin/planderson-tui?

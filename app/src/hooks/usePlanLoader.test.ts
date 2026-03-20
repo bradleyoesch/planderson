@@ -2,19 +2,20 @@
  * TESTING APPROACH: Dependency Injection + Real Filesystem
  *
  * usePlanLoader is tested using:
- * 1. PLANDERSON_BASE_DIR env var → redirects all fs ops to a temp dir (no module mocking)
+ * 1. spyOn(os, 'homedir') + dev.json → redirects all fs ops to a temp dir (no module mocking)
  * 2. createSocketClient factory param → inject mock socket client (5th param)
  *
  * We cannot test keyboard input or re-renders at the unit level; this hook is
  * mount-only (empty deps array), so all behaviors fire on the initial render.
  */
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test';
+import { afterEach, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test';
 import fs from 'fs';
-import os from 'os';
+import * as os from 'os';
 import path from 'path';
 
 import { PlandersonSocketClient } from '~/lib/socket-ipc';
+import { useTempDir } from '~/test-utils/fixtures';
 import { registerSession } from '~/utils/io/sockets';
 
 import { usePlanLoader } from './usePlanLoader';
@@ -27,18 +28,25 @@ describe('usePlanLoader', () => {
     let tempBase: string;
 
     beforeEach(() => {
+        const fakeHome = useTempDir();
+        spyOn(os, 'homedir').mockReturnValue(fakeHome);
+
+        // Write dev.json so getPlandersonBaseDir() returns tempBase
         tempBase = path.join(
             os.tmpdir(),
             `planderson-usePlanLoader-${Date.now()}-${Math.random().toString(36).slice(2)}`,
         );
-        process.env.PLANDERSON_BASE_DIR = tempBase;
+        const plandersonDir = path.join(fakeHome, '.planderson');
+        fs.mkdirSync(plandersonDir, { recursive: true });
+        fs.writeFileSync(path.join(plandersonDir, 'dev.json'), JSON.stringify({ baseDir: tempBase }));
+
         fs.mkdirSync(path.join(tempBase, 'sockets'), { recursive: true });
         fs.mkdirSync(path.join(tempBase, 'registry'), { recursive: true });
         fs.mkdirSync(path.join(tempBase, 'logs'), { recursive: true });
     });
 
     afterEach(() => {
-        delete process.env.PLANDERSON_BASE_DIR;
+        mock.restore();
         if (fs.existsSync(tempBase)) {
             fs.rmSync(tempBase, { recursive: true, force: true });
         }
