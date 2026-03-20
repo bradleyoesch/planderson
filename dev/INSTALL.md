@@ -2,7 +2,7 @@
 
 This guide covers installing your local Planderson build to `~/.planderson/` so you can test changes end-to-end in a real install — with Claude Code hooks, tmux integration, and the actual binary path.
 
-For prod installation, see [plugin/README.md](../plugin/README.md).
+For prod installation, see [README.md](../README.md).
 For local dev setup (no global install needed), see [CONTRIBUTING.md](../CONTRIBUTING.md).
 
 ## When to Use This
