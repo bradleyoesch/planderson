@@ -645,7 +645,7 @@ describe('lib socket-ipc', () => {
 
     describe('PlandersonSocketServer.waitForDecision()', () => {
         describe('Client disconnect', () => {
-            test('resolves as no-op when connected TUI closes without sending decision', async () => {
+            test('does not resolve when TUI disconnects without sending decision', async () => {
                 const { PlandersonSocketServer } = await import('./socket-ipc');
                 const socketPath = `/tmp/planderson-test-disconnect-${Date.now()}.sock`;
                 const server = new PlandersonSocketServer(socketPath);
@@ -667,8 +667,57 @@ describe('lib socket-ipc', () => {
                         });
                     });
 
+                    // waitForDecision should still be pending after a brief wait
+                    const raceResult = await Promise.race([
+                        server.waitForDecision(5),
+                        new Promise((resolve) => setTimeout(() => resolve('still-waiting'), 200)),
+                    ]);
+                    expect(raceResult).toBe('still-waiting');
+                } finally {
+                    await server.close();
+                }
+            });
+
+            test('accepts decision from reconnecting TUI after first quit', async () => {
+                const { PlandersonSocketServer } = await import('./socket-ipc');
+                const socketPath = `/tmp/planderson-test-reconnect-${Date.now()}.sock`;
+                const server = new PlandersonSocketServer(socketPath);
+
+                try {
+                    await server.start('test plan content');
+
+                    // Client 1: connect, get_plan, destroy without decision
+                    await new Promise<void>((resolve, reject) => {
+                        const client = net.connect(socketPath);
+                        client.once('error', reject);
+                        client.once('connect', () => {
+                            client.write(`${JSON.stringify({ type: 'get_plan' })}\n`);
+                            client.once('data', () => {
+                                client.destroy();
+                                resolve();
+                            });
+                        });
+                    });
+
+                    // Small delay to ensure close event has fired
+                    await new Promise((resolve) => setTimeout(resolve, 50));
+
+                    // Client 2: connect, get_plan, send accept
+                    await new Promise<void>((resolve, reject) => {
+                        const client = net.connect(socketPath);
+                        client.once('error', reject);
+                        client.once('connect', () => {
+                            client.write(`${JSON.stringify({ type: 'get_plan' })}\n`);
+                            client.once('data', () => {
+                                client.write(`${JSON.stringify({ type: 'decision', decision: 'accept' })}\n`);
+                                resolve();
+                            });
+                        });
+                    });
+
                     const result = await server.waitForDecision(5);
-                    expect(result.type).toBe('no-op');
+                    expect(result.type).toBe('decision');
+                    expect((result as { type: 'decision'; decision: string }).decision).toBe('accept');
                 } finally {
                     await server.close();
                 }

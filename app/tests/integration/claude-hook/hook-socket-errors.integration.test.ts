@@ -81,7 +81,7 @@ describe('claude-hook hook-socket-errors integration', () => {
             hookProcess.stdin.write(JSON.stringify(hookInput));
             hookProcess.stdin.end();
 
-            // Connect and immediately disconnect
+            // Connect and immediately disconnect — hook keeps waiting, eventually times out
             setTimeout(() => {
                 const client = net.connect(TEST_SOCKET_PATH);
                 client.on('connect', () => {
@@ -93,10 +93,9 @@ describe('claude-hook hook-socket-errors integration', () => {
             }, 200);
 
             const stdout = await readStream(hookProcess.stdout);
-            // No-op: hook exits without JSON output (empty stdout = allow in Claude Code)
-            if (stdout.trim() === '') return;
             const response = JSON.parse(stdout);
-            expect(response.hookSpecificOutput.decision.behavior).toBe('allow');
+            expect(response.hookSpecificOutput.decision.behavior).toBe('deny');
+            expect(response.hookSpecificOutput.decision.message).toContain('Timeout');
         }, 10000);
 
         test('handles TUI disconnecting during plan transmission', async () => {
@@ -116,7 +115,7 @@ describe('claude-hook hook-socket-errors integration', () => {
             hookProcess.stdin.write(JSON.stringify(hookInput));
             hookProcess.stdin.end();
 
-            // Connect, start reading, then disconnect
+            // Connect, start reading, then disconnect — hook keeps waiting, eventually times out
             await waitForSocket(TEST_SOCKET_PATH);
             const client = net.connect(TEST_SOCKET_PATH);
             client.on('connect', () => {
@@ -129,10 +128,9 @@ describe('claude-hook hook-socket-errors integration', () => {
             });
 
             const stdout = await readStream(hookProcess.stdout);
-            // No-op: hook exits without JSON output (empty stdout = allow in Claude Code)
-            if (stdout.trim() === '') return;
             const response = JSON.parse(stdout);
-            expect(response.hookSpecificOutput.decision.behavior).toBe('allow');
+            expect(response.hookSpecificOutput.decision.behavior).toBe('deny');
+            expect(response.hookSpecificOutput.decision.message).toContain('Timeout');
         }, 10000);
 
         test('handles TUI exiting via signal (no decision sent)', async () => {
@@ -151,7 +149,7 @@ describe('claude-hook hook-socket-errors integration', () => {
             hookProcess.stdin.write(JSON.stringify(hookInput));
             hookProcess.stdin.end();
 
-            // Connect, get plan, then destroy without sending decision (simulates signal exit)
+            // Connect, get plan, then destroy without sending decision — hook keeps waiting, eventually times out
             await waitForSocket(TEST_SOCKET_PATH);
             const client = net.connect(TEST_SOCKET_PATH);
             client.on('connect', () => {
@@ -165,10 +163,9 @@ describe('claude-hook hook-socket-errors integration', () => {
             });
 
             const stdout = await readStream(hookProcess.stdout);
-            // No-op: hook exits without JSON output (empty stdout = allow in Claude Code)
-            if (stdout.trim() === '') return;
             const response = JSON.parse(stdout);
-            expect(response.hookSpecificOutput.decision.behavior).toBe('allow');
+            expect(response.hookSpecificOutput.decision.behavior).toBe('deny');
+            expect(response.hookSpecificOutput.decision.message).toContain('Timeout');
         }, 10000);
     });
 
