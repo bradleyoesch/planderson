@@ -65,7 +65,7 @@ PLANDERSON_DIR=""
 DEV_JSON="$HOME/.planderson/dev.json"
 DEV_BASE_DIR=""
 if [ -f "$DEV_JSON" ]; then
-    DEV_BASE_DIR=$(python3 -c "import json; d=json.load(open('$DEV_JSON')); print(d.get('baseDir',''))" 2>/dev/null || true)
+    DEV_BASE_DIR=$(sed -n 's/.*"baseDir"[[:space:]]*:[[:space:]]*"\(.*\)".*/\1/p' "$DEV_JSON")
 fi
 
 if [ -n "$DEV_BASE_DIR" ]; then
