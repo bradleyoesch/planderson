@@ -50,11 +50,12 @@ export const runTui = (args: string[]): void => {
         },
     }) as typeof process.stdout;
 
-    // Position cursor at top-left before first render so the interceptor's first-render
-    // path writes content from row 1. Without this, the shell cursor may be at the last
-    // row after the user pressed Enter, and stripping '\n' alone would leave content below
-    // the visible area. In the tmux respawn-pane path this is already at row 1 (no-op).
-    process.stdout.write('\x1b[H');
+    // Clear screen and position cursor at top-left before first render so the TUI renders
+    // on a clean display. Without \x1b[2J, existing terminal content bleeds through the TUI
+    // until the user scrolls (log-update overwrites line-by-line but doesn't clear old chars
+    // at the ends of shorter lines). In the tmux respawn-pane path the pane is already empty
+    // so this is a no-op.
+    process.stdout.write('\x1b[2J\x1b[H');
 
     // Render the app
     render(
