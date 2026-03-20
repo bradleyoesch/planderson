@@ -44,8 +44,7 @@ export const SETTINGS_DOCS: Record<
             { value: 'approve', description: 'Submits the plan for Claude to continue executing' },
             {
                 value: 'exit',
-                description:
-                    'On approve, exits the TUI\n(to allow users to "approve and clear context" etc, which Claude does not support programmatically)',
+                description: 'On approve, exits the TUI',
             },
         ],
         description: 'Action taken when the plan is approved in the TUI',

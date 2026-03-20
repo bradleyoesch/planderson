@@ -6,7 +6,7 @@ Planderson uses a **pane-swap mechanism** to display the plan TUI in the Claude 
 
 ### Requirements
 
-- **tmux 3.0+** - For `swap-pane` support
+- **tmux 3.0+**
 
 ### Installation
 
@@ -29,7 +29,7 @@ When Claude presents a plan in plan mode, use the bind-key to open tht TUI in th
 
 ### Auto launch
 
-This also supports automatically launching the TUI in the tmux pane when a plan is ready.
+Planderson also supports automatically launching the TUI in the tmux pane when a plan is ready.
 
 Set `launchMode` setting to `auto-tmux`:
 
@@ -39,25 +39,20 @@ planderson settings --launchMode auto-tmux
 
 For details, run `planderson settings --launchMode`
 
-## Optional: tmux mouse and scroll
+## Optional: tmux mouse and scroll support
 
 Like many things in tmux, this becomes less obvious, more opinionated, and more dependent on your local setup. Below are some potential options to set up mouse support and proper scroll behavior inside Planderson.
 
-_If you believe you have a somewhat standard mouse/scroll tmux setup and got it working outside of these options_
+If you believe you have a somewhat standard mouse/scroll tmux setup and got it working outside of these below options, search [issues](https://github.com/bradleyoesch/planderson/issues) and submit a [pull request](https://github.com/bradleyoesch/planderson/pulls) if new.
 
-### Basic mouse interactions
+### Basic mouse scrolling
 
-Planderson navigates through lines with up/down keys. Enable basic mouse interactions in tmux with:
-
-```conf
-set -g mouse on
-```
+Planderson navigates through lines with up/down keys. Basic mouse integration (e.g. `set -g mouse on`) enables scrolling with copy mode. You may need to instead use the [Send `Up` and `Down` keys for the mouse wheel](https://github.com/tmux/tmux/wiki/Recipes#send-up-and-down-keys-for-the-mouse-wheel) recipe.
 
 ### Only send up/down keys in specific cases
 
-You may have a more complex setup, e.g. the [Send `Up` and `Down` keys for the mouse wheel](https://github.com/tmux/tmux/wiki/Recipes#send-up-and-down-keys-for-the-mouse-wheel) recipe. You may require more specific changes.
+You may have a more complex setup, e.g. a unique variant on the [Send `Up` and `Down` keys for the mouse wheel](https://github.com/tmux/tmux/wiki/Recipes#send-up-and-down-keys-for-the-mouse-wheel) recipe and may require more specific changes.
 
-If you have a more specific setup for different scrolling, you may benefit from a more complex setup.
 For example, the below configuration enables copy mode scrolling on claude and normal shell instances, but sends up/down otherwise.
 
 ```conf

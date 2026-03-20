@@ -36,7 +36,7 @@ The goal is to provide a lightweight TUI to bridge the gap between "pure" termin
 
 ## Usage
 
-When the TUI launches, use these controls:
+Basic controls while in the plan TUI:
 
 | Key                | Action                         |
 | ------------------ | ------------------------------ |
@@ -45,23 +45,26 @@ When the TUI launches, use these controls:
 | `c`                | Add a comment to a line        |
 | `q`                | Add a question to a line       |
 | `Delete`           | Mark a line for deletion       |
-| **Enter**          | Accept plan                    |
-| **Esc**            | Deny plan                      |
+| **Enter**          | Submit feedback or approve     |
+| **Esc**            | Exit TUI                       |
 | **?**              | Show full keybinding reference |
 
-For details and more keybindings, run `planderson help`.
+1. Move up and down the plan to review.
+2. Add comments and questions, delete and undelete lines or blocks
+3. Hit `Enter` to submit that feedback and wait for Claude to modify plan
+   If no feedback has been submitted, `Enter` will approve the plan
 
-## Manual usage
+For details and more keybindings, run `planderson help` or hit `?` while in the TUI.
 
-After Claude presents the plan to review, in a separate terminal, launch the TUI:
+## Manual launch
+
+Without any further setup or integrations (as described in the next section), you may manually trigger the plan TUI. After Claude presents the plan to review, in a separate terminal, launch the TUI:
 
 ```bash
 planderson tui
 ```
 
-This will open the latest plan in the TUI.
-
-## Recommended usage
+## Recommended setup
 
 ### Tmux integration
 
