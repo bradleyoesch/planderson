@@ -23,7 +23,7 @@ export const HOOK_PATH = path.join(__dirname, '../../../src/commands/hook.ts');
  * Defaults: TMUX and TMUX_PANE are cleared to prevent tmux auto-launch.
  * Override via extraEnv to test tmux-specific behavior.
  */
-export const spawnHook = (extraEnv: Record<string, string | undefined> = {}): HookProcess => {
+export const spawnHook = (extraEnv: Record<string, string | undefined> = {}, baseDir?: string): HookProcess => {
     const fakeHome = fs.mkdtempSync(path.join(os.tmpdir(), 'planderson-test-home-'));
     afterEach(() => {
         if (fs.existsSync(fakeHome)) {
@@ -31,8 +31,6 @@ export const spawnHook = (extraEnv: Record<string, string | undefined> = {}): Ho
         }
     });
 
-    // PLANDERSON_BASE_DIR is no longer supported as an env var; translate it to dev.json
-    const { PLANDERSON_BASE_DIR: baseDir, ...cleanEnv } = extraEnv;
     if (baseDir) {
         const plandersonDir = path.join(fakeHome, '.planderson');
         fs.mkdirSync(plandersonDir, { recursive: true });
@@ -45,7 +43,7 @@ export const spawnHook = (extraEnv: Record<string, string | undefined> = {}): Ho
             HOME: fakeHome,
             TMUX: undefined,
             TMUX_PANE: undefined,
-            ...cleanEnv,
+            ...extraEnv,
         },
     }) as HookProcess;
 };

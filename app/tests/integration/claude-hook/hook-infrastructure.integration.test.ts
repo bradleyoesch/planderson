@@ -533,7 +533,7 @@ describe('claude-hook hook-infrastructure integration', () => {
                 hook_event_name: 'PermissionRequest',
             };
 
-            const hookProcess = spawnHook({ PLANDERSON_SOCKET_PATH: TEST_SOCKET_PATH, PLANDERSON_BASE_DIR: base });
+            const hookProcess = spawnHook({ PLANDERSON_SOCKET_PATH: TEST_SOCKET_PATH }, base);
 
             hookProcess.stdin.write(JSON.stringify(hookInput));
             hookProcess.stdin.end();
@@ -565,7 +565,7 @@ describe('claude-hook hook-infrastructure integration', () => {
         test('hook encounters exception -> logs error to error.log', async () => {
             const base = useTempDir('planderson-test-log-');
 
-            const hookProcess = spawnHook({ PLANDERSON_BASE_DIR: base });
+            const hookProcess = spawnHook({}, base);
 
             // Send malformed input to trigger error
             hookProcess.stdin.write('{ invalid json }');
@@ -597,11 +597,7 @@ describe('claude-hook hook-infrastructure integration', () => {
                 hook_event_name: 'PermissionRequest',
             };
 
-            const hookProcess = spawnHook({
-                PLANDERSON_SOCKET_PATH: TEST_SOCKET_PATH,
-                TMUX_PANE: '%100',
-                PLANDERSON_BASE_DIR: base,
-            }); // Mock tmux pane for test
+            const hookProcess = spawnHook({ PLANDERSON_SOCKET_PATH: TEST_SOCKET_PATH, TMUX_PANE: '%100' }, base); // Mock tmux pane for test
 
             hookProcess.stdin.write(JSON.stringify(hookInput));
             hookProcess.stdin.end();
@@ -639,7 +635,7 @@ describe('claude-hook hook-infrastructure integration', () => {
 
             const feedbackMessage = 'This needs more work';
 
-            const hookProcess = spawnHook({ PLANDERSON_SOCKET_PATH: TEST_SOCKET_PATH, PLANDERSON_BASE_DIR: base });
+            const hookProcess = spawnHook({ PLANDERSON_SOCKET_PATH: TEST_SOCKET_PATH }, base);
 
             hookProcess.stdin.write(JSON.stringify(hookInput));
             hookProcess.stdin.end();
@@ -674,7 +670,7 @@ describe('claude-hook hook-infrastructure integration', () => {
                 hook_event_name: 'PermissionRequest',
             };
 
-            const hookProcess = spawnHook({ PLANDERSON_SOCKET_PATH: longPath, PLANDERSON_BASE_DIR: base });
+            const hookProcess = spawnHook({ PLANDERSON_SOCKET_PATH: longPath }, base);
 
             hookProcess.stdin.write(JSON.stringify(hookInput));
             hookProcess.stdin.end();
@@ -709,7 +705,7 @@ describe('claude-hook hook-infrastructure integration', () => {
                 hook_event_name: 'PermissionRequest',
             };
 
-            const hookProcess = spawnHook({ PLANDERSON_SOCKET_PATH: TEST_SOCKET_PATH, PLANDERSON_BASE_DIR: base });
+            const hookProcess = spawnHook({ PLANDERSON_SOCKET_PATH: TEST_SOCKET_PATH }, base);
 
             hookProcess.stdin.write(JSON.stringify(hookInput));
             hookProcess.stdin.end();
