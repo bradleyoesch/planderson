@@ -65,7 +65,7 @@ PLANDERSON_DIR=""
 DEV_JSON="$HOME/.planderson/dev.json"
 DEV_BASE_DIR=""
 if [ -f "$DEV_JSON" ]; then
-    DEV_BASE_DIR=$(sed -n 's/.*"baseDir"[[:space:]]*:[[:space:]]*"\(.*\)".*/\1/p' "$DEV_JSON")
+    DEV_BASE_DIR=$(awk -F'"' '/"baseDir"/{print $4}' "$DEV_JSON")
 fi
 
 if [ -n "$DEV_BASE_DIR" ]; then
