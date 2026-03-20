@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test';
+import * as net from 'net';
 
-import { useTestSocket } from '~/test-utils/fixtures';
+import { useTestSocket, waitForSocket } from '~/test-utils/fixtures';
 
 import { connectAndRespond, readStream, spawnHook } from './helpers';
 
@@ -151,6 +152,50 @@ describe('claude-hook hook-happy-path integration', () => {
 
             const response = JSON.parse(stdout);
 
+            expect(response.hookSpecificOutput.decision.behavior).toBe('allow');
+        }, 15000);
+    });
+
+    describe('Reconnect After Quit', () => {
+        test('accepts plan after TUI quits and reconnects', async () => {
+            const { path: TEST_SOCKET_PATH } = useTestSocket('hook-happy');
+            const hookInput = {
+                tool_name: 'ExitPlanMode',
+                tool_input: { plan: 'Test plan content' },
+                hook_event_name: 'PermissionRequest',
+            };
+
+            const hookProcess = spawnHook({
+                PLANDERSON_SOCKET_PATH: TEST_SOCKET_PATH,
+                PLANDERSON_TIMEOUT_SECONDS: '10',
+            });
+
+            hookProcess.stdin.write(JSON.stringify(hookInput));
+            hookProcess.stdin.end();
+
+            // Client 1: connect, get plan, quit without decision
+            await waitForSocket(TEST_SOCKET_PATH);
+            await new Promise<void>((resolve, reject) => {
+                const client = net.connect(TEST_SOCKET_PATH);
+                client.once('error', reject);
+                client.once('connect', () => {
+                    client.write(`${JSON.stringify({ type: 'get_plan' })}\n`);
+                    client.once('data', () => {
+                        client.destroy();
+                        resolve();
+                    });
+                });
+            });
+
+            // Small delay to ensure close event has fired and server is ready
+            await new Promise((resolve) => setTimeout(resolve, 50));
+
+            // Client 2: reconnect and accept
+            const clientPromise = connectAndRespond(TEST_SOCKET_PATH, 'accept', undefined, 0);
+
+            const [stdout] = await Promise.all([readStream(hookProcess.stdout), clientPromise]);
+
+            const response = JSON.parse(stdout);
             expect(response.hookSpecificOutput.decision.behavior).toBe('allow');
         }, 15000);
     });

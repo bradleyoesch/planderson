@@ -221,12 +221,10 @@ describe('infrastructure socket integration', () => {
                 await server.close();
             });
 
-            test('should resolve as no-op when client disconnects without decision', async () => {
+            test('should not resolve when client disconnects without decision', async () => {
                 const socketInfo = useTestSocket('ipc-decision-timeout');
                 const server = new PlandersonSocketServer(socketInfo.path);
                 await server.start('test plan');
-
-                const decisionPromise = server.waitForDecision(5); // 5 second timeout
 
                 const client = net.connect(socketInfo.path);
                 await new Promise((resolve) => client.on('connect', resolve));
@@ -237,8 +235,12 @@ describe('infrastructure socket integration', () => {
                 // Client disconnects without sending decision
                 client.destroy();
 
-                const decision = await decisionPromise;
-                expect(decision.type).toBe('no-op');
+                // waitForDecision should still be pending after a brief wait
+                const raceResult = await Promise.race([
+                    server.waitForDecision(5),
+                    new Promise((resolve) => setTimeout(() => resolve('still-waiting'), 200)),
+                ]);
+                expect(raceResult).toBe('still-waiting');
 
                 await server.close();
             });
