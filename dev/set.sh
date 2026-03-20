@@ -31,7 +31,7 @@ echo "✓ Symlinked $BIN_DIR/planderson → $WRAPPER"
 # Write dev config so getPlandersonBaseDir() uses this worktree regardless of which binary runs
 mkdir -p "$HOME/.planderson"
 printf '{\n    "baseDir": "%s"\n}\n' "$REPO_ROOT" > "$HOME/.planderson/dev.json"
-echo "✓ Created $HOME/.planderson/dev.json"
+echo "✓ Created $HOME/.planderson/dev.json (baseDir: $REPO_ROOT)"
 
 # Create local settings.json if it doesn't exist
 if [ ! -f "$SETTINGS_FILE" ]; then
