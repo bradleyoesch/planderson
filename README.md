@@ -14,12 +14,10 @@ The goal is to provide a lightweight TUI to bridge the gap between "pure" termin
 
 ## Prerequisites
 
-- **tmux 3.2+**
-- **macOS or Linux**
+- **macOS or Linux** (has not been tested on Windows)
+- **tmux 3.0+** (optional, for [tmux integration](./integrations/tmux/README.md))
 
 ## Installation
-
-Install as a Claude Code plugin — see [plugin/README.md](./plugin/README.md) for the full install and usage guide.
 
 1. **Install the binary:**
 
@@ -38,7 +36,7 @@ Install as a Claude Code plugin — see [plugin/README.md](./plugin/README.md) f
 
 ## Usage
 
-When the TUI launches, use these controls:
+Basic controls while in the plan TUI:
 
 | Key                | Action                         |
 | ------------------ | ------------------------------ |
@@ -46,12 +44,45 @@ When the TUI launches, use these controls:
 | Shift+up/down keys | Multi-select lines             |
 | `c`                | Add a comment to a line        |
 | `q`                | Add a question to a line       |
-| `x`                | Mark a line for deletion       |
-| **Enter**          | Accept plan                    |
-| **Esc**            | Deny plan                      |
+| `Delete`           | Mark a line for deletion       |
+| **Enter**          | Submit feedback or approve     |
+| **Esc**            | Exit TUI                       |
 | **?**              | Show full keybinding reference |
 
-See [plugin/README.md](./plugin/README.md) for the complete usage.
+1. Move up and down the plan to review.
+2. Add comments and questions, delete and undelete lines or blocks
+3. Hit `Enter` to submit that feedback and wait for Claude to modify plan
+   If no feedback has been submitted, `Enter` will approve the plan
+
+For details and more keybindings, run `planderson help` or hit `?` while in the TUI.
+
+## Manual launch
+
+Without any further setup or integrations (as described in the next section), you may manually trigger the plan TUI. After Claude presents the plan to review, in a separate terminal, launch the TUI:
+
+```bash
+planderson tui
+```
+
+## Recommended setup
+
+### Tmux integration
+
+For more control and seamless integration, setup with tmux: [integrations/tmux/README.md](./integrations/tmux/README.md).
+
+### Approve and clear context
+
+Claude does not currently support programmatically approving a plan and clearing context, e.g. "Yes, clear context and auto-accept edits".
+
+If you'd like to avoid accidentally approving a plan without clearing context, you may change the default action on approve to simply exit so you can trigger that manually. You may also exit as usual with other keybindings.
+
+Set `approveAction` setting to `exit`:
+
+```bash
+planderson settings --approveAction exit
+```
+
+For details, run `planderson settings --approveAction`
 
 ## Development
 

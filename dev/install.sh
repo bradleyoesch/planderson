@@ -117,14 +117,8 @@ echo '           ]'
 echo '       }'
 echo '   }'
 echo -e "${NC}"
-echo -e "${BOLD}2. Configure tmux Keybinding (Optional)${NC}"
-echo -e "   Add this line to your ${YELLOW}~/.tmux.conf${NC}:"
-echo ""
-echo -e "   ${CYAN}bind-key g run-shell 'planderson tmux'${NC}"
-echo ""
-echo "   Then reload tmux config:"
-echo ""
-echo -e "   ${CYAN}tmux source-file ~/.tmux.conf${NC}"
+echo -e "${BOLD}2. For recommended setup and next steps, see:${NC}"
+echo -e "   ${YELLOW}./README.md#recommended-setup${NC}"
 echo ""
 
 if ! echo "$PATH" | tr ':' '\n' | grep -qx "$BIN_DIR"; then
@@ -140,4 +134,4 @@ if ! echo "$PATH" | tr ':' '\n' | grep -qx "$BIN_DIR"; then
     echo ""
 fi
 
-echo -e "For more details, see: ${YELLOW}$PROJECT_ROOT/dev/INSTALL.md${NC}"
+echo -e "For more details, see: ${YELLOW}./dev/INSTALL.md${NC}"
