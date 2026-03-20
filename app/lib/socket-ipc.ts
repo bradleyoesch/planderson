@@ -234,6 +234,13 @@ export class PlandersonSocketServer {
             // Clear active socket when connection closes — decisionResolve is intentionally
             // left non-null so the server can accept a new connection and decision.
             this.activeSocket = null;
+
+            if (this.sessionEngaged) {
+                // Clean disconnect after get_plan with no decision sent. At the socket level,
+                // intentional quit (:q, Escape) and signal/crash (ctrl-c, unhandled exception)
+                // are indistinguishable — both result in a clean FIN with no error event.
+                logRawError('TUI disconnected without sending a decision');
+            }
             this.sessionEngaged = false;
         });
     }
