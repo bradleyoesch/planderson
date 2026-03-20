@@ -179,6 +179,36 @@ describe('config settings', () => {
         });
     });
 
+    describe('dev.json override', () => {
+        test('reads settings from dev.json baseDir when dev.json exists', () => {
+            const customBase = path.join(tempHomeDir, 'custom-worktree');
+            fs.mkdirSync(customBase, { recursive: true });
+            fs.writeFileSync(
+                path.join(tempHomeDir, '.planderson', 'dev.json'),
+                JSON.stringify({ baseDir: customBase }),
+            );
+            fs.writeFileSync(path.join(customBase, 'settings.json'), JSON.stringify({ launchMode: 'auto-tmux' }));
+
+            const result = settings.loadSettings(testSessionId);
+            expect(result.launchMode).toBe('auto-tmux');
+        });
+
+        test('ignores ~/.planderson/settings.json when dev.json points elsewhere', () => {
+            fs.writeFileSync(settingsPath, JSON.stringify({ launchMode: 'auto-tmux' }));
+
+            const customBase = path.join(tempHomeDir, 'custom-worktree');
+            fs.mkdirSync(customBase, { recursive: true });
+            fs.writeFileSync(
+                path.join(tempHomeDir, '.planderson', 'dev.json'),
+                JSON.stringify({ baseDir: customBase }),
+            );
+            // no settings.json in customBase
+
+            const result = settings.loadSettings(testSessionId);
+            expect(result).toEqual(DEFAULT_SETTINGS);
+        });
+    });
+
     describe('launchMode setting', () => {
         test('defaults to manual when not specified', () => {
             fs.writeFileSync(settingsPath, JSON.stringify({}));
