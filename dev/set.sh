@@ -58,7 +58,7 @@ cat > "$CONFIG_FILE" << TMUXCONF
 # Generated: $(date)
 
 bind-key g run-shell "planderson tmux"
-bind-key t run-shell "planderson tmux --filepath dev/plan-test.md"
+bind-key t run-shell "PLANDERSON_FORCE_UPDATE_VERSION=9.9.9 planderson tmux --filepath dev/plan-test.md"
 TMUXCONF
 
 tmux source-file "$CONFIG_FILE"
