@@ -190,7 +190,7 @@ Error: Connection refused
 
 ### Via GitHub UI (recommended)
 
-Go to **Actions → Release (Dispatch) → Run workflow**, pick `patch`, `minor`, or `major`, and click Run. The workflow bumps the version, commits, and pushes a tag. The existing `release.yml` triggers on the tag and handles building binaries and creating the GitHub Release.
+Go to [**Actions → Release (Dispatch) → Run workflow**](https://github.com/bradleyoesch/planderson/actions/workflows/release-dispatch.yml), pick `patch`, `minor`, or `major`, and click Run. The workflow bumps the version, commits, and pushes a tag. The existing `release.yml` triggers on the tag and handles building binaries and creating the GitHub Release.
 
 ### Locally
 
