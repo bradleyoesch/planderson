@@ -38,21 +38,21 @@ The goal is to provide a lightweight TUI to bridge the gap between "pure" termin
 
 Basic controls while in the plan TUI:
 
-| Key                | Action                         |
-| ------------------ | ------------------------------ |
-| Up/down keys       | Navigate lines                 |
-| Shift+up/down keys | Multi-select lines             |
-| `c`                | Add a comment to a line        |
-| `q`                | Add a question to a line       |
-| `Delete`           | Mark a line for deletion       |
-| **Enter**          | Submit feedback or approve     |
-| **Esc**            | Exit TUI                       |
-| **?**              | Show full keybinding reference |
+| Key                     | Action                         |
+| ----------------------- | ------------------------------ |
+| `Up`/`Down`             | Navigate lines                 |
+| `Shift+Up`/`Shift+Down` | Multi-select lines             |
+| `c`                     | Add comment                    |
+| `q`                     | Add question                   |
+| `Delete`                | Mark line for deletion         |
+| `Enter`                 | Submit feedback or approve     |
+| `Esc`                   | Exit TUI                       |
+| `?`                     | Show full keybinding reference |
 
 1. Move up and down the plan to review.
 2. Add comments and questions, delete and undelete lines or blocks
-3. Hit `Enter` to submit that feedback and wait for Claude to modify plan
-   If no feedback has been submitted, `Enter` will approve the plan
+3. Hit `Enter` to submit that feedback and wait for Claude to modify plan to iterate again
+   If no feedback to submit, `Enter` will approve the plan
 
 For details and more keybindings, run `planderson help` or hit `?` while in the TUI.
 
