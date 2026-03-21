@@ -64,12 +64,6 @@ Without any further setup or integrations (as described in the next section), yo
 planderson tui
 ```
 
-## Upgrading
-
-```bash
-planderson upgrade
-```
-
 ## Recommended setup
 
 ### Tmux integration
@@ -89,6 +83,14 @@ planderson settings --approveAction exit
 ```
 
 For details, run `planderson settings --approveAction`
+
+## Upgrading
+
+To upgrade to latest version, run:
+
+```bash
+planderson upgrade
+```
 
 ## Development
 
