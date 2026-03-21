@@ -1,0 +1,39 @@
+name: Release (Dispatch)
+
+on:
+    workflow_dispatch:
+        inputs:
+            bump_type:
+                description: Version bump type
+                type: choice
+                options:
+                    - patch
+                    - minor
+                    - major
+                required: true
+
+permissions:
+    contents: write
+
+jobs:
+    bump-and-tag:
+        name: Bump version and push tag
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v5
+              with:
+                  token: ${{ secrets.BOT_PAT }}
+                  fetch-depth: 0
+
+            - name: Configure git
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "github-actions[bot]@users.noreply.github.com"
+
+            - name: Bump version and tag
+              run: |
+                  npm version ${{ inputs.bump_type }} -m "chore(release): v%s"
+
+            - name: Push commit and tag
+              run: git push --follow-tags
