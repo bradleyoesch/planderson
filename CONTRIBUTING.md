@@ -188,6 +188,12 @@ Error: Connection refused
 
 ## Releasing
 
+### Via GitHub UI (recommended)
+
+Go to **Actions → Release (Dispatch) → Run workflow**, pick `patch`, `minor`, or `major`, and click Run. The workflow bumps the version, commits, and pushes a tag. The existing `release.yml` triggers on the tag and handles building binaries and creating the GitHub Release.
+
+### Locally
+
 Run one of the following to bump the version, commit, tag, and push:
 
 ```bash
