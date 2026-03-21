@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 import { debounce } from '~/utils/debounce';
 import { logEvent } from '~/utils/io/logger';
@@ -8,7 +8,7 @@ interface TerminalContextValue {
     terminalWidth: number;
 }
 
-const TerminalContext = React.createContext<TerminalContextValue | null>(null);
+const TerminalContext = createContext<TerminalContextValue | null>(null);
 
 interface TerminalProviderProps {
     children: React.ReactNode;
@@ -82,7 +82,7 @@ export const TerminalProvider: React.FC<TerminalProviderProps> = ({
  * For viewport height (content area), use state.viewportHeight from PlanView state
  */
 export const useTerminal = (): TerminalContextValue => {
-    const context = React.useContext(TerminalContext);
+    const context = useContext(TerminalContext);
     if (!context) {
         throw new Error('useTerminal must be used within a TerminalProvider');
     }

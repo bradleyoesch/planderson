@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useReducer, useState } from 'react';
 
 import { currentVersion, fetchLatestVersion, isNewerVersion } from '~/commands/upgrade';
 import { useTerminal } from '~/contexts/TerminalContext';
@@ -24,14 +24,14 @@ export interface PlanViewStaticContextValue {
     onCancel: () => void;
 }
 
-export const PlanViewStaticContext = React.createContext<PlanViewStaticContextValue | null>(null);
+export const PlanViewStaticContext = createContext<PlanViewStaticContextValue | null>(null);
 
 /**
  * Hook to access static context
  * Throws if used outside provider
  */
 export const usePlanViewStaticContext = (): PlanViewStaticContextValue => {
-    const context = React.useContext(PlanViewStaticContext);
+    const context = useContext(PlanViewStaticContext);
     if (!context) {
         throw new Error('usePlanViewStaticContext must be used within PlanViewProvider');
     }
@@ -46,14 +46,14 @@ export interface PlanViewDynamicContextValue {
     dispatch: React.Dispatch<PlanViewAction>;
 }
 
-export const PlanViewDynamicContext = React.createContext<PlanViewDynamicContextValue | null>(null);
+export const PlanViewDynamicContext = createContext<PlanViewDynamicContextValue | null>(null);
 
 /**
  * Hook to access dynamic context
  * Throws if used outside provider
  */
 export const usePlanViewDynamicContext = (): PlanViewDynamicContextValue => {
-    const context = React.useContext(PlanViewDynamicContext);
+    const context = useContext(PlanViewDynamicContext);
     if (!context) {
         throw new Error('usePlanViewDynamicContext must be used within PlanViewProvider');
     }
@@ -84,14 +84,14 @@ export const PlanViewProvider: React.FC<PlanViewProviderProps> = ({
     onCancel,
 }) => {
     const { terminalWidth, terminalHeight } = useTerminal();
-    const [state, dispatch] = React.useReducer(planViewReducer, terminalHeight, (height) => ({
+    const [state, dispatch] = useReducer(planViewReducer, terminalHeight, (height) => ({
         ...createInitialState(),
         viewportHeight: calculateViewportHeight('plan', height),
     }));
 
-    const [latestVersion, setLatestVersion] = React.useState<string | null>(null);
+    const [latestVersion, setLatestVersion] = useState<string | null>(null);
 
-    React.useEffect(() => {
+    useEffect(() => {
         fetchLatestVersion()
             .then((v) => {
                 if (v && isNewerVersion(v, currentVersion)) setLatestVersion(v);
@@ -100,7 +100,7 @@ export const PlanViewProvider: React.FC<PlanViewProviderProps> = ({
     }, []);
 
     // Memoize static context - recalculates when content or terminal width changes
-    const staticValue: PlanViewStaticContextValue = React.useMemo(() => {
+    const staticValue: PlanViewStaticContextValue = useMemo(() => {
         const paddingX = 1;
         // Strip a single trailing newline so files ending with \n (standard for editors)
         // don't produce a ghost empty line that the cursor can navigate to.
@@ -124,7 +124,7 @@ export const PlanViewProvider: React.FC<PlanViewProviderProps> = ({
     }, [sessionId, content, terminalWidth, latestVersion, onShowHelp, onApprove, onDeny, onCancel]);
 
     // Memoize dynamic context - only changes when state/dispatch changes
-    const dynamicValue = React.useMemo(() => ({ state, dispatch }), [state, dispatch]);
+    const dynamicValue = useMemo(() => ({ state, dispatch }), [state, dispatch]);
 
     return (
         <PlanViewStaticContext.Provider value={staticValue}>

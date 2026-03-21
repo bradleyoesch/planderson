@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createContext, useContext } from 'react';
 
 import { Settings } from '~/utils/config/settings';
 
@@ -6,14 +6,14 @@ interface SettingsContextValue {
     settings: Settings;
 }
 
-const SettingsContext = React.createContext<SettingsContextValue | null>(null);
+const SettingsContext = createContext<SettingsContextValue | null>(null);
 
 /**
  * Hook to access settings from any component
  * Throws if used outside SettingsProvider
  */
 export const useSettings = (): SettingsContextValue => {
-    const context = React.useContext(SettingsContext);
+    const context = useContext(SettingsContext);
     if (!context) {
         throw new Error('useSettings must be used within SettingsProvider');
     }

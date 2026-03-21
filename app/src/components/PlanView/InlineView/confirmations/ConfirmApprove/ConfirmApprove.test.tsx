@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test';
 import { render as inkRender } from 'ink-testing-library';
-import React from 'react';
+import React, { useLayoutEffect } from 'react';
 
 const stripAnsi = (str: string) => str.replaceAll(/\x1b\[[\d;]*m/g, '');
 
@@ -40,7 +40,7 @@ const renderWithState = (
 
     const StateInit: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         const { dispatch } = usePlanViewDynamicContext();
-        React.useLayoutEffect(() => {
+        useLayoutEffect(() => {
             actions.forEach((action) => dispatch(action));
         }, []);
         return <>{children}</>;
