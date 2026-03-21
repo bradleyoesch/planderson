@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test';
 import { render as inkRender } from 'ink-testing-library';
 import React from 'react';
 
-import { PlanViewProvider } from '~/contexts/PlanViewProvider';
+import { PlanViewProvider, PlanViewStaticContext, PlanViewStaticContextValue } from '~/contexts/PlanViewProvider';
 import { SettingsProvider } from '~/contexts/SettingsContext';
 import { TerminalProvider } from '~/contexts/TerminalContext';
 import { normalizeSnapshot, testAtAllWidths } from '~/test-utils/snapshot-helpers';
@@ -11,6 +11,18 @@ import { DEFAULT_SETTINGS } from '~/utils/config/settings';
 import { InlineView } from './InlineView';
 
 const NOOP = () => {};
+
+const BASE_STATIC_CONTEXT: PlanViewStaticContextValue = {
+    sessionId: 'test-session',
+    contentLines: [],
+    wrappedLines: [],
+    paddingX: 1,
+    latestVersion: null,
+    onShowHelp: NOOP,
+    onApprove: NOOP,
+    onDeny: NOOP,
+    onCancel: NOOP,
+};
 
 describe('InlineView snapshots', () => {
     // Helper factory to create width-aware render function
@@ -52,6 +64,32 @@ describe('InlineView snapshots', () => {
             </SettingsProvider>
         </TerminalProvider>
     );
+
+    test('snapshot: plan mode no update', () => {
+        const { lastFrame } = render(
+            <InlineView mode="plan" commandText="" currentQuestionText="" currentCommentText="" inputCursor={0} />,
+        );
+        expect(normalizeSnapshot(lastFrame())).toMatchSnapshot();
+    });
+
+    test('snapshot: plan mode with update available', () => {
+        const { lastFrame } = inkRender(
+            <TerminalProvider terminalWidth={80} terminalHeight={24}>
+                <SettingsProvider settings={DEFAULT_SETTINGS}>
+                    <PlanViewStaticContext.Provider value={{ ...BASE_STATIC_CONTEXT, latestVersion: '9.9.9' }}>
+                        <InlineView
+                            mode="plan"
+                            commandText=""
+                            currentQuestionText=""
+                            currentCommentText=""
+                            inputCursor={0}
+                        />
+                    </PlanViewStaticContext.Provider>
+                </SettingsProvider>
+            </TerminalProvider>,
+        );
+        expect(normalizeSnapshot(lastFrame())).toMatchSnapshot();
+    });
 
     test('snapshot: command mode', () => {
         const { lastFrame } = render(

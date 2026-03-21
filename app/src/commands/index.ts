@@ -2,4 +2,4 @@ export { runHelp } from './help';
 export { runHook } from './hook';
 export { runSettings } from './settings';
 export { runTui } from './tui';
-export { runUpdate } from './update';
+export { runUpgrade } from './upgrade';

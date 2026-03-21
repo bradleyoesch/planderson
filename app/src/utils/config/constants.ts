@@ -15,6 +15,7 @@ export const COLORS = {
     CODE: '#aeb8fd', // Purple (matches TITLE) for inline code
     LINK: '#207fe6', // Blue for links
     H1_COLOR: '#8b8b8b', // Grey for H1 headings
+    UPDATE: '#ffbe00', // Amber for update notifications
 } as const;
 
 // Syntax highlighting colors for code blocks
