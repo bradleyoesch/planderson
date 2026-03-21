@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { currentVersion, fetchLatestVersion, isNewerVersion } from '~/commands/upgrade';
 import { useTerminal } from '~/contexts/TerminalContext';
 import { PlanViewAction } from '~/state/planViewActions';
 import { planViewReducer } from '~/state/planViewReducer';
@@ -16,6 +17,7 @@ export interface PlanViewStaticContextValue {
     contentLines: string[];
     wrappedLines: LineMetadata[];
     paddingX: number;
+    latestVersion: string | null;
     onShowHelp: () => void;
     onApprove: (message?: string, logMetadata?: string) => void;
     onDeny: (message?: string, logMetadata?: string) => void;
@@ -87,6 +89,16 @@ export const PlanViewProvider: React.FC<PlanViewProviderProps> = ({
         viewportHeight: calculateViewportHeight('plan', height),
     }));
 
+    const [latestVersion, setLatestVersion] = React.useState<string | null>(null);
+
+    React.useEffect(() => {
+        fetchLatestVersion()
+            .then((v) => {
+                if (v && isNewerVersion(v, currentVersion)) setLatestVersion(v);
+            })
+            .catch(() => {}); // silent on network failure
+    }, []);
+
     // Memoize static context - recalculates when content or terminal width changes
     const staticValue: PlanViewStaticContextValue = React.useMemo(() => {
         const paddingX = 1;
@@ -103,12 +115,13 @@ export const PlanViewProvider: React.FC<PlanViewProviderProps> = ({
             contentLines,
             wrappedLines,
             paddingX,
+            latestVersion,
             onShowHelp,
             onApprove,
             onDeny,
             onCancel,
         };
-    }, [sessionId, content, terminalWidth, onShowHelp, onApprove, onDeny, onCancel]);
+    }, [sessionId, content, terminalWidth, latestVersion, onShowHelp, onApprove, onDeny, onCancel]);
 
     // Memoize dynamic context - only changes when state/dispatch changes
     const dynamicValue = React.useMemo(() => ({ state, dispatch }), [state, dispatch]);

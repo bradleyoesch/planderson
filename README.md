@@ -34,6 +34,14 @@ The goal is to provide a lightweight TUI to bridge the gap between "pure" termin
 
 3. **Restart Claude Code.** Plugins need a restart to take effect.
 
+## Updating
+
+```bash
+planderson upgrade
+```
+
+The TUI also shows a notification in the footer when a newer version is available.
+
 ## Usage
 
 Basic controls while in the plan TUI:

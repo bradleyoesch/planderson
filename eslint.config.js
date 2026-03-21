@@ -238,9 +238,9 @@ export default [
     },
 
     // ===== CLI Entry Point Override =====
-    // app/src/cli.ts and app/src/commands/update.ts legitimately import from outside app/src/ (package.json)
+    // app/src/cli.ts and app/src/commands/upgrade.ts legitimately import from outside app/src/ (package.json)
     {
-        files: ['app/src/cli.ts', 'app/src/commands/update.ts'],
+        files: ['app/src/cli.ts', 'app/src/commands/upgrade.ts'],
         rules: {
             'no-restricted-imports': 'off',
         },

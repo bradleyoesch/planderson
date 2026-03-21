@@ -1,4 +1,3 @@
-import { Text } from 'ink';
 import React from 'react';
 
 import { PlanViewMode } from '~/utils/config/constants';
@@ -9,6 +8,7 @@ import { ConfirmDeny } from './confirmations/ConfirmDeny';
 import { CommandInput } from './inputs/CommandInput';
 import { CommentInput } from './inputs/CommentInput';
 import { QuestionInput } from './inputs/QuestionInput';
+import { PlanFooter } from './PlanFooter';
 
 // Maximum height when inline mode is active (single line for command/input)
 export const MAX_INLINE_HEIGHT = 1;
@@ -30,8 +30,8 @@ export const InlineView: React.FC<InlineViewProps> = ({
 }) => {
     switch (mode) {
         case 'plan':
-            // Normal plan view - show default footer (single blank line)
-            return <Text> </Text>;
+            // Normal plan view - show update notification if available, otherwise blank line via layout
+            return <PlanFooter />;
         case 'help':
             // Help mode is handled by PlanView directly (renders HelpView)
             // Return null since no inline footer is needed

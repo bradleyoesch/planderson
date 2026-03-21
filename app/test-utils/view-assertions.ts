@@ -127,6 +127,13 @@ export const isShowingDenialConfirmation = function (frame: string): boolean {
 };
 
 /**
+ * Check if the update notification is visible in the footer
+ */
+export const hasUpdateNotification = function (frame: string): boolean {
+    return stripAnsi(frame).includes('planderson upgrade');
+};
+
+/**
  * Get the view header text (e.g., "Review Plan", "Help", "Error")
  */
 export const getViewHeader = function (frame: string): string | null {
