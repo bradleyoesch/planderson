@@ -9,7 +9,7 @@ export const PlanFooter: React.FC = () => {
     if (!latestVersion) return null;
     return (
         <Box justifyContent="flex-end">
-            <Text color={COLORS.MUTED}>
+            <Text color={COLORS.MUTED} wrap="truncate">
                 Update available! Run: <Text bold>planderson upgrade</Text>
             </Text>
         </Box>
