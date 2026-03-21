@@ -29,6 +29,7 @@ export const buildHelpText = (): string => {
             '  tui       Launch the plan viewer TUI',
             '  settings  View and update settings',
             '  tmux      Replaces current pane with TUI and restores on exit',
+            '  upgrade   Upgrade planderson to the latest version',
         ]),
     );
 

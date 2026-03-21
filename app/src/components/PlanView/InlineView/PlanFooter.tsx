@@ -8,7 +8,7 @@ export const PlanFooter: React.FC = () => {
     const { latestVersion } = usePlanViewStaticContext();
     if (!latestVersion) return null;
     return (
-        <Box justifyContent="flex-end">
+        <Box justifyContent="flex-end" paddingX={1}>
             <Text color={COLORS.MUTED} wrap="truncate">
                 Update available! Run: <Text bold>planderson upgrade</Text>
             </Text>

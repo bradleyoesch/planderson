@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test';
 import { render as inkRender } from 'ink-testing-library';
-import React from 'react';
+import React, { useLayoutEffect } from 'react';
 
 import { PlanViewProvider, usePlanViewDynamicContext } from '~/contexts/PlanViewProvider';
 import { TerminalProvider } from '~/contexts/TerminalContext';
@@ -13,7 +13,7 @@ const stripAnsi = (str: string) => str.replaceAll(/\x1b\[[\d;]*m/g, '');
 const renderWithIndex = (confirmSelectedIndex: 0 | 1 = 0) => {
     const StateInit: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         const { dispatch } = usePlanViewDynamicContext();
-        React.useLayoutEffect(() => {
+        useLayoutEffect(() => {
             if (confirmSelectedIndex === 1) {
                 dispatch({ type: 'MOVE_CONFIRM_SELECTION', direction: 'down' });
             }
