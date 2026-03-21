@@ -92,11 +92,6 @@ export const PlanViewProvider: React.FC<PlanViewProviderProps> = ({
     const [latestVersion, setLatestVersion] = React.useState<string | null>(null);
 
     React.useEffect(() => {
-        const forced = process.env.PLANDERSON_FORCE_UPDATE_VERSION;
-        if (forced) {
-            setLatestVersion(forced);
-            return;
-        }
         fetchLatestVersion()
             .then((v) => {
                 if (v && v !== currentVersion) setLatestVersion(v);

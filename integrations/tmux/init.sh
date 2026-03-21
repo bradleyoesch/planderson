@@ -99,11 +99,6 @@ if [ -n "$FILEPATH" ]; then
     PLANDERSON_COMMAND="$PLANDERSON_COMMAND $FILEPATH"
 fi
 
-# Propagate dev env vars into the command so they survive tmux respawn-pane
-if [ -n "${PLANDERSON_FORCE_UPDATE_VERSION:-}" ]; then
-    PLANDERSON_COMMAND="env PLANDERSON_FORCE_UPDATE_VERSION=$PLANDERSON_FORCE_UPDATE_VERSION $PLANDERSON_COMMAND"
-fi
-
 ACTIVITY_LOG="$PLANDERSON_DIR/logs/activity.log"
 mkdir -p "$(dirname "$ACTIVITY_LOG")"
 
