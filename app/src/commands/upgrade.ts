@@ -6,6 +6,14 @@ export const currentVersion = version;
 
 export const stripVersionPrefix = (tag: string): string => tag.replace(/^v/, '');
 
+export const isNewerVersion = (latest: string, current: string): boolean => {
+    const [lMaj, lMin, lPat] = latest.split('.').map(Number);
+    const [cMaj, cMin, cPat] = current.split('.').map(Number);
+    if (lMaj !== cMaj) return lMaj > cMaj;
+    if (lMin !== cMin) return lMin > cMin;
+    return lPat > cPat;
+};
+
 export const fetchLatestVersion = async (): Promise<string | null> => {
     const res = await fetch('https://github.com/bradleyoesch/planderson/releases/latest');
     const tag = res.url.split('/').pop();

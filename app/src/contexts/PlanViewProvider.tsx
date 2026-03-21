@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { currentVersion, fetchLatestVersion } from '~/commands/upgrade';
+import { currentVersion, fetchLatestVersion, isNewerVersion } from '~/commands/upgrade';
 import { useTerminal } from '~/contexts/TerminalContext';
 import { PlanViewAction } from '~/state/planViewActions';
 import { planViewReducer } from '~/state/planViewReducer';
@@ -94,7 +94,7 @@ export const PlanViewProvider: React.FC<PlanViewProviderProps> = ({
     React.useEffect(() => {
         fetchLatestVersion()
             .then((v) => {
-                if (v && v !== currentVersion) setLatestVersion(v);
+                if (v && isNewerVersion(v, currentVersion)) setLatestVersion(v);
             })
             .catch(() => {}); // silent on network failure
     }, []);
