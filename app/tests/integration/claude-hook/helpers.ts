@@ -21,7 +21,10 @@ export const HOOK_PATH = path.join(__dirname, '../../../src/commands/hook.ts');
  * The temp HOME directory is auto-cleaned after each test.
  *
  * Defaults: TMUX and TMUX_PANE are cleared to prevent tmux auto-launch.
- * Override via extraEnv to test tmux-specific behavior.
+ * PLANDERSON_STDIN_TIMEOUT_MS is set to 1000ms so that if the stdin 'end' event
+ * is missed in CI (a bun subprocess timing edge case), the hook falls back quickly
+ * rather than waiting the full 5s, preventing test timeouts.
+ * Override via extraEnv to test specific behavior.
  */
 export const spawnHook = (extraEnv: Record<string, string | undefined> = {}, baseDir?: string): HookProcess => {
     const fakeHome = fs.mkdtempSync(path.join(os.tmpdir(), 'planderson-test-home-'));
@@ -43,6 +46,7 @@ export const spawnHook = (extraEnv: Record<string, string | undefined> = {}, bas
             HOME: fakeHome,
             TMUX: undefined,
             TMUX_PANE: undefined,
+            PLANDERSON_STDIN_TIMEOUT_MS: '1000',
             ...extraEnv,
         },
     }) as HookProcess;

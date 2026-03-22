@@ -23,7 +23,10 @@ const DEFAULT_TIMEOUT_SECONDS =
         ? Number.parseInt(process.env.PLANDERSON_TIMEOUT_SECONDS, 10)
         : 900;
 const MAX_STDIN_BYTES = 10 * 1024 * 1024; // 10MB limit
-const STDIN_TIMEOUT_MS = 5000; // 5 second timeout for reading stdin
+const STDIN_TIMEOUT_MS =
+    process.env.PLANDERSON_STDIN_TIMEOUT_MS !== undefined && process.env.PLANDERSON_STDIN_TIMEOUT_MS !== ''
+        ? Number.parseInt(process.env.PLANDERSON_STDIN_TIMEOUT_MS, 10)
+        : 5000;
 const MAX_SOCKET_PATH_LENGTH = 104; // macOS/BSD limit for Unix domain sockets
 
 // Zod schemas for runtime validation
