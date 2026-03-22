@@ -78,6 +78,7 @@ export interface FeedbackMetadata {
     text: string; // Original feedback text
     segments: WrappedSegment[]; // Wrapped segments
     type: 'comment' | 'question';
+    prefix: string; // '💬\u00A0' or '❔\u00A0' (non-breaking space keeps emoji+text together)
 }
 
 /**
@@ -486,16 +487,22 @@ export const wrapFeedback = (
     const result: FeedbackMetadata[] = [];
 
     const effectiveWidth = terminalWidth - paddingX * 2;
-    const prefix = type === 'comment' ? '💬' : '❔';
+    // \u00A0 (non-breaking space) prevents wrapLine from word-breaking between emoji and text
+    const prefix = type === 'comment' ? '💬\u00A0' : '❔\u00A0';
 
     feedback.forEach((entry, lineIndex) => {
-        const segments = wrapLine(`${prefix} ${entry.text}`, effectiveWidth);
-        // Feedback appears above the anchor line only (not all lines in range)
+        // Include prefix in the wrapped string so wrapLine accounts for its visual width,
+        // then strip it from the first segment so consumers get clean text content.
+        const rawSegments = wrapLine(`${prefix}${entry.text}`, effectiveWidth);
+        const segments = rawSegments.map((seg, i) =>
+            i === 0 ? { ...seg, content: seg.content.slice(prefix.length) } : seg,
+        );
         result.push({
             lineIndex,
             text: entry.text,
             segments,
             type,
+            prefix,
         });
     });
 

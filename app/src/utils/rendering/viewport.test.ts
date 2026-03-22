@@ -232,8 +232,8 @@ describe('rendering viewport', () => {
 
         test('counts wrapped feedback as multiple terminal lines', () => {
             // Long feedback wraps - verify counting uses actual terminal lines not logical lines
-            // With word-wrap: '💬 ' goes on line 1, then 120 A's char-wrap at effective width 38
-            // line 1: '💬 ', line 2-4: 38 A's each, line 5: 6 A's (120 - 3*38 = 6) → 5 total
+            // '💬\u00A0' (width 3) + 120 A's char-wraps at effective width 38:
+            // segment 0: 35 A's, segment 1: 38 A's, segment 2: 38 A's, segment 3: 9 A's → 4 total
             const longComment = 'A'.repeat(120);
             const comments = new Map<number, FeedbackEntry>([[0, { text: longComment, lines: [0] }]]);
             const questions = new Map<number, FeedbackEntry>();
@@ -245,14 +245,13 @@ describe('rendering viewport', () => {
                 wrapFeedback(questions, 'question', 40, 1),
             );
 
-            // Should count actual terminal lines (5), not logical lines (1)
-            expect(count).toBe(5);
+            // Should count actual terminal lines (4), not logical lines (1)
+            expect(count).toBe(4);
         });
 
         test('counts multiple wrapped feedback items independently', () => {
-            // With word-wrap: prefix alone on line 1, then A's/B's char-wrap at effective 38
-            // 80 A's: line 1 '💬 ', line 2: 38 A's, line 3: 38 A's, line 4: 4 A's → 4 lines
-            // 80 B's: same → 4 lines
+            // '💬\u00A0' (width 3) + 80 A's: segment 0: 35 A's, segment 1: 38 A's, segment 2: 7 A's → 3 lines
+            // '❔\u00A0' (width 3) + 80 B's: same → 3 lines
             const longComment = 'A'.repeat(80);
             const longQuestion = 'B'.repeat(80);
             const comments = new Map<number, FeedbackEntry>([[0, { text: longComment, lines: [0] }]]);
@@ -265,7 +264,7 @@ describe('rendering viewport', () => {
                 wrapFeedback(questions, 'question', 40, 1),
             );
 
-            expect(count).toBe(8); // 4 + 4
+            expect(count).toBe(6); // 3 + 3
         });
     });
 });

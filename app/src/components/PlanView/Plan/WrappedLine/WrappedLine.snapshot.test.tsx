@@ -305,6 +305,7 @@ describe('WrappedLine snapshots', () => {
                 { content: 'multiple lines to test the wrapping behavior', segmentIndex: 1 },
             ],
             type: 'comment',
+            prefix: '💬\u00A0',
         };
 
         const { lastFrame } = render(<WrappedFeedback feedback={feedback} />);
@@ -321,6 +322,7 @@ describe('WrappedLine snapshots', () => {
                 { content: 'instead of a simpler alternative?', segmentIndex: 1 },
             ],
             type: 'question',
+            prefix: '❔\u00A0',
         };
 
         const { lastFrame } = render(<WrappedFeedback feedback={feedback} />);

@@ -173,9 +173,10 @@ describe('rendering line-wrapping', () => {
                 lineIndex: 0,
                 text: 'Short comment',
                 type: 'comment',
+                prefix: '💬\u00A0',
             });
             expect(result[0].segments).toHaveLength(1);
-            expect(result[0].segments[0].content).toBe('💬 Short comment');
+            expect(result[0].segments[0].content).toBe('Short comment');
 
             // Long feedback - multiple segments
             expect(result[1].lineIndex).toBe(2);
@@ -187,16 +188,15 @@ describe('rendering line-wrapping', () => {
 
         test('accounts for emoji prefix width when wrapping', () => {
             // Width 40 - padding 2 = 38 effective
-            // With word-wrap: '💬 ' (space is a break char) → '💬 ' on line 1 (3 chars),
-            // then 73 A's char-wrap at full effective width 38: 38+38-3=35... wait:
-            // line 2: 38 A's, line 3: 35 A's → 3 total segments
+            // '💬\u00A0' (width 3) + 73 A's char-wraps at 38 visual:
+            // segment 0: '💬\u00A0' + 35 A's (width 38), segment 1: 38 A's → 2 total segments
             const text = createLongLine(73);
             const result = wrapFeedback(new Map([[0, { text, lines: [0] }]]), 'comment', 40, 1);
 
-            expect(result[0].segments).toHaveLength(3);
-            expect(result[0].segments[0].content).toBe('💬 '); // prefix alone on line 1
-            expect(result[0].segments[1].content).toHaveLength(38); // 38 A's
-            expect(result[0].segments[2].content).toHaveLength(35); // 35 A's (73 - 38 = 35)
+            expect(result[0].segments).toHaveLength(2);
+            // prefix (width 3) occupies first 3 visual cols, so segment 0 gets 35 A's
+            expect(result[0].segments[0].content).toHaveLength(35);
+            expect(result[0].segments[1].content).toHaveLength(38); // 73 - 35 = 38 A's
         });
 
         test('handles wide characters in feedback', () => {
@@ -205,6 +205,24 @@ describe('rendering line-wrapping', () => {
             const result = wrapFeedback(new Map([[0, { text: wideText, lines: [0] }]]), 'comment', 50, 1);
 
             expect(result[0].segments.length).toBeGreaterThan(1);
+        });
+
+        test('sets correct prefix for each type', () => {
+            const comment = wrapFeedback(new Map([[0, { text: 'Test', lines: [0] }]]), 'comment', 80, 1)[0];
+            const question = wrapFeedback(new Map([[0, { text: 'Test', lines: [0] }]]), 'question', 80, 1)[0];
+            expect(comment.prefix).toBe('💬\u00A0');
+            expect(question.prefix).toBe('❔\u00A0');
+        });
+
+        test('accounts for question prefix visual width (❔ is width 2, .length 1)', () => {
+            // ❔ has .length === 1 (BMP) but stringWidth === 2, so '❔\u00A0' is still width 3
+            // Same wrapping behavior as '💬\u00A0': segment 0 gets 35 A's, segment 1 gets 38
+            const text = createLongLine(73);
+            const result = wrapFeedback(new Map([[0, { text, lines: [0] }]]), 'question', 40, 1);
+
+            expect(result[0].segments).toHaveLength(2);
+            expect(result[0].segments[0].content).toHaveLength(35);
+            expect(result[0].segments[1].content).toHaveLength(38);
         });
 
         test('preserves feedback type and handles empty map', () => {

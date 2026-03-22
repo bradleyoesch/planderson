@@ -17,6 +17,7 @@ describe('WrappedLine', () => {
                 text: 'This is a comment',
                 segments: [{ content: 'This is a comment', segmentIndex: 0 }],
                 type: 'comment',
+                prefix: '💬\u00A0',
             };
 
             const { lastFrame } = render(<WrappedFeedback feedback={feedback} />);
@@ -33,6 +34,7 @@ describe('WrappedLine', () => {
                 text: 'Why is this here?',
                 segments: [{ content: 'Why is this here?', segmentIndex: 0 }],
                 type: 'question',
+                prefix: '❔\u00A0',
             };
 
             const { lastFrame } = render(<WrappedFeedback feedback={feedback} />);
@@ -53,6 +55,7 @@ describe('WrappedLine', () => {
                         { content: 'that wraps', segmentIndex: 1 },
                     ],
                     type: 'comment',
+                    prefix: '💬\u00A0',
                 };
 
                 const { lastFrame } = render(<WrappedFeedback feedback={feedback} />);
@@ -70,6 +73,7 @@ describe('WrappedLine', () => {
                         { content: ' line     ', segmentIndex: 1 },
                     ],
                     type: 'comment',
+                    prefix: '💬\u00A0',
                 };
 
                 const { lastFrame } = render(<WrappedFeedback feedback={feedback} />);
@@ -84,6 +88,7 @@ describe('WrappedLine', () => {
                     text: '',
                     segments: [{ content: '', segmentIndex: 0 }],
                     type: 'comment',
+                    prefix: '💬\u00A0',
                 };
 
                 const { lastFrame } = render(<WrappedFeedback feedback={feedback} />);

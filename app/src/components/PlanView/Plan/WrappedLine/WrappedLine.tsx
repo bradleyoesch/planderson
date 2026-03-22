@@ -15,17 +15,20 @@ interface WrappedFeedbackProps {
 
 /**
  * Component that renders wrapped feedback (comment or question) with proper styling.
- * Each segment is trimmed and joined with newlines to prevent trailing spaces.
+ * The emoji prefix renders non-italic; the remaining text renders italic.
+ * Each segment is trimmed and joined with newlines to prevent trailing spaces, e.g.
+ * |end of the|
+ * | line     |
  */
 export const WrappedFeedback: React.FC<WrappedFeedbackProps> = ({ feedback }) => {
     const color = feedback.type === 'comment' ? COLORS.ACCENT : COLORS.QUESTION;
+    const { prefix, segments } = feedback;
+    const italicContent = segments.map((s) => s.content.trim()).join('\n');
 
-    // Trim each segment so that wrapped spaces aren't rendered, e.g.
-    // |end of the|
-    // | line     |
     return (
-        <Text color={color} italic>
-            {feedback.segments.map((segment) => segment.content.trim()).join('\n')}
+        <Text color={color}>
+            <Text>{prefix}</Text>
+            <Text italic>{italicContent}</Text>
         </Text>
     );
 };
