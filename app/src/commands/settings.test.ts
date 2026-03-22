@@ -4,6 +4,7 @@ import * as os from 'os';
 import path from 'path';
 
 import { useTempDir } from '~/test-utils/fixtures';
+import { SETTINGS_DOCS } from '~/utils/config/settings';
 import { resetWriteFunction, setWriteFunction } from '~/utils/io/logger';
 
 import { runSettings } from './settings';
@@ -74,6 +75,25 @@ describe('commands settings', () => {
             run([]);
 
             expect(output()).toContain('To set a setting: `planderson settings --<key> <value>`');
+        });
+
+        test('all descriptions start at the same column', () => {
+            run([]);
+
+            const settingRows = output()
+                .split('\n')
+                .filter((line) => line.startsWith('  ') && !line.startsWith('  To ') && line.trim().length > 0);
+
+            const descriptionColumns = settingRows
+                .map((line) => {
+                    const doc = Object.values(SETTINGS_DOCS).find((d) => line.endsWith(d.description));
+                    if (!doc) return null;
+                    return line.lastIndexOf(doc.description);
+                })
+                .filter((col): col is number => col !== null);
+
+            expect(descriptionColumns.length).toBeGreaterThan(0);
+            expect(new Set(descriptionColumns).size).toBe(1);
         });
     });
 

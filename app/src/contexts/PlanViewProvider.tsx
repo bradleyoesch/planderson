@@ -1,10 +1,18 @@
 import React, { createContext, useContext, useEffect, useMemo, useReducer, useState } from 'react';
 
-import { currentVersion, fetchLatestVersion, isNewerVersion } from '~/commands/upgrade';
+import {
+    currentVersion,
+    fetchLatestVersion,
+    isNewerVersion,
+    runSilentUpgrade,
+    shouldAutoUpgrade,
+} from '~/commands/upgrade';
+import { useSettings } from '~/contexts/SettingsContext';
 import { useTerminal } from '~/contexts/TerminalContext';
 import { PlanViewAction } from '~/state/planViewActions';
 import { planViewReducer } from '~/state/planViewReducer';
 import { createInitialState, PlanViewState } from '~/state/planViewState';
+import { logEvent } from '~/utils/io/logger';
 import { LineMetadata, wrapContentWithFormatting } from '~/utils/rendering/line-wrapping';
 import { parseMarkdownDocument } from '~/utils/rendering/markdown/document-parser';
 import { calculateViewportHeight } from '~/utils/rendering/viewport';
@@ -18,6 +26,7 @@ export interface PlanViewStaticContextValue {
     wrappedLines: LineMetadata[];
     paddingX: number;
     latestVersion: string | null;
+    upgradedVersion: string | null;
     onShowHelp: () => void;
     onApprove: (message?: string, logMetadata?: string) => void;
     onDeny: (message?: string, logMetadata?: string) => void;
@@ -84,19 +93,35 @@ export const PlanViewProvider: React.FC<PlanViewProviderProps> = ({
     onCancel,
 }) => {
     const { terminalWidth, terminalHeight } = useTerminal();
+    const { settings } = useSettings();
     const [state, dispatch] = useReducer(planViewReducer, terminalHeight, (height) => ({
         ...createInitialState(),
         viewportHeight: calculateViewportHeight('plan', height),
     }));
 
     const [latestVersion, setLatestVersion] = useState<string | null>(null);
+    const [upgradedVersion, setUpgradedVersion] = useState<string | null>(null);
 
     useEffect(() => {
         fetchLatestVersion()
             .then((v) => {
-                if (v && isNewerVersion(v, currentVersion)) setLatestVersion(v);
+                if (v && isNewerVersion(v, currentVersion)) {
+                    if (shouldAutoUpgrade(settings.autoUpgradeVersion, v, currentVersion)) {
+                        runSilentUpgrade()
+                            .then((result) => {
+                                if (result === 'success') {
+                                    setUpgradedVersion(v);
+                                    logEvent(__filename, sessionId, 'upgrade.auto', `version=${v}`);
+                                }
+                            })
+                            .catch(() => {});
+                    } else if (settings.autoUpgradeVersion === 'none') {
+                        setLatestVersion(v);
+                    }
+                }
             })
             .catch(() => {}); // silent on network failure
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Memoize static context - recalculates when content or terminal width changes
@@ -116,12 +141,13 @@ export const PlanViewProvider: React.FC<PlanViewProviderProps> = ({
             wrappedLines,
             paddingX,
             latestVersion,
+            upgradedVersion,
             onShowHelp,
             onApprove,
             onDeny,
             onCancel,
         };
-    }, [sessionId, content, terminalWidth, latestVersion, onShowHelp, onApprove, onDeny, onCancel]);
+    }, [sessionId, content, terminalWidth, latestVersion, upgradedVersion, onShowHelp, onApprove, onDeny, onCancel]);
 
     // Memoize dynamic context - only changes when state/dispatch changes
     const dynamicValue = useMemo(() => ({ state, dispatch }), [state, dispatch]);

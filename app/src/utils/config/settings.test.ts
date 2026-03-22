@@ -67,6 +67,7 @@ describe('config settings', () => {
             const result = settings.loadSettings(testSessionId);
             expect(result).toEqual({
                 approveAction: 'exit',
+                autoUpgradeVersion: 'none',
                 launchMode: 'manual',
             });
         });
@@ -145,6 +146,7 @@ describe('config settings', () => {
             const result = settings.loadSettings(testSessionId);
             expect(result).toEqual({
                 approveAction: 'exit',
+                autoUpgradeVersion: 'none',
                 launchMode: 'manual',
             });
             expect(result).not.toHaveProperty('unknownField');
@@ -167,6 +169,7 @@ describe('config settings', () => {
         test('has expected default values', () => {
             expect(DEFAULT_SETTINGS).toEqual({
                 approveAction: 'approve',
+                autoUpgradeVersion: 'none',
                 launchMode: 'manual',
             });
         });
@@ -271,6 +274,29 @@ describe('config settings', () => {
         });
     });
 
+    describe('autoUpgradeVersion setting', () => {
+        test('defaults to none when not specified', () => {
+            fs.writeFileSync(settingsPath, JSON.stringify({}));
+
+            const result = settings.loadSettings(testSessionId);
+            expect(result.autoUpgradeVersion).toBe('none');
+        });
+
+        test('accepts all valid values (patch, minor, all)', () => {
+            (['patch', 'minor', 'all'] as const).forEach((value) => {
+                fs.writeFileSync(settingsPath, JSON.stringify({ autoUpgradeVersion: value }));
+                const result = settings.loadSettings(testSessionId);
+                expect(result.autoUpgradeVersion).toBe(value);
+            });
+        });
+
+        test('rejects invalid autoUpgradeVersion values', () => {
+            fs.writeFileSync(settingsPath, JSON.stringify({ autoUpgradeVersion: 'always' }));
+
+            expect(() => settings.loadSettings(testSessionId)).toThrow('Invalid settings.json');
+        });
+    });
+
     describe('saveSettings', () => {
         test('creates file when none exists', () => {
             const result = settings.saveSettings(testSessionId, { launchMode: 'auto-tmux' });
@@ -357,6 +383,15 @@ describe('config settings', () => {
                     value: 'exit',
                     description: 'On approve, exits the TUI',
                 },
+            ]);
+        });
+
+        test('autoUpgradeVersion validValues match schema', () => {
+            expect(settings.SETTINGS_DOCS.autoUpgradeVersion.validValues.map((v) => v.value)).toEqual([
+                'none',
+                'patch',
+                'minor',
+                'all',
             ]);
         });
     });

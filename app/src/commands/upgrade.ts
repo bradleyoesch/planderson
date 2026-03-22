@@ -1,8 +1,13 @@
-import { spawnSync } from 'child_process';
+import { spawn, spawnSync } from 'child_process';
+
+import { loadSettings, Settings } from '~/utils/config/settings';
+import { generateId } from '~/utils/id';
 
 import { version } from '../../../package.json';
 
 export const currentVersion = version;
+
+export const RELEASES_URL = 'https://github.com/bradleyoesch/planderson/releases';
 
 export const stripVersionPrefix = (tag: string): string => tag.replace(/^v/, '');
 
@@ -20,24 +25,65 @@ export const fetchLatestVersion = async (): Promise<string | null> => {
     return tag ? stripVersionPrefix(tag) : null;
 };
 
+export const categorizeVersionBump = (latest: string, current: string): 'patch' | 'minor' | 'major' => {
+    const [lMaj, lMin] = latest.split('.').map(Number);
+    const [cMaj, cMin] = current.split('.').map(Number);
+    if (lMaj !== cMaj) return 'major';
+    if (lMin !== cMin) return 'minor';
+    return 'patch';
+};
+
+export const shouldAutoUpgrade = (
+    setting: Settings['autoUpgradeVersion'],
+    latest: string,
+    current: string,
+): boolean => {
+    if (setting === 'none') return false;
+    const bump = categorizeVersionBump(latest, current);
+    if (bump === 'patch') return true;
+    if (bump === 'minor') return setting === 'minor' || setting === 'all';
+    // major
+    return setting === 'all';
+};
+
+const INSTALL_URL = 'https://raw.githubusercontent.com/bradleyoesch/planderson/main/install.sh';
+
+export const runSilentUpgrade = (): Promise<'success' | 'failure'> => {
+    return new Promise((resolve) => {
+        const child = spawn('bash', ['-c', `curl -fsSL ${INSTALL_URL} | bash`], { stdio: 'ignore' });
+        child.on('close', (code) => {
+            resolve(code === 0 ? 'success' : 'failure');
+        });
+    });
+};
+
 export const runUpgrade = async (): Promise<void> => {
+    let latest: string | null;
     try {
-        const latest = await fetchLatestVersion();
-
-        if (latest === version) {
-            console.log(`Already on latest version (v${version})`);
-            process.exit(0);
-        }
-
-        if (!latest) {
-            console.warn('Warning: could not determine latest version, installing anyway...');
-        } else {
-            console.log(`Updating planderson v${version} → v${latest}...`);
-        }
-        const INSTALL_URL = 'https://raw.githubusercontent.com/bradleyoesch/planderson/main/install.sh';
-        spawnSync('bash', ['-c', `curl -fsSL ${INSTALL_URL} | bash`], { stdio: 'inherit' });
+        latest = await fetchLatestVersion();
     } catch (err) {
         console.error('planderson upgrade failed:', err);
         process.exit(1);
+        return;
     }
+
+    const settings = loadSettings(generateId());
+
+    if (latest === version) {
+        console.log(`Already on latest version (v${version})`);
+        if (settings.autoUpgradeVersion === 'none') {
+            console.log(`Tip: run \`planderson settings --autoUpgradeVersion all\` to upgrade automatically`);
+        }
+        console.log(`Releases: ${RELEASES_URL}`);
+        process.exit(0);
+        return;
+    }
+
+    if (!latest) {
+        console.warn('Warning: could not determine latest version, installing anyway...');
+    } else {
+        console.log(`Updating planderson v${version} → v${latest}...`);
+    }
+    spawnSync('bash', ['-c', `curl -fsSL ${INSTALL_URL} | bash`], { stdio: 'inherit' });
+    console.log(`Releases: ${RELEASES_URL}`);
 };

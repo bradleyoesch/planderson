@@ -18,6 +18,7 @@ const BASE_STATIC_CONTEXT: PlanViewStaticContextValue = {
     wrappedLines: [],
     paddingX: 1,
     latestVersion: null,
+    upgradedVersion: null,
     onShowHelp: NOOP,
     onApprove: NOOP,
     onDeny: NOOP,
@@ -30,6 +31,19 @@ describe('PlanFooter snapshots', () => {
             <TerminalProvider terminalWidth={80} terminalHeight={24}>
                 <SettingsProvider settings={DEFAULT_SETTINGS}>
                     <PlanViewStaticContext.Provider value={{ ...BASE_STATIC_CONTEXT, latestVersion: '9.9.9' }}>
+                        <PlanFooter />
+                    </PlanViewStaticContext.Provider>
+                </SettingsProvider>
+            </TerminalProvider>,
+        );
+        expect(normalizeSnapshot(lastFrame())).toMatchSnapshot();
+    });
+
+    test('snapshot: upgraded version', () => {
+        const { lastFrame } = render(
+            <TerminalProvider terminalWidth={80} terminalHeight={24}>
+                <SettingsProvider settings={DEFAULT_SETTINGS}>
+                    <PlanViewStaticContext.Provider value={{ ...BASE_STATIC_CONTEXT, upgradedVersion: '9.9.9' }}>
                         <PlanFooter />
                     </PlanViewStaticContext.Provider>
                 </SettingsProvider>

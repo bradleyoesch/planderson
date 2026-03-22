@@ -1,8 +1,12 @@
-import { renderHook } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
+import { renderHook, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test';
 import React from 'react';
 
+import * as upgradeModule from '~/commands/upgrade';
+import { SettingsProvider } from '~/contexts/SettingsContext';
 import { TerminalProvider } from '~/contexts/TerminalContext';
+import type { Settings } from '~/utils/config/settings';
+import { DEFAULT_SETTINGS } from '~/utils/config/settings';
 
 import { PlanViewProvider, usePlanViewDynamicContext, usePlanViewStaticContext } from './PlanViewProvider';
 
@@ -17,6 +21,18 @@ describe('PlanViewProvider', () => {
         onDeny: () => {},
         onCancel: () => {},
     };
+
+    const makeWrapper =
+        (overrides?: { props?: Partial<typeof defaultProps>; settings?: Partial<Settings>; terminalWidth?: number }) =>
+        ({ children }: { children: React.ReactNode }) => (
+            <TerminalProvider terminalWidth={overrides?.terminalWidth ?? 80} terminalHeight={24}>
+                <SettingsProvider settings={{ ...DEFAULT_SETTINGS, ...overrides?.settings }}>
+                    <PlanViewProvider {...defaultProps} {...overrides?.props}>
+                        {children}
+                    </PlanViewProvider>
+                </SettingsProvider>
+            </TerminalProvider>
+        );
 
     describe('error cases', () => {
         // Suppress React's "error boundary" warnings. These tests intentionally render
@@ -46,28 +62,16 @@ describe('PlanViewProvider', () => {
 
     describe('static context', () => {
         test('provides static context values', () => {
-            const wrapper = ({ children }: { children: React.ReactNode }) => (
-                <TerminalProvider terminalWidth={80} terminalHeight={24}>
-                    <PlanViewProvider {...defaultProps}>{children}</PlanViewProvider>
-                </TerminalProvider>
-            );
-
-            const { result } = renderHook(() => usePlanViewStaticContext(), { wrapper });
+            const { result } = renderHook(() => usePlanViewStaticContext(), { wrapper: makeWrapper() });
 
             expect(result.current.contentLines).toEqual(['Line 1', 'Line 2', 'Line 3']);
             expect(result.current.sessionId).toBe('abc123');
         });
 
         test('contentLines splits content correctly', () => {
-            const wrapper = ({ children }: { children: React.ReactNode }) => (
-                <TerminalProvider terminalWidth={80} terminalHeight={24}>
-                    <PlanViewProvider {...defaultProps} content={'A\nB\nC\n'}>
-                        {children}
-                    </PlanViewProvider>
-                </TerminalProvider>
-            );
-
-            const { result } = renderHook(() => usePlanViewStaticContext(), { wrapper });
+            const { result } = renderHook(() => usePlanViewStaticContext(), {
+                wrapper: makeWrapper({ props: { content: 'A\nB\nC\n' } }),
+            });
 
             // Trailing \n is stripped before splitting so files ending with a newline
             // (standard for editor-created files) don't produce a ghost empty line.
@@ -76,13 +80,7 @@ describe('PlanViewProvider', () => {
         });
 
         test('provides wrappedLines from markdown parsing and line wrapping', () => {
-            const wrapper = ({ children }: { children: React.ReactNode }) => (
-                <TerminalProvider terminalWidth={80} terminalHeight={24}>
-                    <PlanViewProvider {...defaultProps}>{children}</PlanViewProvider>
-                </TerminalProvider>
-            );
-
-            const { result } = renderHook(() => usePlanViewStaticContext(), { wrapper });
+            const { result } = renderHook(() => usePlanViewStaticContext(), { wrapper: makeWrapper() });
 
             // Verify wrappedLines exist (integration with markdown parser and line wrapper)
             expect(result.current.wrappedLines).toBeDefined();
@@ -92,13 +90,7 @@ describe('PlanViewProvider', () => {
 
     describe('dynamic context', () => {
         test('provides dynamic context with initial state', () => {
-            const wrapper = ({ children }: { children: React.ReactNode }) => (
-                <TerminalProvider terminalWidth={80} terminalHeight={24}>
-                    <PlanViewProvider {...defaultProps}>{children}</PlanViewProvider>
-                </TerminalProvider>
-            );
-
-            const { result } = renderHook(() => usePlanViewDynamicContext(), { wrapper });
+            const { result } = renderHook(() => usePlanViewDynamicContext(), { wrapper: makeWrapper() });
 
             expect(result.current.state.cursorLine).toBe(0);
             expect(result.current.state.selectionAnchor).toBe(null);
@@ -108,26 +100,14 @@ describe('PlanViewProvider', () => {
         });
 
         test('initial viewportHeight is calculated from terminal height', () => {
-            const wrapper = ({ children }: { children: React.ReactNode }) => (
-                <TerminalProvider terminalWidth={80} terminalHeight={24}>
-                    <PlanViewProvider {...defaultProps}>{children}</PlanViewProvider>
-                </TerminalProvider>
-            );
-
-            const { result } = renderHook(() => usePlanViewDynamicContext(), { wrapper });
+            const { result } = renderHook(() => usePlanViewDynamicContext(), { wrapper: makeWrapper() });
 
             // calculateViewportHeight('plan', 24) = 24 - 3 (header) - 1 (footer) = 20
             expect(result.current.state.viewportHeight).toBe(20);
         });
 
         test('dispatch function is provided', () => {
-            const wrapper = ({ children }: { children: React.ReactNode }) => (
-                <TerminalProvider terminalWidth={80} terminalHeight={24}>
-                    <PlanViewProvider {...defaultProps}>{children}</PlanViewProvider>
-                </TerminalProvider>
-            );
-
-            const { result } = renderHook(() => usePlanViewDynamicContext(), { wrapper });
+            const { result } = renderHook(() => usePlanViewDynamicContext(), { wrapper: makeWrapper() });
 
             expect(typeof result.current.dispatch).toBe('function');
         });
@@ -140,21 +120,9 @@ describe('PlanViewProvider', () => {
             const onDeny = () => 'deny';
             const onCancel = () => 'cancel';
 
-            const wrapper = ({ children }: { children: React.ReactNode }) => (
-                <TerminalProvider terminalWidth={80} terminalHeight={24}>
-                    <PlanViewProvider
-                        {...defaultProps}
-                        onShowHelp={onShowHelp}
-                        onApprove={onApprove}
-                        onDeny={onDeny}
-                        onCancel={onCancel}
-                    >
-                        {children}
-                    </PlanViewProvider>
-                </TerminalProvider>
-            );
-
-            const { result } = renderHook(() => usePlanViewStaticContext(), { wrapper });
+            const { result } = renderHook(() => usePlanViewStaticContext(), {
+                wrapper: makeWrapper({ props: { onShowHelp, onApprove, onDeny, onCancel } }),
+            });
 
             expect(result.current.onShowHelp).toBe(onShowHelp);
             expect(result.current.onApprove).toBe(onApprove);
@@ -181,21 +149,9 @@ describe('PlanViewProvider', () => {
                 cancelCalled = true;
             };
 
-            const wrapper = ({ children }: { children: React.ReactNode }) => (
-                <TerminalProvider terminalWidth={80} terminalHeight={24}>
-                    <PlanViewProvider
-                        {...defaultProps}
-                        onShowHelp={onShowHelp}
-                        onApprove={onApprove}
-                        onDeny={onDeny}
-                        onCancel={onCancel}
-                    >
-                        {children}
-                    </PlanViewProvider>
-                </TerminalProvider>
-            );
-
-            const { result } = renderHook(() => usePlanViewStaticContext(), { wrapper });
+            const { result } = renderHook(() => usePlanViewStaticContext(), {
+                wrapper: makeWrapper({ props: { onShowHelp, onApprove, onDeny, onCancel } }),
+            });
 
             result.current.onShowHelp();
             result.current.onApprove();
@@ -211,13 +167,7 @@ describe('PlanViewProvider', () => {
 
     describe('memoization', () => {
         test('static context memoizes when dependencies unchanged', () => {
-            const wrapper = ({ children }: { children: React.ReactNode }) => (
-                <TerminalProvider terminalWidth={80} terminalHeight={24}>
-                    <PlanViewProvider {...defaultProps}>{children}</PlanViewProvider>
-                </TerminalProvider>
-            );
-
-            const { result, rerender } = renderHook(() => usePlanViewStaticContext(), { wrapper });
+            const { result, rerender } = renderHook(() => usePlanViewStaticContext(), { wrapper: makeWrapper() });
 
             const firstValue = result.current;
 
@@ -233,9 +183,11 @@ describe('PlanViewProvider', () => {
 
             const WrapperWithContent = ({ children }: { children: React.ReactNode }) => (
                 <TerminalProvider terminalWidth={80} terminalHeight={24}>
-                    <PlanViewProvider {...defaultProps} content={content}>
-                        {children}
-                    </PlanViewProvider>
+                    <SettingsProvider settings={DEFAULT_SETTINGS}>
+                        <PlanViewProvider {...defaultProps} content={content}>
+                            {children}
+                        </PlanViewProvider>
+                    </SettingsProvider>
                 </TerminalProvider>
             );
 
@@ -256,29 +208,15 @@ describe('PlanViewProvider', () => {
         });
 
         test('static context recalculates when terminal width changes', () => {
-            // First render with width=80
-            const wrapper1 = ({ children }: { children: React.ReactNode }) => (
-                <TerminalProvider terminalWidth={80} terminalHeight={24}>
-                    <PlanViewProvider {...defaultProps}>{children}</PlanViewProvider>
-                </TerminalProvider>
-            );
-
             const { result: result1, unmount } = renderHook(() => usePlanViewStaticContext(), {
-                wrapper: wrapper1,
+                wrapper: makeWrapper({ terminalWidth: 80 }),
             });
 
             const firstValue = result1.current;
             unmount();
 
-            // Second render with width=120 (new instance)
-            const wrapper2 = ({ children }: { children: React.ReactNode }) => (
-                <TerminalProvider terminalWidth={120} terminalHeight={24}>
-                    <PlanViewProvider {...defaultProps}>{children}</PlanViewProvider>
-                </TerminalProvider>
-            );
-
             const { result: result2 } = renderHook(() => usePlanViewStaticContext(), {
-                wrapper: wrapper2,
+                wrapper: makeWrapper({ terminalWidth: 120 }),
             });
 
             // Should be different object reference (recalculated)
@@ -286,13 +224,7 @@ describe('PlanViewProvider', () => {
         });
 
         test('dynamic context memoizes when state and dispatch unchanged', () => {
-            const wrapper = ({ children }: { children: React.ReactNode }) => (
-                <TerminalProvider terminalWidth={80} terminalHeight={24}>
-                    <PlanViewProvider {...defaultProps}>{children}</PlanViewProvider>
-                </TerminalProvider>
-            );
-
-            const { result, rerender } = renderHook(() => usePlanViewDynamicContext(), { wrapper });
+            const { result, rerender } = renderHook(() => usePlanViewDynamicContext(), { wrapper: makeWrapper() });
 
             const firstValue = result.current;
 
@@ -301,6 +233,47 @@ describe('PlanViewProvider', () => {
 
             // Should be same object reference (memoized)
             expect(result.current).toBe(firstValue);
+        });
+    });
+
+    describe('auto-upgrade behavior', () => {
+        afterEach(() => {
+            mock.restore();
+        });
+
+        test('when autoUpgradeVersion is none: latestVersion is set, upgradedVersion is null', async () => {
+            spyOn(upgradeModule, 'fetchLatestVersion').mockResolvedValue('9.9.9');
+
+            const { result } = renderHook(() => usePlanViewStaticContext(), {
+                wrapper: makeWrapper({ settings: { autoUpgradeVersion: 'none' } }),
+            });
+
+            await waitFor(() => expect(result.current.latestVersion).toBe('9.9.9'));
+            expect(result.current.upgradedVersion).toBeNull();
+        });
+
+        test('when autoUpgradeVersion is all and newer version available: upgradedVersion is set, latestVersion is null', async () => {
+            spyOn(upgradeModule, 'fetchLatestVersion').mockResolvedValue('9.9.9');
+            spyOn(upgradeModule, 'runSilentUpgrade').mockResolvedValue('success');
+
+            const { result } = renderHook(() => usePlanViewStaticContext(), {
+                wrapper: makeWrapper({ settings: { autoUpgradeVersion: 'all' } }),
+            });
+
+            await waitFor(() => expect(result.current.upgradedVersion).toBe('9.9.9'));
+            expect(result.current.latestVersion).toBeNull();
+        });
+
+        test('when autoUpgradeVersion is patch and bump is minor: both latestVersion and upgradedVersion are null', async () => {
+            const fetchSpy = spyOn(upgradeModule, 'fetchLatestVersion').mockResolvedValue('9.9.9');
+
+            const { result } = renderHook(() => usePlanViewStaticContext(), {
+                wrapper: makeWrapper({ settings: { autoUpgradeVersion: 'patch' } }),
+            });
+
+            await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
+            expect(result.current.latestVersion).toBeNull();
+            expect(result.current.upgradedVersion).toBeNull();
         });
     });
 });
