@@ -188,13 +188,18 @@ Error: Connection refused
 
 ## Releasing
 
+There is a github action (`release.yml`) that is triggered on new tags. It builds binaries for all targets, attaches artifacts, and creates the GitHub Release with auto-generated notes. No manual `gh release create` needed.
+
+To create a new tag, see below:
+
 ### Via GitHub UI (recommended)
 
-There is a workflow that bumps the version, commits, and pushes a tag. The existing `release.yml` triggers on the tag and handles building binaries and creating the GitHub Release. You must be an approved member of the `releases` environment to create a tag that starts this process.
+There is a workflow that bumps the version, commits, and pushes a tag. The existing `release.yml` triggers on the tag and handles building binaries and creating the GitHub Release.
 
 1. Go to [Actions → Release (Dispatch) → Run workflow](https://github.com/bradleyoesch/planderson/actions/workflows/release-dispatch.yml)
 2. Pick `patch`, `minor`, or `major`
-3. Click Run.
+3. Click Run
+4. Approved member of `release` environment approves workflow
 
 ### Locally
 
@@ -205,8 +210,6 @@ bun run release:patch   # 0.3.0 → 0.3.1
 bun run release:minor   # 0.3.0 → 0.4.0
 bun run release:major   # 0.3.0 → 1.0.0
 ```
-
-GitHub Actions (`release.yml`) takes over from there: builds binaries for all targets, attaches artifacts, and creates the GitHub Release with auto-generated notes. No manual `gh release create` needed — the workflow is the single source of truth.
 
 ## Common Issues
 
