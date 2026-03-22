@@ -486,7 +486,7 @@ export const wrapFeedback = (
     const result: FeedbackMetadata[] = [];
 
     const effectiveWidth = terminalWidth - paddingX * 2;
-    const prefix = type === 'comment' ? '💬' : '❓';
+    const prefix = type === 'comment' ? '💬' : '❔';
 
     feedback.forEach((entry, lineIndex) => {
         const segments = wrapLine(`${prefix} ${entry.text}`, effectiveWidth);

@@ -329,7 +329,7 @@ describe('Plan snapshots', () => {
             const output = lastFrame()!;
             const lines = output.split('\n');
             const commentLines = lines.slice(0, lines.length - 1).filter((line) => line.trim().length > 0);
-            const greyColorCode = COLORS.SUBTLE;
+            const greyColorCode = COLORS.ACCENT;
 
             commentLines.forEach((line, idx) => {
                 expect(line).toContain(greyColorCode);

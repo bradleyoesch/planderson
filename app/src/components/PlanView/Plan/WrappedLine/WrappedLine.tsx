@@ -18,7 +18,7 @@ interface WrappedFeedbackProps {
  * Each segment is trimmed and joined with newlines to prevent trailing spaces.
  */
 export const WrappedFeedback: React.FC<WrappedFeedbackProps> = ({ feedback }) => {
-    const color = feedback.type === 'comment' ? COLORS.SUBTLE : COLORS.QUESTION;
+    const color = feedback.type === 'comment' ? COLORS.ACCENT : COLORS.QUESTION;
 
     // Trim each segment so that wrapped spaces aren't rendered, e.g.
     // |end of the|

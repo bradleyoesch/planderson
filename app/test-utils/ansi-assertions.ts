@@ -47,4 +47,6 @@ export const COLORS = {
     H1: ANSI.fg(139, 139, 139),
     /** Deleted line color (#666666 -> rgb 102,102,102) */
     DELETED: ANSI.fg(102, 102, 102),
+    /** Accent/teal for comments (#1b989c -> rgb 27,152,140) */
+    ACCENT: ANSI.fg(27, 152, 140),
 } as const;

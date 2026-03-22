@@ -38,7 +38,7 @@ describe.each([
     {
         type: 'question',
         key: 'q',
-        emoji: '❓',
+        emoji: '❔',
         has: hasQuestion,
         count: countQuestions,
         isInMode: isInQuestionMode,

@@ -8,7 +8,7 @@ Step 4: Cleanup"
 `;
 
 exports[`Plan snapshots Multi-Line Selection snapshot: multi-line selection with comment on selected lines 1`] = `
-"\x1B[3m\x1B[38;2;96;96;96m💬 Fix this section\x1B[39m\x1B[23m
+"\x1B[3m\x1B[38;2;27;152;140m💬 Fix this section\x1B[39m\x1B[23m
 \x1B[48;2;80;80;80mLine 1: First\x1B[49m
 \x1B[48;2;80;80;80mLine 2: Second\x1B[49m
 \x1B[48;2;80;80;80mLine 3: Third\x1B[49m
@@ -23,7 +23,7 @@ Keep this line"
 `;
 
 exports[`Plan snapshots Multi-Line Selection snapshot: multi-line selection with both comments and deletions 1`] = `
-"\x1B[3m\x1B[38;2;96;96;96m💬 These lines need work\x1B[39m\x1B[23m
+"\x1B[3m\x1B[38;2;27;152;140m💬 These lines need work\x1B[39m\x1B[23m
 \x1B[48;2;80;80;80mLine A\x1B[49m
 \x1B[48;2;80;80;80mLine B\x1B[49m
 \x1B[9m\x1B[38;2;102;102;102m\x1B[48;2;80;80;80mLine C\x1B[49m\x1B[39m\x1B[29m
@@ -31,12 +31,12 @@ Line D"
 `;
 
 exports[`Plan snapshots Multi-Line Selection snapshot: multiple separate comments (no duplication) 1`] = `
-"\x1B[3m\x1B[38;2;96;96;96m💬 First issue\x1B[39m\x1B[23m
+"\x1B[3m\x1B[38;2;27;152;140m💬 First issue\x1B[39m\x1B[23m
 \x1B[48;2;80;80;80mLine 1\x1B[49m
 Line 2
 Line 3
 Line 4
-\x1B[3m\x1B[38;2;96;96;96m💬 Second issue\x1B[39m\x1B[23m
+\x1B[3m\x1B[38;2;27;152;140m💬 Second issue\x1B[39m\x1B[23m
 Line 5
 Line 6"
 `;
@@ -111,14 +111,14 @@ Line 3"
 
 exports[`Plan snapshots With Comments and Deletions renders with feedback at 40 columns 1`] = `
 "\x1B[48;2;80;80;80mFirst line\x1B[49m
-\x1B[3m\x1B[38;2;96;96;96m💬 This needs improvement\x1B[39m\x1B[23m
+\x1B[3m\x1B[38;2;27;152;140m💬 This needs improvement\x1B[39m\x1B[23m
 Second line needs fix
 \x1B[9m\x1B[38;2;102;102;102mThird line\x1B[39m\x1B[29m"
 `;
 
 exports[`Plan snapshots With Comments and Deletions renders with feedback at 80 columns 1`] = `
 "\x1B[48;2;80;80;80mFirst line\x1B[49m
-\x1B[3m\x1B[38;2;96;96;96m💬 This needs improvement\x1B[39m\x1B[23m
+\x1B[3m\x1B[38;2;27;152;140m💬 This needs improvement\x1B[39m\x1B[23m
 Second line needs fix
 \x1B[9m\x1B[38;2;102;102;102mThird line\x1B[39m\x1B[29m"
 `;
@@ -152,7 +152,7 @@ line 3"
 `;
 
 exports[`Plan snapshots Special Characters handles special characters at 40 columns 1`] = `
-"\x1B[3m\x1B[38;2;96;96;96m💬 Special: <>&"\x1B[39m\x1B[23m
+"\x1B[3m\x1B[38;2;27;152;140m💬 Special: <>&"\x1B[39m\x1B[23m
 \x1B[48;2;80;80;80m<tag>\x1B[49m
 "quotes"
 it's
@@ -161,7 +161,7 @@ it's
 `;
 
 exports[`Plan snapshots Special Characters handles special characters at 80 columns 1`] = `
-"\x1B[3m\x1B[38;2;96;96;96m💬 Special: <>&"\x1B[39m\x1B[23m
+"\x1B[3m\x1B[38;2;27;152;140m💬 Special: <>&"\x1B[39m\x1B[23m
 \x1B[48;2;80;80;80m<tag>\x1B[49m
 "quotes"
 it's
@@ -170,15 +170,15 @@ it's
 `;
 
 exports[`Plan snapshots Line Wrapping snapshot: wraps long comment with consistent styling at narrow width 1`] = `
-"\x1B[3m\x1B[38;2;96;96;96m💬\x1B[39m\x1B[23m
-\x1B[3m\x1B[38;2;96;96;96mAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\x1B[39m\x1B[23m
-\x1B[3m\x1B[38;2;96;96;96mAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\x1B[39m\x1B[23m
-\x1B[3m\x1B[38;2;96;96;96mAAAAAAAAAAAAAAAAAAAAAAAA\x1B[39m\x1B[23m
+"\x1B[3m\x1B[38;2;27;152;140m💬\x1B[39m\x1B[23m
+\x1B[3m\x1B[38;2;27;152;140mAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\x1B[39m\x1B[23m
+\x1B[3m\x1B[38;2;27;152;140mAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\x1B[39m\x1B[23m
+\x1B[3m\x1B[38;2;27;152;140mAAAAAAAAAAAAAAAAAAAAAAAA\x1B[39m\x1B[23m
 \x1B[48;2;80;80;80mShort line\x1B[49m"
 `;
 
 exports[`Plan snapshots Line Wrapping snapshot: wraps long question with consistent styling at narrow width 1`] = `
-"\x1B[3m\x1B[38;2;255;217;61m❓\x1B[39m\x1B[23m
+"\x1B[3m\x1B[38;2;255;217;61m❔\x1B[39m\x1B[23m
 \x1B[3m\x1B[38;2;255;217;61mBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\x1B[39m\x1B[23m
 \x1B[3m\x1B[38;2;255;217;61mBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\x1B[39m\x1B[23m
 \x1B[3m\x1B[38;2;255;217;61mBBBBBBBBBBBBBBBBBBBBBBBB\x1B[39m\x1B[23m
