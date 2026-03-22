@@ -33,17 +33,13 @@ export const categorizeVersionBump = (latest: string, current: string): 'patch' 
     return 'patch';
 };
 
-export const shouldAutoUpgrade = (
-    setting: Settings['autoUpgradeVersion'],
-    latest: string,
-    current: string,
-): boolean => {
-    if (setting === 'none') return false;
+export const shouldAutoUpgrade = (setting: Settings['autoUpgrade'], latest: string, current: string): boolean => {
+    if (setting === 'never') return false;
     const bump = categorizeVersionBump(latest, current);
     if (bump === 'patch') return true;
-    if (bump === 'minor') return setting === 'minor' || setting === 'all';
+    if (bump === 'minor') return setting === 'minor' || setting === 'always';
     // major
-    return setting === 'all';
+    return setting === 'always';
 };
 
 const INSTALL_URL = 'https://raw.githubusercontent.com/bradleyoesch/planderson/main/install.sh';
@@ -71,8 +67,8 @@ export const runUpgrade = async (): Promise<void> => {
 
     if (latest === version) {
         console.log(`Already on latest version (v${version})`);
-        if (settings.autoUpgradeVersion === 'none') {
-            console.log(`Tip: run \`planderson settings --autoUpgradeVersion all\` to upgrade automatically`);
+        if (settings.autoUpgrade === 'never') {
+            console.log(`Tip: run \`planderson settings --autoUpgrade always\` to upgrade automatically`);
         }
         console.log(`Releases: ${RELEASES_URL}`);
         process.exit(0);

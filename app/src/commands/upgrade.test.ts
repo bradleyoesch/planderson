@@ -72,8 +72,8 @@ describe('commands upgrade', () => {
     });
 
     describe('shouldAutoUpgrade', () => {
-        test('returns false when setting is none', () => {
-            expect(shouldAutoUpgrade('none', '1.2.4', '1.2.3')).toBe(false);
+        test('returns false when setting is never', () => {
+            expect(shouldAutoUpgrade('never', '1.2.4', '1.2.3')).toBe(false);
         });
 
         test('returns true for patch bump with setting patch', () => {
@@ -88,8 +88,8 @@ describe('commands upgrade', () => {
             expect(shouldAutoUpgrade('minor', '2.0.0', '1.9.9')).toBe(false);
         });
 
-        test('returns true for major bump with setting all', () => {
-            expect(shouldAutoUpgrade('all', '2.0.0', '1.9.9')).toBe(true);
+        test('returns true for major bump with setting always', () => {
+            expect(shouldAutoUpgrade('always', '2.0.0', '1.9.9')).toBe(true);
         });
 
         test('returns true for minor bump with setting minor', () => {
@@ -173,7 +173,7 @@ describe('commands upgrade', () => {
             expect(consoleLogs.some((l) => l.includes(RELEASES_URL))).toBe(true);
         });
 
-        test('shows tip when autoUpgradeVersion is none', async () => {
+        test('shows tip when autoUpgrade is never', async () => {
             const currentVer = (await import('../../../package.json')).version;
             globalThis.fetch = mock(() =>
                 Promise.resolve({
@@ -182,7 +182,7 @@ describe('commands upgrade', () => {
             ) as unknown as typeof fetch;
             spyOn(settingsModule, 'loadSettings').mockReturnValue({
                 ...DEFAULT_SETTINGS,
-                autoUpgradeVersion: 'none',
+                autoUpgrade: 'never',
             });
 
             try {
@@ -191,10 +191,10 @@ describe('commands upgrade', () => {
                 // process.exit throws in test
             }
 
-            expect(consoleLogs.some((l) => l.includes('planderson settings --autoUpgradeVersion all'))).toBe(true);
+            expect(consoleLogs.some((l) => l.includes('planderson settings --autoUpgrade always'))).toBe(true);
         });
 
-        test('does not show tip when autoUpgradeVersion is all', async () => {
+        test('does not show tip when autoUpgrade is always', async () => {
             const currentVer = (await import('../../../package.json')).version;
             globalThis.fetch = mock(() =>
                 Promise.resolve({
@@ -203,7 +203,7 @@ describe('commands upgrade', () => {
             ) as unknown as typeof fetch;
             spyOn(settingsModule, 'loadSettings').mockReturnValue({
                 ...DEFAULT_SETTINGS,
-                autoUpgradeVersion: 'all',
+                autoUpgrade: 'always',
             });
 
             try {
@@ -212,7 +212,7 @@ describe('commands upgrade', () => {
                 // process.exit throws in test
             }
 
-            expect(consoleLogs.some((l) => l.includes('planderson settings --autoUpgradeVersion all'))).toBe(false);
+            expect(consoleLogs.some((l) => l.includes('planderson settings --autoUpgrade always'))).toBe(false);
         });
     });
 });

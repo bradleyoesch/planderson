@@ -11,7 +11,7 @@ import { getPlandersonBaseDir } from '~/utils/io/paths';
  */
 export const SettingsSchema = z.object({
     approveAction: z.enum(['approve', 'exit']).default('approve'),
-    autoUpgradeVersion: z.enum(['none', 'patch', 'minor', 'all']).default('none'),
+    autoUpgrade: z.enum(['never', 'patch', 'minor', 'always']).default('never'),
     launchMode: z.enum(['auto-tmux', 'manual']).default('manual'),
 });
 
@@ -19,7 +19,7 @@ export type Settings = z.infer<typeof SettingsSchema>;
 
 export const DEFAULT_SETTINGS: Settings = {
     approveAction: 'approve',
-    autoUpgradeVersion: 'none',
+    autoUpgrade: 'never',
     launchMode: 'manual',
 };
 
@@ -31,13 +31,13 @@ export const SETTINGS_DOCS: Record<
     keyof Settings,
     { validValues: Array<{ value: string; description: string }>; description: string }
 > = {
-    autoUpgradeVersion: {
+    autoUpgrade: {
         description: 'Maximum version bump size to upgrade automatically at TUI startup',
         validValues: [
-            { value: 'none', description: 'Never auto-upgrade; manual upgrade only' },
+            { value: 'never', description: 'Never auto-upgrade; manual upgrade only' },
             { value: 'patch', description: 'Auto-upgrade only for patch bumps (e.g. 1.2.3 → 1.2.4)' },
             { value: 'minor', description: 'Auto-upgrade for patch and minor bumps (e.g. 1.2.3 → 1.3.0)' },
-            { value: 'all', description: 'Auto-upgrade for any bump, including major' },
+            { value: 'always', description: 'Auto-upgrade for any bump, including major (e.g. 1.2.3 → 2.0.0)' },
         ],
     },
     launchMode: {

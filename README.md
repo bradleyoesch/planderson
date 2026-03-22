@@ -96,13 +96,13 @@ planderson upgrade
 
 You can opt into automatic upgrades at TUI startup.
 
-Set `autoUpgradeVersion` setting to `all`:
+Set `autoUpgrade` setting to `always`:
 
 ```bash
-planderson settings --autoUpgradeVersion all
+planderson settings --autoUpgrade always
 ```
 
-For details, run `planderson settings --autoUpgradeVersion`
+For details, run `planderson settings --autoUpgrade`
 
 ## Development
 

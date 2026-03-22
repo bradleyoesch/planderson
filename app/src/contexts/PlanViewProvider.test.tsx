@@ -241,34 +241,34 @@ describe('PlanViewProvider', () => {
             mock.restore();
         });
 
-        test('when autoUpgradeVersion is none: latestVersion is set, upgradedVersion is null', async () => {
+        test('when autoUpgrade is never: latestVersion is set, upgradedVersion is null', async () => {
             spyOn(upgradeModule, 'fetchLatestVersion').mockResolvedValue('9.9.9');
 
             const { result } = renderHook(() => usePlanViewStaticContext(), {
-                wrapper: makeWrapper({ settings: { autoUpgradeVersion: 'none' } }),
+                wrapper: makeWrapper({ settings: { autoUpgrade: 'never' } }),
             });
 
             await waitFor(() => expect(result.current.latestVersion).toBe('9.9.9'));
             expect(result.current.upgradedVersion).toBeNull();
         });
 
-        test('when autoUpgradeVersion is all and newer version available: upgradedVersion is set, latestVersion is null', async () => {
+        test('when autoUpgrade is always and newer version available: upgradedVersion is set, latestVersion is null', async () => {
             spyOn(upgradeModule, 'fetchLatestVersion').mockResolvedValue('9.9.9');
             spyOn(upgradeModule, 'runSilentUpgrade').mockResolvedValue('success');
 
             const { result } = renderHook(() => usePlanViewStaticContext(), {
-                wrapper: makeWrapper({ settings: { autoUpgradeVersion: 'all' } }),
+                wrapper: makeWrapper({ settings: { autoUpgrade: 'always' } }),
             });
 
             await waitFor(() => expect(result.current.upgradedVersion).toBe('9.9.9'));
             expect(result.current.latestVersion).toBeNull();
         });
 
-        test('when autoUpgradeVersion is patch and bump is minor: both latestVersion and upgradedVersion are null', async () => {
+        test('when autoUpgrade is patch and bump is minor: both latestVersion and upgradedVersion are null', async () => {
             const fetchSpy = spyOn(upgradeModule, 'fetchLatestVersion').mockResolvedValue('9.9.9');
 
             const { result } = renderHook(() => usePlanViewStaticContext(), {
-                wrapper: makeWrapper({ settings: { autoUpgradeVersion: 'patch' } }),
+                wrapper: makeWrapper({ settings: { autoUpgrade: 'patch' } }),
             });
 
             await waitFor(() => expect(fetchSpy).toHaveBeenCalled());

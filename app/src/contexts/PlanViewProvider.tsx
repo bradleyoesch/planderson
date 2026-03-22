@@ -106,7 +106,7 @@ export const PlanViewProvider: React.FC<PlanViewProviderProps> = ({
         fetchLatestVersion()
             .then((v) => {
                 if (v && isNewerVersion(v, currentVersion)) {
-                    if (shouldAutoUpgrade(settings.autoUpgradeVersion, v, currentVersion)) {
+                    if (shouldAutoUpgrade(settings.autoUpgrade, v, currentVersion)) {
                         runSilentUpgrade()
                             .then((result) => {
                                 if (result === 'success') {
@@ -115,7 +115,7 @@ export const PlanViewProvider: React.FC<PlanViewProviderProps> = ({
                                 }
                             })
                             .catch(() => {});
-                    } else if (settings.autoUpgradeVersion === 'none') {
+                    } else if (settings.autoUpgrade === 'never') {
                         setLatestVersion(v);
                     }
                 }
