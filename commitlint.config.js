@@ -25,6 +25,7 @@ export default {
                 'hook', // Claude Code hook integration
                 'markdown', // Markdown parsing/rendering
                 'plugin', // Claude Code plugin distribution
+                'release', // Version bumps and release commits
                 'socket', // Socket IPC communication
                 'state', // State management (reducer, actions)
                 'test', // Testing infrastructure
