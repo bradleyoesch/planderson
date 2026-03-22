@@ -1,11 +1,10 @@
 import { afterEach, describe, expect, test } from 'bun:test';
-import { cleanup, render as inkRender } from 'ink-testing-library';
+import { cleanup } from 'ink-testing-library';
 import React from 'react';
 
 import { Plan } from '~/components/PlanView/Plan/Plan';
-import { PlanViewProvider } from '~/contexts/PlanViewProvider';
-import { TerminalProvider } from '~/contexts/TerminalContext';
 import { wrapContent, wrapMarkdownContent } from '~/test-utils/line-wrapping-helpers';
+import { renderWithPlanViewProvider } from '~/test-utils/render-helpers';
 import { getRenderedLines } from '~/test-utils/visual-assertions';
 import { wrapFeedback } from '~/utils/rendering/line-wrapping';
 
@@ -21,27 +20,17 @@ describe('content word-wrapping integration', () => {
     const renderPlan = (lines: string[], width: number, markdown = false) => {
         const visibleLines = markdown ? wrapMarkdownContent(lines, width, 1) : wrapContent(lines, width, 1);
 
-        return inkRender(
-            <TerminalProvider terminalWidth={width} terminalHeight={24}>
-                <PlanViewProvider
-                    sessionId="test-session"
-                    content={lines.join('\n')}
-                    onShowHelp={() => {}}
-                    onApprove={() => {}}
-                    onDeny={() => {}}
-                    onCancel={() => {}}
-                >
-                    <Plan
-                        visibleLines={visibleLines}
-                        scrollOffset={0}
-                        cursorLine={0}
-                        selectionAnchor={null}
-                        wrappedComments={wrapFeedback(new Map(), 'comment', width, 1)}
-                        wrappedQuestions={wrapFeedback(new Map(), 'question', width, 1)}
-                        deletedLines={new Set()}
-                    />
-                </PlanViewProvider>
-            </TerminalProvider>,
+        return renderWithPlanViewProvider(
+            <Plan
+                visibleLines={visibleLines}
+                scrollOffset={0}
+                cursorLine={0}
+                selectionAnchor={null}
+                wrappedComments={wrapFeedback(new Map(), 'comment', width, 1)}
+                wrappedQuestions={wrapFeedback(new Map(), 'question', width, 1)}
+                deletedLines={new Set()}
+            />,
+            { terminalWidth: width, content: lines.join('\n') },
         );
     };
 

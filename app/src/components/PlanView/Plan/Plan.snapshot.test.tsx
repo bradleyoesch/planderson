@@ -1,13 +1,11 @@
 import { describe, expect, test } from 'bun:test';
-import { render as inkRender } from 'ink-testing-library';
 import React from 'react';
 import stringWidth from 'string-width';
 
-import { PlanViewProvider } from '~/contexts/PlanViewProvider';
-import { TerminalProvider } from '~/contexts/TerminalContext';
 import { COLORS } from '~/test-utils/ansi-assertions';
 import { stripAnsi } from '~/test-utils/ink-helpers';
 import { wrapContent, wrapMarkdownContent } from '~/test-utils/line-wrapping-helpers';
+import { renderWithPlanViewProvider } from '~/test-utils/render-helpers';
 import { SNAPSHOT_FIXTURES } from '~/test-utils/snapshot-fixtures';
 import { ALL_WIDTHS, normalizeSnapshot, TERMINAL_WIDTHS, testAtAllWidths } from '~/test-utils/snapshot-helpers';
 import { wrapFeedback } from '~/utils/rendering/line-wrapping';
@@ -28,22 +26,8 @@ describe('Plan snapshots', () => {
         terminalWidth: 80,
     };
 
-    const render = (planElement: React.ReactElement, terminalWidth: number = 80) => {
-        return inkRender(
-            <TerminalProvider terminalWidth={terminalWidth} terminalHeight={24}>
-                <PlanViewProvider
-                    sessionId="test-session"
-                    content="Test content"
-                    onShowHelp={() => {}}
-                    onApprove={() => {}}
-                    onDeny={() => {}}
-                    onCancel={() => {}}
-                >
-                    {planElement}
-                </PlanViewProvider>
-            </TerminalProvider>,
-        );
-    };
+    const render = (planElement: React.ReactElement, terminalWidth: number = 80) =>
+        renderWithPlanViewProvider(planElement, { terminalWidth });
 
     describe('Multi-Line Selection', () => {
         test('snapshot: multi-line selection (3 lines selected)', () => {

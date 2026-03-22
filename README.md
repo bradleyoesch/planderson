@@ -92,6 +92,18 @@ To upgrade to latest version, run:
 planderson upgrade
 ```
 
+### Auto-upgrade
+
+You can opt into automatic upgrades at TUI startup.
+
+Set `autoUpgrade` setting to `always`:
+
+```bash
+planderson settings --autoUpgrade always
+```
+
+For details, run `planderson settings --autoUpgrade`
+
 ## Development
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for development setup, building, and testing.

@@ -132,16 +132,18 @@ describe('PlanView', () => {
 
             const { lastFrame } = inkRender(
                 <TerminalProvider terminalWidth={80} terminalHeight={24}>
-                    <PlanViewProvider
-                        content={defaultProps.content}
-                        sessionId={defaultProps.sessionId}
-                        onShowHelp={onShowHelp}
-                        onApprove={onApprove}
-                        onDeny={onDeny}
-                        onCancel={onCancel}
-                    >
-                        <CallbackTester />
-                    </PlanViewProvider>
+                    <SettingsProvider settings={DEFAULT_SETTINGS}>
+                        <PlanViewProvider
+                            content={defaultProps.content}
+                            sessionId={defaultProps.sessionId}
+                            onShowHelp={onShowHelp}
+                            onApprove={onApprove}
+                            onDeny={onDeny}
+                            onCancel={onCancel}
+                        >
+                            <CallbackTester />
+                        </PlanViewProvider>
+                    </SettingsProvider>
                 </TerminalProvider>,
             );
 

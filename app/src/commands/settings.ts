@@ -39,11 +39,14 @@ export const runSettings = (args: string[]): void => {
 
     const printSettingsHelp = (): void => {
         const valueWidth = Math.max(...settingsKeys.map((k) => String(current[k]).length));
+        const validValuesWidth = Math.max(
+            ...settingsKeys.map((k) => SETTINGS_DOCS[k].validValues.map((v) => v.value).join(' | ').length),
+        );
         settingsKeys.forEach((k) => {
             const doc = SETTINGS_DOCS[k];
             const validValues = doc.validValues.map((v) => v.value).join(' | ');
             console.log(
-                `  ${k.padEnd(keyWidth)}  ${String(current[k]).padEnd(valueWidth)}  ${validValues.padEnd(20)}  ${doc.description}`,
+                `  ${k.padEnd(keyWidth)}  ${String(current[k]).padEnd(valueWidth)}  ${validValues.padEnd(validValuesWidth)}  ${doc.description}`,
             );
         });
         console.log('');
