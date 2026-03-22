@@ -19,6 +19,7 @@ jobs:
     bump-and-tag:
         name: Bump version and push tag
         runs-on: ubuntu-latest
+        environment: release
 
         steps:
             - uses: actions/checkout@v5
