@@ -2,8 +2,7 @@ import { describe, expect, test } from 'bun:test';
 import { render } from 'ink-testing-library';
 import React from 'react';
 
-import { PlanViewProvider } from '~/contexts/PlanViewProvider';
-import { TerminalProvider } from '~/contexts/TerminalContext';
+import { renderWithPlanViewProvider } from '~/test-utils/render-helpers';
 import { normalizeSnapshot } from '~/test-utils/snapshot-helpers';
 import type { FeedbackMetadata, LineMetadata } from '~/utils/rendering/line-wrapping';
 
@@ -12,23 +11,8 @@ import { WrappedFeedback, WrappedLine } from './WrappedLine';
 describe('WrappedLine snapshots', () => {
     const terminalWidth = 80;
 
-    // Helper to wrap with TerminalProvider and PlanViewProvider
-    const renderLine = (line: React.ReactElement, width: number = terminalWidth) => {
-        return render(
-            <TerminalProvider terminalWidth={width} terminalHeight={24}>
-                <PlanViewProvider
-                    sessionId="test-session"
-                    content="Test content"
-                    onShowHelp={() => {}}
-                    onApprove={() => {}}
-                    onDeny={() => {}}
-                    onCancel={() => {}}
-                >
-                    {line}
-                </PlanViewProvider>
-            </TerminalProvider>,
-        );
-    };
+    const renderLine = (line: React.ReactElement, width: number = terminalWidth) =>
+        renderWithPlanViewProvider(line, { terminalWidth: width });
 
     test('snapshot: horizontal rule at 80 columns', () => {
         const lineMetadata: LineMetadata = {

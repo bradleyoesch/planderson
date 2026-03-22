@@ -10,8 +10,10 @@ import { describe, expect, test } from 'bun:test';
 import React, { useEffect, useState } from 'react';
 
 import { PlanViewProvider, usePlanViewDynamicContext } from '~/contexts/PlanViewProvider';
+import { SettingsProvider } from '~/contexts/SettingsContext';
 import { TerminalProvider } from '~/contexts/TerminalContext';
 import { createPlanViewProps, createPlanViewTestHook, createPlanViewWrapper } from '~/test-utils/plan-view-helpers';
+import { DEFAULT_SETTINGS } from '~/utils/config/settings';
 
 import { useScrollClamping } from './useScrollClamping';
 
@@ -44,9 +46,11 @@ const createDynamicViewportWrapper = (
 
         return (
             <TerminalProvider terminalWidth={80} terminalHeight={th}>
-                <PlanViewProvider {...createPlanViewProps(content ? { content } : {})}>
-                    <ViewportHeightSetter>{children}</ViewportHeightSetter>
-                </PlanViewProvider>
+                <SettingsProvider settings={DEFAULT_SETTINGS}>
+                    <PlanViewProvider {...createPlanViewProps(content ? { content } : {})}>
+                        <ViewportHeightSetter>{children}</ViewportHeightSetter>
+                    </PlanViewProvider>
+                </SettingsProvider>
             </TerminalProvider>
         );
     };

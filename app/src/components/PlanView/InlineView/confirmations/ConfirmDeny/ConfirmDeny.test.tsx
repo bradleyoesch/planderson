@@ -1,17 +1,14 @@
 import { describe, expect, test } from 'bun:test';
-import { render as inkRender } from 'ink-testing-library';
 import React, { useLayoutEffect } from 'react';
 
 const stripAnsi = (str: string) => str.replaceAll(/\x1b\[[\d;]*m/g, '');
 
-import { PlanViewProvider, usePlanViewDynamicContext } from '~/contexts/PlanViewProvider';
-import { TerminalProvider } from '~/contexts/TerminalContext';
+import { usePlanViewDynamicContext } from '~/contexts/PlanViewProvider';
 import type { PlanViewAction } from '~/state/planViewActions';
 import type { FeedbackEntry } from '~/state/planViewState';
+import { renderWithPlanViewProvider } from '~/test-utils/render-helpers';
 
 import { ConfirmDeny } from './ConfirmDeny';
-
-const NOOP = () => {};
 
 const renderWithState = (
     setup: {
@@ -43,21 +40,10 @@ const renderWithState = (
         return <>{children}</>;
     };
 
-    return inkRender(
-        <TerminalProvider terminalWidth={80} terminalHeight={24}>
-            <PlanViewProvider
-                sessionId="test"
-                content=""
-                onShowHelp={NOOP}
-                onApprove={NOOP}
-                onDeny={NOOP}
-                onCancel={NOOP}
-            >
-                <StateInit>
-                    <ConfirmDeny />
-                </StateInit>
-            </PlanViewProvider>
-        </TerminalProvider>,
+    return renderWithPlanViewProvider(
+        <StateInit>
+            <ConfirmDeny />
+        </StateInit>,
     );
 };
 

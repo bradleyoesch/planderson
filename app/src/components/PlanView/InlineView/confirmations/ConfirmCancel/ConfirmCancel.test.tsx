@@ -1,13 +1,11 @@
 import { describe, expect, test } from 'bun:test';
-import { render as inkRender } from 'ink-testing-library';
 import React, { useLayoutEffect } from 'react';
 
-import { PlanViewProvider, usePlanViewDynamicContext } from '~/contexts/PlanViewProvider';
-import { TerminalProvider } from '~/contexts/TerminalContext';
+import { usePlanViewDynamicContext } from '~/contexts/PlanViewProvider';
+import { renderWithPlanViewProvider } from '~/test-utils/render-helpers';
 
 import { ConfirmCancel } from './ConfirmCancel';
 
-const NOOP = () => {};
 const stripAnsi = (str: string) => str.replaceAll(/\x1b\[[\d;]*m/g, '');
 
 const renderWithIndex = (confirmSelectedIndex: 0 | 1 = 0) => {
@@ -21,21 +19,10 @@ const renderWithIndex = (confirmSelectedIndex: 0 | 1 = 0) => {
         return <>{children}</>;
     };
 
-    return inkRender(
-        <TerminalProvider terminalWidth={80} terminalHeight={24}>
-            <PlanViewProvider
-                sessionId="test"
-                content=""
-                onShowHelp={NOOP}
-                onApprove={NOOP}
-                onDeny={NOOP}
-                onCancel={NOOP}
-            >
-                <StateInit>
-                    <ConfirmCancel />
-                </StateInit>
-            </PlanViewProvider>
-        </TerminalProvider>,
+    return renderWithPlanViewProvider(
+        <StateInit>
+            <ConfirmCancel />
+        </StateInit>,
     );
 };
 

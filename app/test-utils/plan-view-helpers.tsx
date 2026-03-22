@@ -2,7 +2,9 @@ import { mock } from 'bun:test';
 import React, { useEffect } from 'react';
 
 import { PlanViewProvider, usePlanViewDynamicContext, usePlanViewStaticContext } from '~/contexts/PlanViewProvider';
+import { SettingsProvider } from '~/contexts/SettingsContext';
 import { TerminalProvider } from '~/contexts/TerminalContext';
+import { DEFAULT_SETTINGS } from '~/utils/config/settings';
 
 type PlanViewProviderProps = Omit<React.ComponentProps<typeof PlanViewProvider>, 'children'>;
 
@@ -46,9 +48,11 @@ export const createPlanViewWrapper = (
 
         return (
             <TerminalProvider terminalHeight={viewport.terminalHeight}>
-                <PlanViewProvider {...props}>
-                    <ViewportHeightSetter>{children}</ViewportHeightSetter>
-                </PlanViewProvider>
+                <SettingsProvider settings={DEFAULT_SETTINGS}>
+                    <PlanViewProvider {...props}>
+                        <ViewportHeightSetter>{children}</ViewportHeightSetter>
+                    </PlanViewProvider>
+                </SettingsProvider>
             </TerminalProvider>
         );
     };

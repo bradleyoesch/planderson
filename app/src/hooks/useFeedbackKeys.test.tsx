@@ -11,63 +11,17 @@
 
 import { act, renderHook } from '@testing-library/react';
 import { describe, expect, mock, test } from 'bun:test';
-import React, { type ReactNode, useEffect } from 'react';
 
-import { PlanViewProvider, usePlanViewDynamicContext, usePlanViewStaticContext } from '~/contexts/PlanViewProvider';
-import { TerminalProvider } from '~/contexts/TerminalContext';
+import { createPlanViewProps, createPlanViewTestHook, createPlanViewWrapper } from '~/test-utils/plan-view-helpers';
 
 import { useFeedbackKeys } from './useFeedbackKeys';
 
 describe('useFeedbackKeys', () => {
-    const defaultProps = {
-        content: Array.from({ length: 50 }, (_, i) => `Line ${i + 1}`).join('\n'),
-        sessionId: 'test123',
-        terminalWidth: 80,
-        onShowHelp: mock(() => {}),
-        onApprove: mock(() => {}),
-        onDeny: mock(() => {}),
-        onCancel: mock(() => {}),
-    };
-
-    const createWrapper = (
-        props = defaultProps,
-        viewport: { viewportHeight: number; terminalHeight?: number } = { viewportHeight: 20 },
-    ) => {
-        const Wrapper = ({ children }: { children: ReactNode }) => {
-            const ViewportHeightSetter = ({ children: c }: { children: ReactNode }) => {
-                const { state, dispatch } = usePlanViewDynamicContext();
-
-                useEffect(() => {
-                    if (state.viewportHeight !== viewport.viewportHeight) {
-                        dispatch({ type: 'SET_VIEWPORT_HEIGHT', height: viewport.viewportHeight });
-                    }
-                }, [state.viewportHeight, dispatch]);
-
-                return <>{c}</>;
-            };
-
-            return (
-                <TerminalProvider terminalHeight={viewport.terminalHeight}>
-                    <PlanViewProvider {...props}>
-                        <ViewportHeightSetter>{children}</ViewportHeightSetter>
-                    </PlanViewProvider>
-                </TerminalProvider>
-            );
-        };
-        Wrapper.displayName = 'TestWrapper';
-        return Wrapper;
-    };
-
-    const useTestHook = () => {
-        const { state, dispatch } = usePlanViewDynamicContext();
-        const { contentLines, onShowHelp, onCancel } = usePlanViewStaticContext();
-        useFeedbackKeys();
-        return { state, dispatch, contentLines, onShowHelp, onCancel };
-    };
+    const useTestHook = createPlanViewTestHook(useFeedbackKeys);
 
     describe('Comment Mode Actions', () => {
         test('can enter comment mode and save comment', () => {
-            const wrapper = createWrapper();
+            const wrapper = createPlanViewWrapper();
             const { result } = renderHook(() => useTestHook(), { wrapper });
 
             act(() => {
@@ -92,7 +46,7 @@ describe('useFeedbackKeys', () => {
         });
 
         test('pre-fills existing comment when editing', () => {
-            const wrapper = createWrapper();
+            const wrapper = createPlanViewWrapper();
             const { result } = renderHook(() => useTestHook(), { wrapper });
 
             act(() => {
@@ -120,7 +74,7 @@ describe('useFeedbackKeys', () => {
         });
 
         test('handles multi-line comment selection', () => {
-            const wrapper = createWrapper();
+            const wrapper = createPlanViewWrapper();
             const { result } = renderHook(() => useTestHook(), { wrapper });
 
             act(() => {
@@ -146,7 +100,7 @@ describe('useFeedbackKeys', () => {
         });
 
         test('does not pre-fill when multiple lines selected even if one has comment', () => {
-            const wrapper = createWrapper();
+            const wrapper = createPlanViewWrapper();
             const { result } = renderHook(() => useTestHook(), { wrapper });
 
             act(() => {
@@ -177,7 +131,7 @@ describe('useFeedbackKeys', () => {
 
     describe('Question Mode Actions', () => {
         test('can enter line question mode', () => {
-            const wrapper = createWrapper();
+            const wrapper = createPlanViewWrapper();
             const { result } = renderHook(() => useTestHook(), { wrapper });
 
             act(() => {
@@ -201,7 +155,7 @@ describe('useFeedbackKeys', () => {
         });
 
         test('pre-fills existing question when editing', () => {
-            const wrapper = createWrapper();
+            const wrapper = createPlanViewWrapper();
             const { result } = renderHook(() => useTestHook(), { wrapper });
 
             act(() => {
@@ -227,7 +181,7 @@ describe('useFeedbackKeys', () => {
         });
 
         test('handles multi-line question selection', () => {
-            const wrapper = createWrapper();
+            const wrapper = createPlanViewWrapper();
             const { result } = renderHook(() => useTestHook(), { wrapper });
 
             act(() => {
@@ -253,7 +207,7 @@ describe('useFeedbackKeys', () => {
 
     describe('Delete Toggle Actions', () => {
         test('marks line for deletion', () => {
-            const wrapper = createWrapper();
+            const wrapper = createPlanViewWrapper();
             const { result } = renderHook(() => useTestHook(), { wrapper });
 
             act(() => {
@@ -273,7 +227,7 @@ describe('useFeedbackKeys', () => {
         });
 
         test('unmarks line when toggling already deleted line', () => {
-            const wrapper = createWrapper();
+            const wrapper = createPlanViewWrapper();
             const { result } = renderHook(() => useTestHook(), { wrapper });
 
             act(() => {
@@ -296,7 +250,7 @@ describe('useFeedbackKeys', () => {
         });
 
         test('marks multiple selected lines for deletion', () => {
-            const wrapper = createWrapper();
+            const wrapper = createPlanViewWrapper();
             const { result } = renderHook(() => useTestHook(), { wrapper });
 
             act(() => {
@@ -321,7 +275,7 @@ describe('useFeedbackKeys', () => {
         });
 
         test('toggle logic: deletes all when some selected lines are not deleted', () => {
-            const wrapper = createWrapper();
+            const wrapper = createPlanViewWrapper();
             const { result } = renderHook(() => useTestHook(), { wrapper });
 
             act(() => {
@@ -349,7 +303,7 @@ describe('useFeedbackKeys', () => {
         });
 
         test('toggle logic: undeletes all when all selected lines are deleted', () => {
-            const wrapper = createWrapper();
+            const wrapper = createPlanViewWrapper();
             const { result } = renderHook(() => useTestHook(), { wrapper });
 
             act(() => {
@@ -380,7 +334,7 @@ describe('useFeedbackKeys', () => {
         });
 
         test('clears selection after delete operation', () => {
-            const wrapper = createWrapper();
+            const wrapper = createPlanViewWrapper();
             const { result } = renderHook(() => useTestHook(), { wrapper });
 
             act(() => {
@@ -406,7 +360,7 @@ describe('useFeedbackKeys', () => {
 
     describe('Command Mode', () => {
         test('can enter command mode', () => {
-            const wrapper = createWrapper();
+            const wrapper = createPlanViewWrapper();
             const { result } = renderHook(() => useTestHook(), { wrapper });
 
             // Simulate entering command mode (what ':' would trigger)
@@ -426,7 +380,7 @@ describe('useFeedbackKeys', () => {
 
     describe('Help Mode', () => {
         test('can enter help mode and clears selection', () => {
-            const wrapper = createWrapper();
+            const wrapper = createPlanViewWrapper();
             const { result } = renderHook(() => useTestHook(), { wrapper });
 
             act(() => {
@@ -449,7 +403,7 @@ describe('useFeedbackKeys', () => {
 
     describe('Smart Submit Behavior', () => {
         test('enters confirm-approve mode when no feedback exists', () => {
-            const wrapper = createWrapper();
+            const wrapper = createPlanViewWrapper();
             const { result } = renderHook(() => useTestHook(), { wrapper });
 
             // Simulate Enter key press with no feedback
@@ -465,7 +419,7 @@ describe('useFeedbackKeys', () => {
         });
 
         test('enters confirm-deny mode when any feedback exists', () => {
-            const wrapper = createWrapper();
+            const wrapper = createPlanViewWrapper();
             const { result } = renderHook(() => useTestHook(), { wrapper });
 
             act(() => {
@@ -493,7 +447,7 @@ describe('useFeedbackKeys', () => {
     describe('Escape - Cancel/Deny', () => {
         test('calls onCancel immediately when no feedback exists', () => {
             const onCancel = mock(() => {});
-            const wrapper = createWrapper({ ...defaultProps, onCancel });
+            const wrapper = createPlanViewWrapper(createPlanViewProps({ onCancel }));
             const { result } = renderHook(() => useTestHook(), { wrapper });
 
             // Simulate Escape key press with no feedback
@@ -506,7 +460,7 @@ describe('useFeedbackKeys', () => {
 
         test('enters confirm-cancel mode when feedback exists', () => {
             const onCancel = mock(() => {});
-            const wrapper = createWrapper({ ...defaultProps, onCancel });
+            const wrapper = createPlanViewWrapper(createPlanViewProps({ onCancel }));
             const { result } = renderHook(() => useTestHook(), { wrapper });
 
             act(() => {
@@ -529,7 +483,7 @@ describe('useFeedbackKeys', () => {
         });
 
         test('clears selection when Escape pressed', () => {
-            const wrapper = createWrapper();
+            const wrapper = createPlanViewWrapper();
             const { result } = renderHook(() => useTestHook(), { wrapper });
 
             act(() => {
@@ -550,7 +504,7 @@ describe('useFeedbackKeys', () => {
 
     describe('Selection Handling', () => {
         test('handles empty selection (selectionAnchor null) for single line operations', () => {
-            const wrapper = createWrapper();
+            const wrapper = createPlanViewWrapper();
             const { result } = renderHook(() => useTestHook(), { wrapper });
 
             act(() => {
@@ -573,7 +527,7 @@ describe('useFeedbackKeys', () => {
         });
 
         test('handles selection with cursor before anchor (reverse selection)', () => {
-            const wrapper = createWrapper();
+            const wrapper = createPlanViewWrapper();
             const { result } = renderHook(() => useTestHook(), { wrapper });
 
             act(() => {

@@ -22,16 +22,18 @@ export const renderWithTerminalProvider = (
 ) => {
     return inkRender(
         <TerminalProvider terminalWidth={options?.terminalWidth} terminalHeight={options?.terminalHeight}>
-            <PlanViewProvider
-                sessionId="test-session"
-                content=""
-                onShowHelp={NOOP}
-                onApprove={NOOP}
-                onDeny={NOOP}
-                onCancel={NOOP}
-            >
-                {component}
-            </PlanViewProvider>
+            <SettingsProvider settings={DEFAULT_SETTINGS}>
+                <PlanViewProvider
+                    sessionId="test-session"
+                    content=""
+                    onShowHelp={NOOP}
+                    onApprove={NOOP}
+                    onDeny={NOOP}
+                    onCancel={NOOP}
+                >
+                    {component}
+                </PlanViewProvider>
+            </SettingsProvider>
         </TerminalProvider>,
     );
 };
@@ -86,16 +88,18 @@ export const renderWithPlanViewProvider = (
 
     return inkRender(
         <TerminalProvider terminalWidth={options?.terminalWidth} terminalHeight={options?.terminalHeight}>
-            <PlanViewProvider
-                sessionId={sessionId}
-                content={content}
-                onShowHelp={() => {}}
-                onApprove={() => {}}
-                onDeny={() => {}}
-                onCancel={() => {}}
-            >
-                {component}
-            </PlanViewProvider>
+            <SettingsProvider settings={DEFAULT_SETTINGS}>
+                <PlanViewProvider
+                    sessionId={sessionId}
+                    content={content}
+                    onShowHelp={() => {}}
+                    onApprove={() => {}}
+                    onDeny={() => {}}
+                    onCancel={() => {}}
+                >
+                    {component}
+                </PlanViewProvider>
+            </SettingsProvider>
         </TerminalProvider>,
     );
 };
