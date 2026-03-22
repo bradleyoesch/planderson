@@ -10,5 +10,3 @@
 `bun run dev:reset` removes `dev.json`, so `getPlandersonBaseDir()` falls back to `~/.planderson/` automatically.
 
 **Hook resolution:** The Claude Code hook is configured as `"command": "planderson hook"` in the plugin's hooks.json. Claude Code caches the resolved binary at startup. In dev mode, since `dev.json` is read at runtime by `getPlandersonBaseDir()`, the hook uses the correct worktree path regardless of which binary Claude cached — no restart required after running `bun run dev:set`.
-
-**Warning:** Enabling `launchMode: "auto-tmux"` in both local and prod settings simultaneously causes both to trigger.
