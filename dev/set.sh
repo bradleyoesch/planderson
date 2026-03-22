@@ -8,7 +8,6 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-SETTINGS_FILE="$REPO_ROOT/settings.json"
 BIN_DIR="${XDG_DATA_HOME:-$HOME/.local}/bin"
 WRAPPER="$SCRIPT_DIR/planderson"
 
@@ -32,17 +31,6 @@ echo "✓ Symlinked $BIN_DIR/planderson → $WRAPPER"
 mkdir -p "$HOME/.planderson"
 printf '{\n    "baseDir": "%s"\n}\n' "$REPO_ROOT" > "$HOME/.planderson/dev.json"
 echo "✓ Created $HOME/.planderson/dev.json (baseDir: $REPO_ROOT)"
-
-# Create local settings.json if it doesn't exist
-if [ ! -f "$SETTINGS_FILE" ]; then
-    cat > "$SETTINGS_FILE" << 'SETTINGS'
-{
-    "launchMode": "manual",
-    "approveAction": "approve"
-}
-SETTINGS
-    echo "✓ Created $SETTINGS_FILE"
-fi
 
 # Only configure tmux if running in a tmux session
 if [ -z "$TMUX" ]; then

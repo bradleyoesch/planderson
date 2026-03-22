@@ -7,7 +7,6 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-SETTINGS_FILE="$REPO_ROOT/settings.json"
 BIN_DIR="${XDG_DATA_HOME:-$HOME/.local}/bin"
 WRAPPER="$SCRIPT_DIR/planderson"
 GLOBAL_BINARY="$HOME/.planderson/planderson"
@@ -29,31 +28,6 @@ fi
 # Remove dev config so getPlandersonBaseDir() falls back to ~/.planderson
 rm -f "$HOME/.planderson/dev.json"
 echo "✓ Removed $HOME/.planderson/dev.json"
-
-# Ensure launchMode is set to manual in settings.json
-if [ -f "$SETTINGS_FILE" ]; then
-    if command -v jq >/dev/null 2>&1; then
-        TMP_FILE=$(mktemp)
-        jq --indent 4 '.launchMode = "manual"' "$SETTINGS_FILE" > "$TMP_FILE"
-        mv "$TMP_FILE" "$SETTINGS_FILE"
-    else
-        cat > "$SETTINGS_FILE" << 'EOF'
-{
-    "launchMode": "manual",
-    "approveAction": "approve"
-}
-EOF
-    fi
-    echo "✓ Updated $SETTINGS_FILE (launchMode: manual)"
-else
-    cat > "$SETTINGS_FILE" << 'EOF'
-{
-    "launchMode": "manual",
-    "approveAction": "approve"
-}
-EOF
-    echo "✓ Created $SETTINGS_FILE (launchMode: manual)"
-fi
 
 # Remove generated local tmux config
 LOCAL_TMUX_CONF="$REPO_ROOT/integrations/tmux/.tmux.local.conf"
