@@ -22,7 +22,7 @@ import { stripAnsi } from '~/test-utils/ink-helpers';
 
 const MARKERS = {
     COMMENT: '💬',
-    QUESTION: '❓',
+    QUESTION: '❔',
 } as const;
 
 // ============================================================================
@@ -197,7 +197,7 @@ export const hasComment = (frame: string, lineContent: string): boolean => {
 };
 
 /**
- * Check if a line has a question marker (❓) above it
+ * Check if a line has a question marker (❔) above it
  * Checks consecutive feedback lines immediately above (stops at first non-feedback line)
  */
 export const hasQuestion = (frame: string, lineContent: string): boolean => {
@@ -274,7 +274,7 @@ export const countComments = (frame: string): number => {
  * Count question markers
  */
 export const countQuestions = (frame: string): number => {
-    return (frame.match(/❓/g) || []).length;
+    return (frame.match(/❔/g) || []).length;
 };
 
 // ============================================================================

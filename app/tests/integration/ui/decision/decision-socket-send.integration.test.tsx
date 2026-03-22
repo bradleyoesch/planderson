@@ -78,7 +78,7 @@ describe('decision decision-socket-send integration', () => {
 
         await typeKey(stdin, 'q');
         await typeText(stdin, 'what is the timeline?', { enter: true });
-        await waitFor(() => expect(lastFrame()).toContain('❓'));
+        await waitFor(() => expect(lastFrame()).toContain('❔'));
 
         await typeKey(stdin, Keys.ENTER);
         await waitFor(() => expect(lastFrame()!.toLowerCase()).toContain('send feedback'));

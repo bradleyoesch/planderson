@@ -11,19 +11,20 @@ import type { CodeMetadata } from '~/utils/rendering/markdown/markdown';
 import { WrappedFeedback, WrappedLine } from './WrappedLine';
 describe('WrappedLine', () => {
     describe('WrappedFeedback', () => {
-        test('renders comment with SUBTLE color and italic', () => {
+        test('renders comment with ACCENT color and italic', () => {
             const feedback: FeedbackMetadata = {
                 lineIndex: 0,
                 text: 'This is a comment',
                 segments: [{ content: 'This is a comment', segmentIndex: 0 }],
                 type: 'comment',
+                prefix: '💬\u00A0',
             };
 
             const { lastFrame } = render(<WrappedFeedback feedback={feedback} />);
 
             const output = lastFrame();
             expect(output).toContain('This is a comment');
-            expect(output).toContain(COLORS.SUBTLE);
+            expect(output).toContain(COLORS.ACCENT);
             expect(output).toContain(ANSI.ITALIC);
         });
 
@@ -33,6 +34,7 @@ describe('WrappedLine', () => {
                 text: 'Why is this here?',
                 segments: [{ content: 'Why is this here?', segmentIndex: 0 }],
                 type: 'question',
+                prefix: '❔\u00A0',
             };
 
             const { lastFrame } = render(<WrappedFeedback feedback={feedback} />);
@@ -53,6 +55,7 @@ describe('WrappedLine', () => {
                         { content: 'that wraps', segmentIndex: 1 },
                     ],
                     type: 'comment',
+                    prefix: '💬\u00A0',
                 };
 
                 const { lastFrame } = render(<WrappedFeedback feedback={feedback} />);
@@ -70,6 +73,7 @@ describe('WrappedLine', () => {
                         { content: ' line     ', segmentIndex: 1 },
                     ],
                     type: 'comment',
+                    prefix: '💬\u00A0',
                 };
 
                 const { lastFrame } = render(<WrappedFeedback feedback={feedback} />);
@@ -84,6 +88,7 @@ describe('WrappedLine', () => {
                     text: '',
                     segments: [{ content: '', segmentIndex: 0 }],
                     type: 'comment',
+                    prefix: '💬\u00A0',
                 };
 
                 const { lastFrame } = render(<WrappedFeedback feedback={feedback} />);
