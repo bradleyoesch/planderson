@@ -32,7 +32,7 @@ The goal is to provide a lightweight TUI to bridge the gap between "pure" termin
     /plugin install planderson@planderson
     ```
 
-3. **Restart Claude Code.** Plugins need a restart to take effect.
+3. **Run `/reload-plugins`** to activate the plugin without restarting.
 
 ## Usage
 
