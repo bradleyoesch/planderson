@@ -32,7 +32,11 @@ The goal is to provide a lightweight TUI to bridge the gap between "pure" termin
     /plugin install planderson@planderson
     ```
 
-3. **Run `/reload-plugins`** to activate the plugin without restarting.
+3. **Reload plugins or restart claude for plugin to take effect:**
+
+    ```
+    /reload-plugins
+    ```
 
 ## Usage
 
