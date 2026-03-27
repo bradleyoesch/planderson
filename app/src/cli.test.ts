@@ -1,6 +1,6 @@
-import { describe, expect, test } from 'bun:test';
+import { afterEach, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test';
 
-import { parseSubcommand } from './cli';
+import { main, parseSubcommand } from './cli';
 
 describe('src cli', () => {
     describe('parseSubcommand', () => {
@@ -106,11 +106,54 @@ describe('src cli', () => {
             expect(parseSubcommand(['update'])).toEqual({ command: 'update', remainingArgs: [] });
         });
 
+        test('returns completions subcommand with no args', () => {
+            const result = parseSubcommand(['completions']);
+
+            expect(result.command).toBe('completions');
+            expect(result.remainingArgs).toEqual([]);
+        });
+
+        test('returns completions subcommand with forwarded args', () => {
+            const result = parseSubcommand(['completions', 'bash']);
+
+            expect(result.command).toBe('completions');
+            expect(result.remainingArgs).toEqual(['bash']);
+        });
+
         test('returns original string for unknown subcommand', () => {
             const result = parseSubcommand(['unknown']);
 
             expect(result.command).toBe('unknown');
             expect(result.remainingArgs).toEqual([]);
+        });
+    });
+
+    describe('main', () => {
+        beforeEach(() => {
+            spyOn(console, 'log').mockImplementation(() => {});
+            spyOn(console, 'error').mockImplementation(() => {});
+            spyOn(process, 'exit').mockImplementation(((code?: number) => {
+                throw { isExit: true, exitCode: code ?? 0 };
+            }) as (code?: number) => never);
+        });
+
+        afterEach(() => {
+            mock.restore();
+        });
+
+        const runMain = async (args: string[]): Promise<number> => {
+            try {
+                await main(args);
+                return -1;
+            } catch (e: unknown) {
+                const err = e as { isExit?: boolean; exitCode?: number };
+                if (err?.isExit) return err.exitCode ?? 0;
+                throw e;
+            }
+        };
+
+        test('exits 2 for unknown command', async () => {
+            expect(await runMain(['unknowncmd'])).toBe(2);
         });
     });
 });

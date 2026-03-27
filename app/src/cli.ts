@@ -2,10 +2,10 @@ import { spawnSync } from 'child_process';
 import path from 'path';
 
 import { version } from '../../package.json';
-import { runHelp, runHook, runSettings, runTui, runUpgrade } from './commands';
+import { runCompletions, runHelp, runHook, runSettings, runTui, runUpgrade } from './commands';
 import { getPlandersonBaseDir } from './utils/io/paths';
 
-const KNOWN_COMMANDS = new Set(['help', 'hook', 'settings', 'tui', 'tmux', 'upgrade']);
+const KNOWN_COMMANDS = new Set(['help', 'hook', 'settings', 'tui', 'tmux', 'upgrade', 'completions']);
 
 export const parseSubcommand = (args: string[]): { command: string; remainingArgs: string[] } => {
     const first = args[0];
@@ -34,7 +34,7 @@ const runTmux = (args: string[]): void => {
     spawnSync('bash', [scriptPath, ...args], { stdio: 'inherit' });
 };
 
-const main = async (args: string[]): Promise<void> => {
+export const main = async (args: string[]): Promise<void> => {
     const { command, remainingArgs } = parseSubcommand(args);
 
     switch (command) {
@@ -56,13 +56,16 @@ const main = async (args: string[]): Promise<void> => {
         case 'upgrade':
             await runUpgrade();
             break;
+        case 'completions':
+            runCompletions(remainingArgs);
+            break;
         case 'version':
             console.log(version);
             process.exit(0);
             break;
         default:
             console.log(`planderson: '${command}' is not a planderson command. See 'planderson --help'`);
-            process.exit(1);
+            process.exit(2);
     }
 };
 

@@ -2,14 +2,14 @@ import { parseArguments } from '~/utils/cli/args';
 import { DEFAULT_SETTINGS, loadSettings, saveSettings, Settings, SETTINGS_DOCS } from '~/utils/config/settings';
 import { generateId } from '~/utils/id';
 
-const GREEN = '\x1b[32m';
-const GREY = '\x1b[90m';
-const RED = '\x1b[31m';
-const RESET = '\x1b[0m';
-
 const LABEL_WIDTH = Math.max('Current value'.length, 'Valid values'.length, 'Description'.length);
 
 export const runSettings = (args: string[]): void => {
+    const GREEN = process.stdout.isTTY ? '\x1b[32m' : '';
+    const GREY = process.stdout.isTTY ? '\x1b[90m' : '';
+    const RED = process.stderr.isTTY ? '\x1b[31m' : '';
+    const RESET = process.stdout.isTTY || process.stderr.isTTY ? '\x1b[0m' : '';
+
     const sessionId = generateId();
     const { remainingArgs } = parseArguments(args);
 
@@ -83,7 +83,7 @@ export const runSettings = (args: string[]): void => {
         updates.forEach(({ key }) => {
             if (!validKeys.has(key)) {
                 console.error(`${RED}Unknown setting: '${key}'${RESET}`);
-                process.exit(1);
+                process.exit(2);
             }
             printSettingDetail(key as keyof Settings);
         });
