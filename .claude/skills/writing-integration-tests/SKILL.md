@@ -1,6 +1,6 @@
 ---
 name: writing-integration-tests
-description: Use when writing, creating, or modifying integration tests (.integration.test.ts/.tsx files). Use when asked to "add integration test", "write integration test", or when implementing features that need keyboard/behavioral test coverage. Also use when integration tests fail and need fixing.
+description: ALWAYS invoke before creating or modifying integration test files (.integration.test.ts/.integration.test.tsx). Also use when integration tests fail and need fixing.
 ---
 
 # Writing Integration Tests
