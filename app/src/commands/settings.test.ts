@@ -157,8 +157,8 @@ describe('commands settings', () => {
     });
 
     describe('detail mode with unknown key', () => {
-        test('exits 1 for unknown setting', () => {
-            expect(run(['--unknownKey'])).toBe(1);
+        test('exits 2 for unknown setting', () => {
+            expect(run(['--unknownKey'])).toBe(2);
         });
 
         test('error output contains Unknown setting message', () => {

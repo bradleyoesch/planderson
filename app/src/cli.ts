@@ -34,7 +34,7 @@ const runTmux = (args: string[]): void => {
     spawnSync('bash', [scriptPath, ...args], { stdio: 'inherit' });
 };
 
-const main = async (args: string[]): Promise<void> => {
+export const main = async (args: string[]): Promise<void> => {
     const { command, remainingArgs } = parseSubcommand(args);
 
     switch (command) {
@@ -62,7 +62,7 @@ const main = async (args: string[]): Promise<void> => {
             break;
         default:
             console.log(`planderson: '${command}' is not a planderson command. See 'planderson --help'`);
-            process.exit(1);
+            process.exit(2);
     }
 };
 

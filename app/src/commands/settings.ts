@@ -83,7 +83,7 @@ export const runSettings = (args: string[]): void => {
         updates.forEach(({ key }) => {
             if (!validKeys.has(key)) {
                 console.error(`${RED}Unknown setting: '${key}'${RESET}`);
-                process.exit(1);
+                process.exit(2);
             }
             printSettingDetail(key as keyof Settings);
         });
