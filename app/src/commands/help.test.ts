@@ -56,6 +56,13 @@ describe('commands help', () => {
             expect(output).toContain('Replaces current pane with TUI and restores on exit');
         });
 
+        test('contains completions command', () => {
+            const output = buildHelpText();
+
+            expect(output).toContain('completions');
+            expect(output).toContain('Output shell completion script for bash or zsh');
+        });
+
         test('contains flags', () => {
             const output = buildHelpText();
 

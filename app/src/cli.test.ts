@@ -106,6 +106,20 @@ describe('src cli', () => {
             expect(parseSubcommand(['update'])).toEqual({ command: 'update', remainingArgs: [] });
         });
 
+        test('returns completions subcommand with no args', () => {
+            const result = parseSubcommand(['completions']);
+
+            expect(result.command).toBe('completions');
+            expect(result.remainingArgs).toEqual([]);
+        });
+
+        test('returns completions subcommand with forwarded args', () => {
+            const result = parseSubcommand(['completions', 'bash']);
+
+            expect(result.command).toBe('completions');
+            expect(result.remainingArgs).toEqual(['bash']);
+        });
+
         test('returns original string for unknown subcommand', () => {
             const result = parseSubcommand(['unknown']);
 
