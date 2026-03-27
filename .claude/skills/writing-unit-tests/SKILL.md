@@ -1,6 +1,6 @@
 ---
 name: writing-unit-tests
-description: Use when writing, creating, or modifying unit tests (.test.ts/.test.tsx files). Use when asked to "add tests", "write tests", "test this", or when implementing features that need test coverage. Also use when unit tests fail and need fixing.
+description: ALWAYS invoke before creating or modifying plain unit test files (.test.ts/.test.tsx), even when following a pre-specified plan that already includes test code. Also use when unit tests fail and need fixing.
 ---
 
 # Writing Unit Tests

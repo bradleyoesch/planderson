@@ -1,6 +1,6 @@
 ---
 name: writing-snapshot-tests
-description: Use when writing, creating, or modifying snapshot tests (.snapshot.test.ts/.snapshot.test.tsx files). Use when asked to "add snapshot tests", "test visual output", or when a component's visual layout is the behavior under test. Also use when snapshot tests fail and need investigation.
+description: ALWAYS invoke before creating or modifying snapshot test files (.snapshot.test.ts/.snapshot.test.tsx). Also use when snapshot tests fail and need investigation.
 ---
 
 # Writing Snapshot Tests

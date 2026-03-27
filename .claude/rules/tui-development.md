@@ -1,3 +1,10 @@
+---
+paths:
+  - "app/src/**/*.tsx"
+  - "app/src/**/*.snapshot.test.ts"
+  - "dev/**"
+---
+
 # TUI Development with render-tui
 
 `bun run render-tui -- <file> [--keys <seq>] [--width N] [--height N] [--output <file>] [--watch]`
