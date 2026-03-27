@@ -168,6 +168,24 @@ describe('commands settings', () => {
         });
     });
 
+    describe('color output', () => {
+        test('omits ANSI codes in success message when stdout is not a TTY', () => {
+            Object.defineProperty(process.stdout, 'isTTY', { value: undefined, configurable: true });
+            run(['--launchMode', 'auto-tmux']);
+            const out = output();
+            expect(out).not.toContain('\x1b[');
+            expect(out).toContain('launchMode');
+            Object.defineProperty(process.stdout, 'isTTY', { value: true, configurable: true });
+        });
+
+        test('includes ANSI codes in success message when stdout is a TTY', () => {
+            Object.defineProperty(process.stdout, 'isTTY', { value: true, configurable: true });
+            run(['--launchMode', 'auto-tmux']);
+            const out = output();
+            expect(out).toContain('\x1b[32m'); // GREEN
+        });
+    });
+
     describe('update mode', () => {
         test('exits 0 when setting is updated successfully', () => {
             expect(run(['--launchMode', 'auto-tmux'])).toBe(0);
