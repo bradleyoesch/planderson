@@ -1,7 +1,6 @@
 ---
 paths:
   - "app/src/utils/config/**"
-  - "app/src/settings.ts"
 ---
 
 # Adding New Settings
