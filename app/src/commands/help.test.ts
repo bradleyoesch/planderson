@@ -63,6 +63,13 @@ describe('commands help', () => {
             expect(output).toContain('Output shell completion script for bash or zsh');
         });
 
+        test('contains setup command', () => {
+            const output = buildHelpText();
+
+            expect(output).toContain('setup');
+            expect(output).toContain('Interactive onboarding and configuration');
+        });
+
         test('contains flags', () => {
             const output = buildHelpText();
 

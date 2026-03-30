@@ -10,6 +10,8 @@ Planderson uses a **pane-swap mechanism** to display the plan TUI in the Claude 
 
 ### Installation
 
+Run `planderson setup` for an interactive walkthrough of the steps below.
+
 ### Manual launch
 
 After installing planderson, add to your `~/.tmux.conf`:

@@ -38,6 +38,12 @@ The goal is to provide a lightweight TUI to bridge the gap between "pure" termin
     /reload-plugins
     ```
 
+4. **Run setup to configure planderson:**
+
+    ```bash
+    planderson setup
+    ```
+
 ## Usage
 
 Basic controls while in the plan TUI:
@@ -69,6 +75,8 @@ planderson tui
 ```
 
 ## Recommended setup
+
+Run `planderson setup` for an interactive walkthrough of the recommended configuration steps below.
 
 ### Tmux integration
 

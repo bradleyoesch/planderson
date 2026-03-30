@@ -2,10 +2,10 @@ import { spawnSync } from 'child_process';
 import path from 'path';
 
 import { version } from '../../package.json';
-import { runCompletions, runHelp, runHook, runSettings, runTui, runUpgrade } from './commands';
+import { runCompletions, runHelp, runHook, runSettings, runSetup, runTui, runUpgrade } from './commands';
 import { getPlandersonBaseDir } from './utils/io/paths';
 
-const KNOWN_COMMANDS = new Set(['help', 'hook', 'settings', 'tui', 'tmux', 'upgrade', 'completions']);
+const KNOWN_COMMANDS = new Set(['help', 'hook', 'settings', 'setup', 'tui', 'tmux', 'upgrade', 'completions']);
 
 export const parseSubcommand = (args: string[]): { command: string; remainingArgs: string[] } => {
     const first = args[0];
@@ -46,6 +46,9 @@ export const main = async (args: string[]): Promise<void> => {
             break;
         case 'settings':
             runSettings(remainingArgs);
+            break;
+        case 'setup':
+            await runSetup();
             break;
         case 'tmux':
             runTmux(remainingArgs);
