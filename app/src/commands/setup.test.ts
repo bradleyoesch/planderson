@@ -130,11 +130,11 @@ describe('commands setup', () => {
             expect(output()).toContain('auto-tmux');
         });
 
-        test('shows settings hint when user answers n', async () => {
+        test('saves manual when user answers n', async () => {
             // tmux=y, launchMode=n, approveAction=n, autoUpgrade=n
             await run(['y', 'n', 'n', 'n']);
 
-            expect(output()).toContain('planderson settings --launchMode');
+            expect(output()).toContain('manual');
         });
     });
 
@@ -152,10 +152,10 @@ describe('commands setup', () => {
             expect(output()).toContain('exit');
         });
 
-        test('shows settings hint when user answers n', async () => {
+        test('saves approve when user answers n', async () => {
             await run(allSkippedAnswers);
 
-            expect(output()).toContain('planderson settings --approveAction');
+            expect(output()).toContain('approve');
         });
     });
 
@@ -173,10 +173,10 @@ describe('commands setup', () => {
             expect(output()).toContain('always');
         });
 
-        test('shows settings hint when user answers n', async () => {
+        test('saves never when user answers n', async () => {
             await run(allSkippedAnswers);
 
-            expect(output()).toContain('planderson settings --autoUpgrade');
+            expect(output()).toContain('never');
         });
     });
 

@@ -32,20 +32,16 @@ const runSettingStep = async (
     rl: readline.Interface,
     sessionId: string,
     key: keyof Settings,
-    targetValue: string,
+    yesValue: string,
+    noValue: string,
     question: string,
     summary: StepResult[],
 ): Promise<void> => {
-    const wantsToSet = await promptYN(rl, `\n${question} (y/n): `);
-    if (!wantsToSet) {
-        console.log(`  For more information or to configure later, run: planderson settings --${key}`);
-        summary.push({ step: key, result: 'skipped' });
-        return;
-    }
-
-    saveSettings(sessionId, { [key]: targetValue });
-    console.log(`  ✓ Set ${key}: ${targetValue}`);
-    summary.push({ step: key, result: 'configured' });
+    const wantsYes = await promptYN(rl, `\n${question} (y/n): `);
+    const value = wantsYes ? yesValue : noValue;
+    saveSettings(sessionId, { [key]: value });
+    console.log(`  ✓ Set ${key}: ${value}`);
+    summary.push({ step: key, result: wantsYes ? 'configured' : 'skipped' });
 };
 
 export const runSetup = async (): Promise<void> => {
@@ -82,6 +78,7 @@ export const runSetup = async (): Promise<void> => {
             sessionId,
             'launchMode',
             'auto-tmux',
+            'manual',
             'Automatically launch the TUI in tmux pane when a plan is ready?',
             summary,
         );
@@ -93,12 +90,13 @@ export const runSetup = async (): Promise<void> => {
         sessionId,
         'approveAction',
         'exit',
+        'approve',
         'Change approve behavior to exit instead of submit, to allow user to perform actions like approve and clear context via claude?',
         summary,
     );
 
     // Step 4: autoUpgrade
-    await runSettingStep(rl, sessionId, 'autoUpgrade', 'always', 'Enable auto-upgrades?', summary);
+    await runSettingStep(rl, sessionId, 'autoUpgrade', 'always', 'never', 'Enable auto-upgrades?', summary);
 
     rl.close();
     printSummary(summary);
