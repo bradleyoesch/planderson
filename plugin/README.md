@@ -32,7 +32,7 @@ The goal is to provide a lightweight TUI to bridge the gap between "pure" termin
     /reload-plugins
     ```
 
-4. **Run setup to configure planderson:**
+4. **(Optional) Run setup to configure planderson:**
 
     ```bash
     planderson setup

@@ -38,7 +38,7 @@ The goal is to provide a lightweight TUI to bridge the gap between "pure" termin
     /reload-plugins
     ```
 
-4. **Run setup to configure planderson:**
+4. **(Optional) Run setup to configure planderson:**
 
     ```bash
     planderson setup
@@ -73,28 +73,6 @@ Without any further setup or integrations (as described in the next section), yo
 ```bash
 planderson tui
 ```
-
-## Recommended setup
-
-Run `planderson setup` for an interactive walkthrough of the recommended configuration steps below.
-
-### Tmux integration
-
-For more control and seamless integration, setup with tmux: [integrations/tmux/README.md](./integrations/tmux/README.md).
-
-### Approve and clear context
-
-Claude does not currently support programmatically approving a plan and clearing context, e.g. "Yes, clear context and auto-accept edits".
-
-If you'd like to avoid accidentally approving a plan without clearing context, you may change the default action on approve to simply exit so you can trigger that manually. You may also exit as usual with other keybindings.
-
-Set `approveAction` setting to `exit`:
-
-```bash
-planderson settings --approveAction exit
-```
-
-For details, run `planderson settings --approveAction`
 
 ## Upgrading
 
