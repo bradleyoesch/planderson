@@ -70,7 +70,7 @@ mkdir -p "$PLANDERSON_DIR/completions"
 
 cat > "$PLANDERSON_DIR/completions/planderson.bash" << 'BASH_COMPLETION'
 _planderson_complete() {
-    local cmds="help hook settings tui tmux upgrade completions"
+    local cmds="help hook settings setup tui tmux upgrade completions"
     COMPREPLY=($(compgen -W "$cmds" -- "${COMP_WORDS[COMP_CWORD]}"))
 }
 complete -F _planderson_complete planderson
@@ -84,6 +84,7 @@ _planderson() {
         'help:Show help and keybindings'
         'hook:Process plan events from Claude Code hooks'
         'settings:View and update settings'
+        'setup:Interactive onboarding and configuration'
         'tui:Launch the plan viewer TUI'
         'tmux:Replace current pane with TUI and restore on exit'
         'upgrade:Upgrade planderson to the latest version'

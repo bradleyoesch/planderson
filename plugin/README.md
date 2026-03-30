@@ -32,6 +32,12 @@ The goal is to provide a lightweight TUI to bridge the gap between "pure" termin
     /reload-plugins
     ```
 
+4. **(Optional) Run setup to configure planderson:**
+
+    ```bash
+    planderson setup
+    ```
+
 ## Usage
 
 Basic controls while in the plan TUI:

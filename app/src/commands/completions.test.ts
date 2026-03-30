@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, mock, spyOn, test } from 'bun:
 
 import { runCompletions } from './completions';
 
-const SUBCOMMANDS = ['help', 'hook', 'settings', 'tui', 'tmux', 'upgrade', 'completions'];
+const SUBCOMMANDS = ['help', 'hook', 'settings', 'setup', 'tui', 'tmux', 'upgrade', 'completions'];
 
 describe('commands completions', () => {
     let logs: string[];

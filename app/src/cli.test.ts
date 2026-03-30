@@ -120,6 +120,13 @@ describe('src cli', () => {
             expect(result.remainingArgs).toEqual(['bash']);
         });
 
+        test('returns setup subcommand with no args', () => {
+            const result = parseSubcommand(['setup']);
+
+            expect(result.command).toBe('setup');
+            expect(result.remainingArgs).toEqual([]);
+        });
+
         test('returns original string for unknown subcommand', () => {
             const result = parseSubcommand(['unknown']);
 
