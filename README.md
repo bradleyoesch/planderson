@@ -46,6 +46,16 @@ The goal is to provide a lightweight TUI to bridge the gap between "pure" termin
 
 ## Usage
 
+Without any further setup or integrations, you may manually trigger the plan TUI. After Claude presents the plan to review, in a separate terminal, launch the TUI:
+
+```bash
+planderson tui
+```
+
+For more control and seamless integration, set up tmux integration: [integrations/tmux/README.md](./integrations/tmux/README.md).
+
+### Controls
+
 Basic controls while in the plan TUI:
 
 | Key                     | Action                         |
@@ -65,14 +75,6 @@ Basic controls while in the plan TUI:
    If no feedback to submit, `Enter` will approve the plan
 
 For details and more keybindings, run `planderson help` or hit `?` while in the TUI.
-
-## Manual launch
-
-Without any further setup or integrations (as described in the next section), you may manually trigger the plan TUI. After Claude presents the plan to review, in a separate terminal, launch the TUI:
-
-```bash
-planderson tui
-```
 
 ## Upgrading
 
