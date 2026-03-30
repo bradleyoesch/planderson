@@ -94,6 +94,12 @@ describe('commands setup', () => {
             expect(output()).toContain('tmux source-file');
         });
 
+        test('shows mouse and scroll support link when user answers y', async () => {
+            await run(['y', 'n', 'n', 'n']);
+
+            expect(output()).toContain('optional-tmux-mouse-and-scroll-support');
+        });
+
         test('shows tmux README link when user answers n', async () => {
             await run(allSkippedAnswers);
 

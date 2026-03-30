@@ -4,6 +4,8 @@ import { saveSettings, Settings } from '~/utils/config/settings';
 import { generateId } from '~/utils/id';
 
 const TMUX_README_URL = 'https://github.com/bradleyoesch/planderson/blob/main/integrations/tmux/README.md';
+const TMUX_MOUSE_URL =
+    'https://github.com/bradleyoesch/planderson/blob/main/integrations/tmux/README.md#optional-tmux-mouse-and-scroll-support';
 
 type StepResult = { step: string; result: 'configured' | 'skipped' };
 
@@ -63,6 +65,8 @@ export const runSetup = async (): Promise<void> => {
         console.log("    bind-key g run-shell 'planderson tmux'");
         console.log('');
         console.log('  Then reload: tmux source-file ~/.tmux.conf');
+        console.log('');
+        console.log(`  For mouse and scroll support, see: ${TMUX_MOUSE_URL}`);
         summary.push({ step: 'tmux integration', result: 'configured' });
     } else {
         console.log(`  For more information, see: ${TMUX_README_URL}`);
