@@ -88,10 +88,11 @@ describe('commands setup', () => {
             expect(output()).toContain('~/.tmux.conf');
         });
 
-        test('shows reload command when user answers y', async () => {
+        test('shows reload command on its own line when user answers y', async () => {
             await run(['y', 'n', 'n', 'n']);
 
-            expect(output()).toContain('tmux source-file');
+            expect(output()).toContain('Then reload:');
+            expect(output()).toContain('tmux source-file ~/.tmux.conf');
         });
 
         test('shows mouse and scroll support link on its own line when user answers y', async () => {

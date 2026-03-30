@@ -64,7 +64,8 @@ export const runSetup = async (): Promise<void> => {
         console.log('  Add to ~/.tmux.conf:');
         console.log("    bind-key g run-shell 'planderson tmux'");
         console.log('');
-        console.log('  Then reload: tmux source-file ~/.tmux.conf');
+        console.log('  Then reload:');
+        console.log('    tmux source-file ~/.tmux.conf');
         console.log('');
         console.log('  For mouse and scroll support, see:');
         console.log(`    ${TMUX_MOUSE_URL}`);
