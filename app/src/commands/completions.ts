@@ -1,12 +1,10 @@
-// NOTE: The completion script strings below must stay in sync with install.sh
-
-const BASH_SCRIPT = `_planderson_complete() {
+export const BASH_SCRIPT = `_planderson_complete() {
     local cmds="help hook settings setup tui tmux upgrade completions"
     COMPREPLY=($(compgen -W "$cmds" -- "\${COMP_WORDS[COMP_CWORD]}"))
 }
 complete -F _planderson_complete planderson`;
 
-const ZSH_SCRIPT = `#compdef planderson
+export const ZSH_SCRIPT = `#compdef planderson
 _planderson() {
     local -a commands
     commands=(
@@ -23,7 +21,7 @@ _planderson() {
 }
 compdef _planderson planderson`;
 
-const detectShell = (): 'bash' | 'zsh' | null => {
+export const detectShell = (): 'bash' | 'zsh' | null => {
     const shell = process.env.SHELL ?? '';
     if (shell.includes('bash')) return 'bash';
     if (shell.includes('zsh')) return 'zsh';
@@ -50,6 +48,9 @@ export const runCompletions = (args: string[]): void => {
     }
 
     console.log(shell === 'bash' ? BASH_SCRIPT : ZSH_SCRIPT);
+    if (process.stdout.isTTY) {
+        process.stderr.write("# Run 'planderson setup' to install or refresh completions\n");
+    }
     process.exit(0);
 };
 

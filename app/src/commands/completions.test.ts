@@ -18,6 +18,7 @@ describe('commands completions', () => {
         spyOn(console, 'error').mockImplementation((...args: unknown[]) => {
             errors.push(args.map(String).join(' '));
         });
+        spyOn(process.stderr, 'write').mockImplementation(() => true);
         spyOn(process, 'exit').mockImplementation(((code?: number) => {
             throw { isExit: true, exitCode: code ?? 0 };
         }) as (code?: number) => never);
@@ -107,6 +108,53 @@ describe('commands completions', () => {
         test('contains compdef _planderson planderson', () => {
             run(['zsh']);
             expect(output()).toContain('compdef _planderson planderson');
+        });
+    });
+
+    describe('installation hint', () => {
+        let stderrWrites: string[];
+        let originalIsTTY: boolean | undefined;
+
+        beforeEach(() => {
+            stderrWrites = [];
+            originalIsTTY = process.stdout.isTTY;
+            Object.defineProperty(process.stdout, 'isTTY', { value: true, configurable: true });
+            spyOn(process.stderr, 'write').mockImplementation((chunk: unknown) => {
+                stderrWrites.push(String(chunk));
+                return true;
+            });
+        });
+
+        afterEach(() => {
+            Object.defineProperty(process.stdout, 'isTTY', { value: originalIsTTY, configurable: true });
+        });
+
+        const hint = (): string => stderrWrites.join('');
+
+        test('writes setup hint to stderr for zsh', () => {
+            run(['zsh']);
+
+            expect(hint()).toContain('planderson setup');
+        });
+
+        test('writes setup hint to stderr for bash', () => {
+            run(['bash']);
+
+            expect(hint()).toContain('planderson setup');
+        });
+
+        test('hint does not appear in stdout', () => {
+            run(['zsh']);
+
+            expect(output()).not.toContain('planderson setup');
+        });
+
+        test('hint is suppressed when stdout is not a TTY', () => {
+            Object.defineProperty(process.stdout, 'isTTY', { value: false, configurable: true });
+
+            run(['zsh']);
+
+            expect(hint()).toBe('');
         });
     });
 });

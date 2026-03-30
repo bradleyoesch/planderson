@@ -1,6 +1,10 @@
 import { afterEach, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test';
 import * as childProcess from 'child_process';
+import fs from 'fs';
+import * as os from 'os';
+import path from 'path';
 
+import { useTempDir } from '~/test-utils/fixtures';
 import * as settingsModule from '~/utils/config/settings';
 import { DEFAULT_SETTINGS } from '~/utils/config/settings';
 
@@ -8,6 +12,7 @@ import {
     categorizeVersionBump,
     fetchLatestVersion,
     isNewerVersion,
+    regenerateCompletions,
     RELEASES_URL,
     runSilentUpgrade,
     runUpgrade,
@@ -97,7 +102,74 @@ describe('commands upgrade', () => {
         });
     });
 
+    describe('regenerateCompletions', () => {
+        let tempDir: string;
+
+        beforeEach(() => {
+            tempDir = useTempDir();
+            spyOn(os, 'homedir').mockReturnValue(tempDir);
+        });
+
+        afterEach(() => {
+            mock.restore();
+        });
+
+        test('overwrites zsh completions file if it exists', () => {
+            const completionsDir = path.join(tempDir, '.planderson', 'completions');
+            fs.mkdirSync(completionsDir, { recursive: true });
+            fs.writeFileSync(path.join(completionsDir, 'planderson.zsh'), 'old content');
+
+            regenerateCompletions();
+
+            const content = fs.readFileSync(path.join(completionsDir, 'planderson.zsh'), 'utf-8');
+            expect(content).toContain('#compdef planderson');
+        });
+
+        test('overwrites bash completions file if it exists', () => {
+            const completionsDir = path.join(tempDir, '.planderson', 'completions');
+            fs.mkdirSync(completionsDir, { recursive: true });
+            fs.writeFileSync(path.join(completionsDir, 'planderson.bash'), 'old content');
+
+            regenerateCompletions();
+
+            const content = fs.readFileSync(path.join(completionsDir, 'planderson.bash'), 'utf-8');
+            expect(content).toContain('_planderson_complete');
+        });
+
+        test('does not create zsh completions file if it does not exist', () => {
+            regenerateCompletions();
+
+            const zshFile = path.join(tempDir, '.planderson', 'completions', 'planderson.zsh');
+            expect(fs.existsSync(zshFile)).toBe(false);
+        });
+
+        test('regenerates both files when both exist', () => {
+            const completionsDir = path.join(tempDir, '.planderson', 'completions');
+            fs.mkdirSync(completionsDir, { recursive: true });
+            fs.writeFileSync(path.join(completionsDir, 'planderson.zsh'), 'old');
+            fs.writeFileSync(path.join(completionsDir, 'planderson.bash'), 'old');
+
+            regenerateCompletions();
+
+            expect(fs.readFileSync(path.join(completionsDir, 'planderson.zsh'), 'utf-8')).toContain(
+                '#compdef planderson',
+            );
+            expect(fs.readFileSync(path.join(completionsDir, 'planderson.bash'), 'utf-8')).toContain(
+                '_planderson_complete',
+            );
+        });
+    });
+
     describe('runSilentUpgrade', () => {
+        beforeEach(() => {
+            const tempDir = useTempDir();
+            spyOn(os, 'homedir').mockReturnValue(tempDir);
+        });
+
+        afterEach(() => {
+            mock.restore();
+        });
+
         test('returns success when spawn exits with code 0', async () => {
             const mockOn = mock((event: string, cb: (code: number) => void) => {
                 if (event === 'close') cb(0);
