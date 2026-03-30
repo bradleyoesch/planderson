@@ -40,7 +40,9 @@ const runSettingStep = async (
     const wantsYes = await promptYN(rl, `\n${question} (y/n): `);
     const value = wantsYes ? yesValue : noValue;
     saveSettings(sessionId, { [key]: value });
-    console.log(`  ✓ Set ${key}: ${value}`);
+    if (wantsYes) {
+        console.log(`  ✓ Set ${key}: ${value}`);
+    }
     summary.push({ step: key, result: wantsYes ? 'configured' : 'skipped' });
 };
 

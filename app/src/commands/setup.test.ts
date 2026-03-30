@@ -130,11 +130,11 @@ describe('commands setup', () => {
             expect(output()).toContain('auto-tmux');
         });
 
-        test('saves manual when user answers n', async () => {
+        test('does not print success message when user answers n', async () => {
             // tmux=y, launchMode=n, approveAction=n, autoUpgrade=n
             await run(['y', 'n', 'n', 'n']);
 
-            expect(output()).toContain('manual');
+            expect(output()).not.toContain('Set launchMode');
         });
     });
 
@@ -152,10 +152,10 @@ describe('commands setup', () => {
             expect(output()).toContain('exit');
         });
 
-        test('saves approve when user answers n', async () => {
+        test('does not print success message when user answers n', async () => {
             await run(allSkippedAnswers);
 
-            expect(output()).toContain('approve');
+            expect(output()).not.toContain('Set approveAction');
         });
     });
 
@@ -173,10 +173,10 @@ describe('commands setup', () => {
             expect(output()).toContain('always');
         });
 
-        test('saves never when user answers n', async () => {
+        test('does not print success message when user answers n', async () => {
             await run(allSkippedAnswers);
 
-            expect(output()).toContain('never');
+            expect(output()).not.toContain('Set autoUpgrade');
         });
     });
 
