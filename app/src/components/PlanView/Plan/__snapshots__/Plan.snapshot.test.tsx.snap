@@ -213,7 +213,7 @@ exports[`Plan snapshots Markdown Rendering renders markdown with bold, italic, a
 
 This is \x1B[1mbold text\x1B[22m and \x1B[3mitalic text\x1B[23m and
 \x1B[9mstrikethrough text\x1B[29m.
-Here is \x1B[38;2;174;184;253minline code\x1B[39m in a sentence.
+Here is \x1B[38;2;163;217;255minline code\x1B[39m in a sentence.
 
 Check out \x1B[38;2;32;127;230mthis link\x1B[39m for more info.
 
@@ -236,7 +236,7 @@ exports[`Plan snapshots Markdown Rendering renders markdown with bold, italic, a
 \x1B[1mHeading Level 2\x1B[22m
 
 This is \x1B[1mbold text\x1B[22m and \x1B[3mitalic text\x1B[23m and \x1B[9mstrikethrough text\x1B[29m.
-Here is \x1B[38;2;174;184;253minline code\x1B[39m in a sentence.
+Here is \x1B[38;2;163;217;255minline code\x1B[39m in a sentence.
 
 Check out \x1B[38;2;32;127;230mthis link\x1B[39m for more info.
 

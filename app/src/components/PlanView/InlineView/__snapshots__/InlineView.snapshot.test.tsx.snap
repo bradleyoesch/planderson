@@ -3,69 +3,69 @@
 exports[`InlineView snapshots snapshot: command mode 1`] = `"\x1B[37m:a█\x1B[39m"`;
 
 exports[`InlineView snapshots Comment Input Mode renders comment input at 40 columns 1`] = `
-"\x1B[38;2;174;184;253m────────────────────────────────────────\x1B[39m
- \x1B[1m\x1B[38;2;174;184;253mComment\x1B[39m\x1B[22m
+"\x1B[38;2;163;217;255m────────────────────────────────────────\x1B[39m
+ \x1B[1m\x1B[38;2;163;217;255mComment\x1B[39m\x1B[22m
 
  \x1B[37mThis is a test comment█\x1B[39m"
 `;
 
 exports[`InlineView snapshots Comment Input Mode renders comment input at 80 columns 1`] = `
-"\x1B[38;2;174;184;253m────────────────────────────────────────────────────────────────────────────────\x1B[39m
- \x1B[1m\x1B[38;2;174;184;253mComment\x1B[39m\x1B[22m
+"\x1B[38;2;163;217;255m────────────────────────────────────────────────────────────────────────────────\x1B[39m
+ \x1B[1m\x1B[38;2;163;217;255mComment\x1B[39m\x1B[22m
 
  \x1B[37mThis is a test comment█\x1B[39m"
 `;
 
 exports[`InlineView snapshots snapshot: confirm approve 1`] = `
-"\x1B[38;2;174;184;253m────────────────────────────────────────────────────────────────────────────────\x1B[39m
- \x1B[1m\x1B[38;2;174;184;253mApprove plan\x1B[39m\x1B[22m
+"\x1B[38;2;163;217;255m────────────────────────────────────────────────────────────────────────────────\x1B[39m
+ \x1B[1m\x1B[38;2;163;217;255mApprove plan\x1B[39m\x1B[22m
 
  Approve plan?
- \x1B[38;2;174;184;253m❯ \x1B[38;2;142;142;142m1. \x1B[38;2;174;184;253mYes\x1B[39m
+ \x1B[38;2;163;217;255m❯ \x1B[38;2;142;142;142m1. \x1B[38;2;163;217;255mYes\x1B[39m
    \x1B[38;2;142;142;142m2. \x1B[37mNo\x1B[39m
 
  \x1B[38;2;142;142;142mEnter to confirm · Esc to cancel\x1B[39m"
 `;
 
 exports[`InlineView snapshots Confirm Deny renders deny confirmation at 40 columns 1`] = `
-"\x1B[38;2;174;184;253m────────────────────────────────────────\x1B[39m
- \x1B[1m\x1B[38;2;174;184;253mSend feedback\x1B[39m\x1B[22m
+"\x1B[38;2;163;217;255m────────────────────────────────────────\x1B[39m
+ \x1B[1m\x1B[38;2;163;217;255mSend feedback\x1B[39m\x1B[22m
 
  Deny without feedback?
- \x1B[38;2;174;184;253m❯ \x1B[38;2;142;142;142m1. \x1B[38;2;174;184;253mYes\x1B[39m
+ \x1B[38;2;163;217;255m❯ \x1B[38;2;142;142;142m1. \x1B[38;2;163;217;255mYes\x1B[39m
    \x1B[38;2;142;142;142m2. \x1B[37mNo\x1B[39m
 
  \x1B[38;2;142;142;142mEnter to confirm · Esc to cancel\x1B[39m"
 `;
 
 exports[`InlineView snapshots Confirm Deny renders deny confirmation at 80 columns 1`] = `
-"\x1B[38;2;174;184;253m────────────────────────────────────────────────────────────────────────────────\x1B[39m
- \x1B[1m\x1B[38;2;174;184;253mSend feedback\x1B[39m\x1B[22m
+"\x1B[38;2;163;217;255m────────────────────────────────────────────────────────────────────────────────\x1B[39m
+ \x1B[1m\x1B[38;2;163;217;255mSend feedback\x1B[39m\x1B[22m
 
  Deny without feedback?
- \x1B[38;2;174;184;253m❯ \x1B[38;2;142;142;142m1. \x1B[38;2;174;184;253mYes\x1B[39m
+ \x1B[38;2;163;217;255m❯ \x1B[38;2;142;142;142m1. \x1B[38;2;163;217;255mYes\x1B[39m
    \x1B[38;2;142;142;142m2. \x1B[37mNo\x1B[39m
 
  \x1B[38;2;142;142;142mEnter to confirm · Esc to cancel\x1B[39m"
 `;
 
 exports[`InlineView snapshots Confirm Cancel renders cancel confirmation at 40 columns 1`] = `
-"\x1B[38;2;174;184;253m────────────────────────────────────────\x1B[39m
- \x1B[1m\x1B[38;2;174;184;253mExit plan\x1B[39m\x1B[22m
+"\x1B[38;2;163;217;255m────────────────────────────────────────\x1B[39m
+ \x1B[1m\x1B[38;2;163;217;255mExit plan\x1B[39m\x1B[22m
 
  Discard feedback and exit?
- \x1B[38;2;174;184;253m❯ \x1B[38;2;142;142;142m1. \x1B[38;2;174;184;253mYes\x1B[39m
+ \x1B[38;2;163;217;255m❯ \x1B[38;2;142;142;142m1. \x1B[38;2;163;217;255mYes\x1B[39m
    \x1B[38;2;142;142;142m2. \x1B[37mNo\x1B[39m
 
  \x1B[38;2;142;142;142mEnter to confirm · Esc to cancel\x1B[39m"
 `;
 
 exports[`InlineView snapshots Confirm Cancel renders cancel confirmation at 80 columns 1`] = `
-"\x1B[38;2;174;184;253m────────────────────────────────────────────────────────────────────────────────\x1B[39m
- \x1B[1m\x1B[38;2;174;184;253mExit plan\x1B[39m\x1B[22m
+"\x1B[38;2;163;217;255m────────────────────────────────────────────────────────────────────────────────\x1B[39m
+ \x1B[1m\x1B[38;2;163;217;255mExit plan\x1B[39m\x1B[22m
 
  Discard feedback and exit?
- \x1B[38;2;174;184;253m❯ \x1B[38;2;142;142;142m1. \x1B[38;2;174;184;253mYes\x1B[39m
+ \x1B[38;2;163;217;255m❯ \x1B[38;2;142;142;142m1. \x1B[38;2;163;217;255mYes\x1B[39m
    \x1B[38;2;142;142;142m2. \x1B[37mNo\x1B[39m
 
  \x1B[38;2;142;142;142mEnter to confirm · Esc to cancel\x1B[39m"

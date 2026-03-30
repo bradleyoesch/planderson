@@ -1,11 +1,11 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
 exports[`ChoiceList snapshots snapshot: selectedIndex=0 shows arrow on first item 1`] = `
-"\x1B[38;2;174;184;253m❯ \x1B[38;2;142;142;142m1. \x1B[38;2;174;184;253mYes\x1B[39m
+"\x1B[38;2;163;217;255m❯ \x1B[38;2;142;142;142m1. \x1B[38;2;163;217;255mYes\x1B[39m
   \x1B[38;2;142;142;142m2. \x1B[37mNo\x1B[39m"
 `;
 
 exports[`ChoiceList snapshots snapshot: selectedIndex=1 shows arrow on second item 1`] = `
 "  \x1B[38;2;142;142;142m1. \x1B[37mYes\x1B[39m
-\x1B[38;2;174;184;253m❯ \x1B[38;2;142;142;142m2. \x1B[38;2;174;184;253mNo\x1B[39m"
+\x1B[38;2;163;217;255m❯ \x1B[38;2;142;142;142m2. \x1B[38;2;163;217;255mNo\x1B[39m"
 `;
