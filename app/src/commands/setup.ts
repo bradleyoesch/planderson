@@ -66,7 +66,8 @@ export const runSetup = async (): Promise<void> => {
         console.log('');
         console.log('  Then reload: tmux source-file ~/.tmux.conf');
         console.log('');
-        console.log(`  For mouse and scroll support, see: ${TMUX_MOUSE_URL}`);
+        console.log('  For mouse and scroll support, see:');
+        console.log(`    ${TMUX_MOUSE_URL}`);
         summary.push({ step: 'tmux integration', result: 'configured' });
     } else {
         console.log(`  For more information, see: ${TMUX_README_URL}`);
