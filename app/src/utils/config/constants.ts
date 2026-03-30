@@ -1,18 +1,16 @@
 // Color constants
 export const COLORS = {
     ACCENT: '#1b988c', // Teal/turquoise for top line
-    APPROVE: '#ab7df6', // Purplish-pink for approve actions
     CURSOR_BG: '#505050', // Medium grey background for cursor line (more noticeable)
     DELETED: '#666666', // Grey color for deleted lines
-    DENY: '#ff6b6b', // Red for deny actions
     QUESTION: '#ffd93d', // Yellow for questions
     MUTED: '#8e8e8e', // Light gray for confirmation UI numbers and help text
     SUBTLE: '#606060', // Medium gray for path and separators
     SUBTLE_2: '#323232', // Medium gray for path and separators
-    TITLE: '#aeb8fd', // Light lavender for title text
+    TITLE: '#a3d9ff', // Light blue for title text
     WARNING: '#ffd93d', // Yellow for warnings/exit
-    ERROR: '#ff6b6b', // Red for errors
-    CODE: '#aeb8fd', // Purple (matches TITLE) for inline code
+    ERROR: '#ff7eb0', // Pink for errors
+    CODE: '#a3d9ff', // Blue (matches TITLE) for inline code
     LINK: '#207fe6', // Blue for links
     H1_COLOR: '#8b8b8b', // Grey for H1 headings
 } as const;

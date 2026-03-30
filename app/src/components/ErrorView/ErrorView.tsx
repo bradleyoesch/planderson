@@ -30,7 +30,7 @@ export const ErrorView: React.FC<ErrorViewProps> = ({ error }) => {
                 </Box>
             }
         >
-            <Text color="red">{error}</Text>
+            <Text color={COLORS.ERROR}>{error}</Text>
         </View>
     );
 };

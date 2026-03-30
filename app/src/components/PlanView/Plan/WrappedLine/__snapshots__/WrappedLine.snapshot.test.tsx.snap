@@ -24,7 +24,7 @@ exports[`WrappedLine snapshots snapshot: normal text with mixed formatting 1`] =
 ,
 \x1B[3mitalic\x1B[23m
 , and
-\x1B[38;2;174;184;253mcode\x1B[39m"
+\x1B[38;2;163;217;255mcode\x1B[39m"
 `;
 
 exports[`WrappedLine snapshots snapshot: wrapped comment feedback 1`] = `
