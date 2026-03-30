@@ -25,13 +25,13 @@ export const buildHelpText = (): string => {
 
     parts.push(
         formatSection('COMMANDS', [
+            '  completions  Output shell completion script for bash or zsh',
             '  hook         Process plan events from Claude Code hooks',
-            '  tui          Launch the plan viewer TUI',
             '  settings     View and update settings',
             '  setup        Interactive onboarding and configuration',
             '  tmux         Replaces current pane with TUI and restores on exit',
+            '  tui          Launch the plan viewer TUI',
             '  upgrade      Upgrade planderson to the latest version',
-            '  completions  Output shell completion script for bash or zsh',
         ]),
     );
 
@@ -46,7 +46,7 @@ export const buildHelpText = (): string => {
 
     parts.push(formatSection('FLAGS', ['  -h, --help     Show this help message', '  -v, --version  Show version']));
 
-    return parts.join('\n');
+    return parts.join('\n').trimEnd();
 };
 
 export const runHelp = (): void => {

@@ -1,9 +1,13 @@
 import { spawn, spawnSync } from 'child_process';
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 
 import { loadSettings, Settings } from '~/utils/config/settings';
 import { generateId } from '~/utils/id';
 
 import { version } from '../../../package.json';
+import { BASH_SCRIPT, ZSH_SCRIPT } from './completions';
 
 export const currentVersion = version;
 
@@ -44,10 +48,21 @@ export const shouldAutoUpgrade = (setting: Settings['autoUpgrade'], latest: stri
 
 const INSTALL_URL = 'https://raw.githubusercontent.com/bradleyoesch/planderson/main/install.sh';
 
+export const regenerateCompletions = (): void => {
+    const completionsDir = path.join(os.homedir(), '.planderson', 'completions');
+    (['bash', 'zsh'] as const).forEach((shell) => {
+        const completionsFile = path.join(completionsDir, `planderson.${shell}`);
+        if (fs.existsSync(completionsFile)) {
+            fs.writeFileSync(completionsFile, shell === 'zsh' ? ZSH_SCRIPT : BASH_SCRIPT);
+        }
+    });
+};
+
 export const runSilentUpgrade = (): Promise<'success' | 'failure'> => {
     return new Promise((resolve) => {
         const child = spawn('bash', ['-c', `curl -fsSL ${INSTALL_URL} | bash`], { stdio: 'ignore' });
         child.on('close', (code) => {
+            if (code === 0) regenerateCompletions();
             resolve(code === 0 ? 'success' : 'failure');
         });
     });
@@ -81,5 +96,6 @@ export const runUpgrade = async (): Promise<void> => {
         console.log(`Updating planderson v${version} → v${latest}...`);
     }
     spawnSync('bash', ['-c', `curl -fsSL ${INSTALL_URL} | bash`], { stdio: 'inherit' });
+    regenerateCompletions();
     console.log(`Releases: ${RELEASES_URL}`);
 };
