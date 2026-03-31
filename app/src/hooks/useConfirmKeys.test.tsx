@@ -449,14 +449,14 @@ describe('useConfirmKeys', () => {
                 // Simulate pressing Enter
                 act(() => {
                     const message =
-                        'Questions about the plan:\nLine 4: "Line 4"\nWhy this approach?\n\nPlease answer these questions. Do not create a new plan yet. After discussion, we will return to plan mode. Still use the below feedback when we return to plan mode.';
+                        '<response_instructions>\nRespond with plain text only — this response must not call ExitPlanMode or any other tool.\nThe reason: the questions below are for discussion — the user will read your answers and may ask follow-up questions before deciding whether to proceed with the plan.\nOnly update the plan after the user explicitly tells you to continue (e.g., "proceed", "continue", "go ahead").\n</response_instructions>\n\n<questions>\n  <question>\n    <ref line="4">Line 4</ref>\n    <feedback>Why this approach?</feedback>\n  </question>\n</questions>';
                     result.current.onDeny(message, message);
                 });
 
                 expect(result.current.onDeny).toHaveBeenCalled();
                 const callArgs = (result.current.onDeny as any).mock.calls[0];
-                expect(callArgs[0]).toContain('Questions about the plan:');
-                expect(callArgs[0]).toContain('Line 4:');
+                expect(callArgs[0]).toContain('<questions>');
+                expect(callArgs[0]).toContain('<ref line="4">');
                 expect(callArgs[0]).toContain('Why this approach?');
             });
 
@@ -480,15 +480,16 @@ describe('useConfirmKeys', () => {
 
                 // Simulate pressing Enter
                 act(() => {
-                    const message = 'Delete lines:\nLine 8: "Line 8"\nLine 9: "Line 9"';
+                    const message =
+                        '<deletions>\n  <deletion>\n    <ref line="8">Line 8</ref>\n  </deletion>\n  <deletion>\n    <ref line="9">Line 9</ref>\n  </deletion>\n</deletions>';
                     result.current.onDeny(message, message);
                 });
 
                 expect(result.current.onDeny).toHaveBeenCalled();
                 const callArgs = (result.current.onDeny as any).mock.calls[0];
-                expect(callArgs[0]).toContain('Delete lines:');
-                expect(callArgs[0]).toContain('Line 8:');
-                expect(callArgs[0]).toContain('Line 9:');
+                expect(callArgs[0]).toContain('<deletions>');
+                expect(callArgs[0]).toContain('<ref line="8">');
+                expect(callArgs[0]).toContain('<ref line="9">');
             });
 
             test('calls onDeny with formatted feedback message (mixed feedback types)', () => {
@@ -514,15 +515,15 @@ describe('useConfirmKeys', () => {
                 // Simulate pressing Enter
                 act(() => {
                     const message =
-                        'Questions about the plan:\nLine 6: "Line 6"\nQuestion text\n\nPlease answer these questions. Do not create a new plan yet. After discussion, we will return to plan mode. Still use the below feedback when we return to plan mode.\n\nComments on the plan:\nLine 3: "Line 3"\nComment text\n\nDelete lines:\nLine 11: "Line 11"';
+                        '<response_instructions>\nRespond with plain text only — this response must not call ExitPlanMode or any other tool.\nThe reason: the questions below are for discussion — the user will read your answers and may ask follow-up questions before deciding whether to proceed with the plan. The comments and deletions are plan modifications that will be applied when you return to plan mode.\nDo not act on the comments or deletions below — hold them until the user confirms to proceed.\nOnly update the plan after the user explicitly tells you to continue (e.g., "proceed", "continue", "go ahead") — and when you do, apply all the feedback below.\n</response_instructions>\n\n<questions>\n  <question>\n    <ref line="6">Line 6</ref>\n    <feedback>Question text</feedback>\n  </question>\n</questions>\n\n<comments>\n  <comment>\n    <ref line="3">Line 3</ref>\n    <feedback>Comment text</feedback>\n  </comment>\n</comments>\n\n<deletions>\n  <deletion>\n    <ref line="11">Line 11</ref>\n  </deletion>\n</deletions>';
                     result.current.onDeny(message, message);
                 });
 
                 expect(result.current.onDeny).toHaveBeenCalled();
                 const callArgs = (result.current.onDeny as any).mock.calls[0];
-                expect(callArgs[0]).toContain('Questions about the plan:');
-                expect(callArgs[0]).toContain('Comments on the plan:');
-                expect(callArgs[0]).toContain('Delete lines:');
+                expect(callArgs[0]).toContain('<questions>');
+                expect(callArgs[0]).toContain('<comments>');
+                expect(callArgs[0]).toContain('<deletions>');
             });
 
             test('includes original line content in formatted message', () => {

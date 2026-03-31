@@ -67,8 +67,8 @@ describe('decision decision-socket-send integration', () => {
         const decision = sendDecisionSpy.mock.calls[0][0] as string;
         const message = sendDecisionSpy.mock.calls[0][1] as string;
         expect(decision).toBe('deny');
-        expect(message).toContain('Comments on the plan:');
-        expect(message).toContain('Line 1: "Line 1"');
+        expect(message).toContain('<comments>');
+        expect(message).toContain('<ref line="1">Line 1</ref>');
         expect(message).toContain('needs more detail');
     });
 
@@ -89,11 +89,11 @@ describe('decision decision-socket-send integration', () => {
         const decision = sendDecisionSpy.mock.calls[0][0] as string;
         const message = sendDecisionSpy.mock.calls[0][1] as string;
         expect(decision).toBe('deny');
-        expect(message).toContain('Questions about the plan:');
-        expect(message).toContain('Line 1: "Step 1"');
+        expect(message).toContain('<questions>');
+        expect(message).toContain('<ref line="1">Step 1</ref>');
         expect(message).toContain('what is the timeline?');
-        expect(message).toContain('Please answer these questions');
-        expect(message).toContain('Do NOT call ExitPlanMode');
+        expect(message).toContain('<response_instructions>');
+        expect(message).toContain('must not call ExitPlanMode');
     });
 
     test('deny with deletion -> sendDecision called with formatted deletions section', async () => {
@@ -112,8 +112,8 @@ describe('decision decision-socket-send integration', () => {
         const decision = sendDecisionSpy.mock.calls[0][0] as string;
         const message = sendDecisionSpy.mock.calls[0][1] as string;
         expect(decision).toBe('deny');
-        expect(message).toContain('Delete lines:');
-        expect(message).toContain('Line 1: "Line 1"');
+        expect(message).toContain('<deletions>');
+        expect(message).toContain('<ref line="1">Line 1</ref>');
     });
 
     test('deny with comment and deletion -> sendDecision message contains both sections', async () => {
@@ -137,9 +137,9 @@ describe('decision decision-socket-send integration', () => {
         const decision = sendDecisionSpy.mock.calls[0][0] as string;
         const message = sendDecisionSpy.mock.calls[0][1] as string;
         expect(decision).toBe('deny');
-        expect(message).toContain('Comments on the plan:');
+        expect(message).toContain('<comments>');
         expect(message).toContain('important note');
-        expect(message).toContain('Delete lines:');
-        expect(message).toContain('Line 2: "Line 2"');
+        expect(message).toContain('<deletions>');
+        expect(message).toContain('<ref line="2">Line 2</ref>');
     });
 });
