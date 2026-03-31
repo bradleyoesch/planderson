@@ -449,7 +449,7 @@ describe('useConfirmKeys', () => {
                 // Simulate pressing Enter
                 act(() => {
                     const message =
-                        '<response_instructions>\nRespond with plain text only — this response must not call ExitPlanMode or any other tool.\nThe reason: the user needs to read your answers and may ask follow-up questions before deciding to proceed.\nOnly call ExitPlanMode after the user explicitly tells you to continue (e.g., "proceed", "continue", "go ahead").\n</response_instructions>\n\n<questions>\n  <question>\n    <ref line="4">Line 4</ref>\n    <feedback>Why this approach?</feedback>\n  </question>\n</questions>';
+                        '<response_instructions>\nRespond with plain text only — this response must not call ExitPlanMode or any other tool.\nThe reason: the questions below are for discussion — the user will read your answers and may ask follow-up questions before deciding whether to proceed with the plan.\nOnly update the plan after the user explicitly tells you to continue (e.g., "proceed", "continue", "go ahead").\n</response_instructions>\n\n<questions>\n  <question>\n    <ref line="4">Line 4</ref>\n    <feedback>Why this approach?</feedback>\n  </question>\n</questions>';
                     result.current.onDeny(message, message);
                 });
 
@@ -515,7 +515,7 @@ describe('useConfirmKeys', () => {
                 // Simulate pressing Enter
                 act(() => {
                     const message =
-                        '<response_instructions>\nRespond with plain text only — this response must not call ExitPlanMode or any other tool.\nThe reason: the user needs to read your answers and may ask follow-up questions before deciding to proceed.\nDo not act on the comments or deletions below — hold them until the user confirms to proceed.\nOnly call ExitPlanMode after the user explicitly tells you to continue (e.g., "proceed", "continue", "go ahead") — and when you do, apply all the feedback below.\n</response_instructions>\n\n<questions>\n  <question>\n    <ref line="6">Line 6</ref>\n    <feedback>Question text</feedback>\n  </question>\n</questions>\n\n<comments>\n  <comment>\n    <ref line="3">Line 3</ref>\n    <feedback>Comment text</feedback>\n  </comment>\n</comments>\n\n<deletions>\n  <deletion>\n    <ref line="11">Line 11</ref>\n  </deletion>\n</deletions>';
+                        '<response_instructions>\nRespond with plain text only — this response must not call ExitPlanMode or any other tool.\nThe reason: the questions below are for discussion — the user will read your answers and may ask follow-up questions before deciding whether to proceed with the plan. The comments and deletions are plan modifications that will be applied when you return to plan mode.\nDo not act on the comments or deletions below — hold them until the user confirms to proceed.\nOnly update the plan after the user explicitly tells you to continue (e.g., "proceed", "continue", "go ahead") — and when you do, apply all the feedback below.\n</response_instructions>\n\n<questions>\n  <question>\n    <ref line="6">Line 6</ref>\n    <feedback>Question text</feedback>\n  </question>\n</questions>\n\n<comments>\n  <comment>\n    <ref line="3">Line 3</ref>\n    <feedback>Comment text</feedback>\n  </comment>\n</comments>\n\n<deletions>\n  <deletion>\n    <ref line="11">Line 11</ref>\n  </deletion>\n</deletions>';
                     result.current.onDeny(message, message);
                 });
 

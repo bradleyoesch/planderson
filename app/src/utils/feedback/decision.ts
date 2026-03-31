@@ -35,6 +35,39 @@ const buildRefs = (lines: number[], contentLines: string[]): string =>
         .map((line) => `    <ref line="${line + 1}">${contentLines[line]}</ref>`)
         .join('\n');
 
+/**
+ * Formats a deny message from the user's feedback to send back to Claude.
+ *
+ * When questions are present, prepends a `<response_instructions>` block telling
+ * Claude to answer conversationally and wait for the user before updating the plan.
+ * Comments and deletions are included as XML for Claude to apply when it returns
+ * to plan mode.
+ *
+ * @example
+ * ```
+ * <response_instructions>...</response_instructions>
+ *
+ * <questions>
+ *   <question>
+ *     <ref line="2">Step 2: Create the API endpoints</ref>
+ *     <feedback>Why REST and not GraphQL here?</feedback>
+ *   </question>
+ * </questions>
+ *
+ * <comments>
+ *   <comment>
+ *     <ref line="1">Step 1: Set up the database schema</ref>
+ *     <feedback>Use Postgres not SQLite</feedback>
+ *   </comment>
+ * </comments>
+ *
+ * <deletions>
+ *   <deletion>
+ *     <ref line="3">Step 3: Add authentication middleware</ref>
+ *   </deletion>
+ * </deletions>
+ * ```
+ */
 // Format feedback message for deny action
 export const formatFeedbackMessage = (
     comments: Map<number, FeedbackEntry>,
@@ -56,6 +89,10 @@ export const formatFeedbackMessage = (
         if (comments.size > 0) holdParts.push('comments');
         if (deletedLines.size > 0) holdParts.push('deletions');
 
+        const semanticLine =
+            holdParts.length > 0
+                ? ` The ${holdParts.join(' and ')} are plan modifications that will be applied when you return to plan mode.`
+                : '';
         const holdLine =
             holdParts.length > 0
                 ? `\nDo not act on the ${holdParts.join(' or ')} below — hold them until the user confirms to proceed.`
@@ -65,8 +102,8 @@ export const formatFeedbackMessage = (
         messageParts.push(
             `<response_instructions>\n` +
                 `Respond with plain text only — this response must not call ExitPlanMode or any other tool.\n` +
-                `The reason: the user needs to read your answers and may ask follow-up questions before deciding to proceed.${holdLine}\n` +
-                `Only call ExitPlanMode after the user explicitly tells you to continue (e.g., "proceed", "continue", "go ahead")${applyClause}.\n` +
+                `The reason: the questions below are for discussion — the user will read your answers and may ask follow-up questions before deciding whether to proceed with the plan.${semanticLine}${holdLine}\n` +
+                `Only update the plan after the user explicitly tells you to continue (e.g., "proceed", "continue", "go ahead")${applyClause}.\n` +
                 `</response_instructions>\n\n` +
                 `<questions>\n${questionItems.join('\n')}\n</questions>`,
         );

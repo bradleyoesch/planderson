@@ -248,7 +248,8 @@ describe('feedback decision', () => {
                 expect(result).toContain('<ref line="3">line 3</ref>');
                 expect(result).toContain('<feedback>Is this needed?</feedback>');
                 expect(result).toContain('must not call ExitPlanMode');
-                expect(result).toContain('explicitly tells you to continue');
+                expect(result).toContain('questions below are for discussion');
+                expect(result).toContain('Only update the plan after the user explicitly tells you to continue');
                 expect(result).not.toContain('<comments>');
             });
 
@@ -275,7 +276,7 @@ describe('feedback decision', () => {
 
                 expect(result).toContain('<response_instructions>');
                 expect(result).toContain('must not call ExitPlanMode');
-                expect(result).toContain('explicitly tells you to continue');
+                expect(result).toContain('Only update the plan after the user explicitly tells you to continue');
             });
 
             test('omits hold instruction when questions are present without comments or deletions', () => {
@@ -300,6 +301,7 @@ describe('feedback decision', () => {
 
                 const result = formatFeedbackMessage(comments, questions, new Set(), contentLines);
 
+                expect(result).toContain('comments are plan modifications');
                 expect(result).toContain('Do not act on the comments below');
                 expect(result).toContain('apply all the feedback below');
                 expect(result).not.toContain('Do not act on the deletions below');
@@ -316,6 +318,7 @@ describe('feedback decision', () => {
                     contentLines,
                 );
 
+                expect(result).toContain('deletions are plan modifications');
                 expect(result).toContain('Do not act on the deletions below');
                 expect(result).toContain('apply all the feedback below');
                 expect(result).not.toContain('Do not act on the comments below');
@@ -328,6 +331,7 @@ describe('feedback decision', () => {
 
                 const result = formatFeedbackMessage(comments, questions, new Set([2]), contentLines);
 
+                expect(result).toContain('comments and deletions are plan modifications');
                 expect(result).toContain('Do not act on the comments or deletions below');
                 expect(result).toContain('apply all the feedback below');
             });
