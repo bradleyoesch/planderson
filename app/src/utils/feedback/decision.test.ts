@@ -77,12 +77,12 @@ describe('feedback decision', () => {
                     contentLines,
                 );
 
-                expect(result).toContain('Comments on the plan:');
-                expect(result).toContain('Line 1: "line 1"');
-                expect(result).toContain('This needs improvement');
-                expect(result).toContain('Line 3: "line 3"');
-                expect(result).toContain('Consider refactoring');
-                expect(result).not.toContain('Delete lines:');
+                expect(result).toContain('<comments>');
+                expect(result).toContain('<ref line="1">line 1</ref>');
+                expect(result).toContain('<feedback>This needs improvement</feedback>');
+                expect(result).toContain('<ref line="3">line 3</ref>');
+                expect(result).toContain('<feedback>Consider refactoring</feedback>');
+                expect(result).not.toContain('<deletions>');
             });
 
             test('formats deletions only', () => {
@@ -97,10 +97,10 @@ describe('feedback decision', () => {
                     contentLines,
                 );
 
-                expect(result).toContain('Delete lines:');
-                expect(result).toContain('Line 2: "line 2"');
-                expect(result).toContain('Line 4: "line 4"');
-                expect(result).not.toContain('Comments on the plan:');
+                expect(result).toContain('<deletions>');
+                expect(result).toContain('<ref line="2">line 2</ref>');
+                expect(result).toContain('<ref line="4">line 4</ref>');
+                expect(result).not.toContain('<comments>');
             });
 
             test('formats both comments and deletions with blank line separator', () => {
@@ -115,11 +115,11 @@ describe('feedback decision', () => {
                     contentLines,
                 );
 
-                expect(result).toContain('Comments on the plan:');
-                expect(result).toContain('Line 1: "line 1"');
-                expect(result).toContain('Fix this');
-                expect(result).toContain('Delete lines:');
-                expect(result).toContain('Line 3: "line 3"');
+                expect(result).toContain('<comments>');
+                expect(result).toContain('<ref line="1">line 1</ref>');
+                expect(result).toContain('<feedback>Fix this</feedback>');
+                expect(result).toContain('<deletions>');
+                expect(result).toContain('<ref line="3">line 3</ref>');
                 expect(result).toContain('\n\n');
             });
 
@@ -140,23 +140,23 @@ describe('feedback decision', () => {
                 )!;
 
                 // Verify comments appear in ascending order
-                const commentSection = result.split('Delete lines:')[0];
-                const line2Index = commentSection.indexOf('Line 2:');
-                const line4Index = commentSection.indexOf('Line 4:');
-                const line6Index = commentSection.indexOf('Line 6:');
+                const commentSection = result.split('<deletions>')[0];
+                const line2Index = commentSection.indexOf('<ref line="2">');
+                const line4Index = commentSection.indexOf('<ref line="4">');
+                const line6Index = commentSection.indexOf('<ref line="6">');
                 expect(line2Index).toBeLessThan(line4Index);
                 expect(line4Index).toBeLessThan(line6Index);
 
                 // Verify deletions appear in ascending order
-                const deleteSection = result.split('Delete lines:')[1];
-                const del3Index = deleteSection.indexOf('Line 3:');
-                const del5Index = deleteSection.indexOf('Line 5:');
-                const del8Index = deleteSection.indexOf('Line 8:');
+                const deleteSection = result.split('<deletions>')[1];
+                const del3Index = deleteSection.indexOf('<ref line="3">');
+                const del5Index = deleteSection.indexOf('<ref line="5">');
+                const del8Index = deleteSection.indexOf('<ref line="8">');
                 expect(del3Index).toBeLessThan(del5Index);
                 expect(del5Index).toBeLessThan(del8Index);
             });
 
-            test('includes original line content in quotes', () => {
+            test('includes original line content in element body', () => {
                 const comments = new Map<number, FeedbackEntry>([[0, { text: 'Comment here', lines: [0] }]]);
                 const deletedLines = new Set<number>([1]);
                 const contentLines = ['const foo = "bar"', 'let x = 42'];
@@ -168,13 +168,13 @@ describe('feedback decision', () => {
                     contentLines,
                 );
 
-                expect(result).toContain('Line 1: "const foo = "bar""');
-                expect(result).toContain('Line 2: "let x = 42"');
+                expect(result).toContain('<ref line="1">const foo = "bar"</ref>');
+                expect(result).toContain('<ref line="2">let x = 42</ref>');
             });
         });
 
         describe('multi-line comments', () => {
-            test('formats multi-line comment with range using stored lines array', () => {
+            test('formats multi-line comment with individual ref per line', () => {
                 const comments = new Map([[0, { text: 'Fix this', lines: [0, 1, 2] }]]);
                 const contentLines = ['line 1', 'line 2', 'line 3', 'line 4'];
 
@@ -185,12 +185,13 @@ describe('feedback decision', () => {
                     contentLines,
                 );
 
-                expect(result).toContain('Lines 1-3:');
-                expect(result).toContain('"line 1" "line 2" "line 3"');
-                expect(result).toContain('Fix this');
+                expect(result).toContain('<ref line="1">line 1</ref>');
+                expect(result).toContain('<ref line="2">line 2</ref>');
+                expect(result).toContain('<ref line="3">line 3</ref>');
+                expect(result).toContain('<feedback>Fix this</feedback>');
             });
 
-            test('formats non-consecutive range correctly', () => {
+            test('formats non-consecutive lines with individual ref per line', () => {
                 const comments = new Map([[0, { text: 'Non-consecutive', lines: [0, 2, 4] }]]);
                 const contentLines = ['line 1', 'line 2', 'line 3', 'line 4', 'line 5'];
 
@@ -201,9 +202,10 @@ describe('feedback decision', () => {
                     contentLines,
                 );
 
-                expect(result).toContain('Lines 1-5:');
-                expect(result).toContain('"line 1" "line 3" "line 5"');
-                expect(result).toContain('Non-consecutive');
+                expect(result).toContain('<ref line="1">line 1</ref>');
+                expect(result).toContain('<ref line="3">line 3</ref>');
+                expect(result).toContain('<ref line="5">line 5</ref>');
+                expect(result).toContain('<feedback>Non-consecutive</feedback>');
             });
 
             test('handles mix of single and multi-line comments', () => {
@@ -221,9 +223,10 @@ describe('feedback decision', () => {
                     contentLines,
                 );
 
-                expect(result).toContain('Line 1: "l0"');
-                expect(result).toContain('Lines 3-4: "l2" "l3"');
-                expect(result).toContain('Line 6: "l5"');
+                expect(result).toContain('<ref line="1">l0</ref>');
+                expect(result).toContain('<ref line="3">l2</ref>');
+                expect(result).toContain('<ref line="4">l3</ref>');
+                expect(result).toContain('<ref line="6">l5</ref>');
             });
         });
 
@@ -239,16 +242,14 @@ describe('feedback decision', () => {
 
                 const result = formatFeedbackMessage(comments, questions, deletedLines, contentLines);
 
-                expect(result).toContain('Questions about the plan:');
-                expect(result).toContain('Line 1: "line 1"');
-                expect(result).toContain('Why this approach?');
-                expect(result).toContain('Line 3: "line 3"');
-                expect(result).toContain('Is this needed?');
-                expect(result).toContain('Do NOT call ExitPlanMode in this response');
-                expect(result).toContain(
-                    'Only call ExitPlanMode again after the user has explicitly asked you to proceed',
-                );
-                expect(result).not.toContain('Comments on the plan:');
+                expect(result).toContain('<questions>');
+                expect(result).toContain('<ref line="1">line 1</ref>');
+                expect(result).toContain('<feedback>Why this approach?</feedback>');
+                expect(result).toContain('<ref line="3">line 3</ref>');
+                expect(result).toContain('<feedback>Is this needed?</feedback>');
+                expect(result).toContain('must not call ExitPlanMode');
+                expect(result).toContain('explicitly tells you to continue');
+                expect(result).not.toContain('<comments>');
             });
 
             test('formats questions before comments', () => {
@@ -259,11 +260,9 @@ describe('feedback decision', () => {
 
                 const result = formatFeedbackMessage(comments, questions, deletedLines, contentLines);
 
-                // Questions section should appear before comments section
-                const questionsIndex = result!.indexOf('Questions about the plan:');
-                const commentsIndex = result!.indexOf('Comments on the plan:');
+                const questionsIndex = result!.indexOf('<questions>');
+                const commentsIndex = result!.indexOf('<comments>');
                 expect(questionsIndex).toBeLessThan(commentsIndex);
-                expect(result).toContain('still use the below feedback');
             });
 
             test('includes explicit instructions with questions', () => {
@@ -274,11 +273,63 @@ describe('feedback decision', () => {
 
                 const result = formatFeedbackMessage(comments, questions, deletedLines, contentLines);
 
-                expect(result).toContain('Do NOT call ExitPlanMode in this response');
-                expect(result).toContain(
-                    'Only call ExitPlanMode again after the user has explicitly asked you to proceed',
+                expect(result).toContain('<response_instructions>');
+                expect(result).toContain('must not call ExitPlanMode');
+                expect(result).toContain('explicitly tells you to continue');
+            });
+
+            test('omits hold instruction when questions are present without comments or deletions', () => {
+                const questions = new Map<number, FeedbackEntry>([[0, { text: 'Question', lines: [0] }]]);
+                const contentLines = ['line 1'];
+
+                const result = formatFeedbackMessage(
+                    new Map<number, FeedbackEntry>(),
+                    questions,
+                    new Set(),
+                    contentLines,
                 );
-                expect(result).toContain('still use the below feedback');
+
+                expect(result).not.toContain('Do not act on');
+                expect(result).not.toContain('apply all the feedback below');
+            });
+
+            test('includes hold instruction for comments when questions are present', () => {
+                const comments = new Map<number, FeedbackEntry>([[0, { text: 'Fix this', lines: [0] }]]);
+                const questions = new Map<number, FeedbackEntry>([[1, { text: 'Why?', lines: [1] }]]);
+                const contentLines = ['line 1', 'line 2'];
+
+                const result = formatFeedbackMessage(comments, questions, new Set(), contentLines);
+
+                expect(result).toContain('Do not act on the comments below');
+                expect(result).toContain('apply all the feedback below');
+                expect(result).not.toContain('Do not act on the deletions below');
+            });
+
+            test('includes hold instruction for deletions when questions are present', () => {
+                const questions = new Map<number, FeedbackEntry>([[0, { text: 'Why?', lines: [0] }]]);
+                const contentLines = ['line 1', 'line 2'];
+
+                const result = formatFeedbackMessage(
+                    new Map<number, FeedbackEntry>(),
+                    questions,
+                    new Set([1]),
+                    contentLines,
+                );
+
+                expect(result).toContain('Do not act on the deletions below');
+                expect(result).toContain('apply all the feedback below');
+                expect(result).not.toContain('Do not act on the comments below');
+            });
+
+            test('includes hold instruction for comments or deletions when all three are present', () => {
+                const comments = new Map<number, FeedbackEntry>([[0, { text: 'Fix this', lines: [0] }]]);
+                const questions = new Map<number, FeedbackEntry>([[1, { text: 'Why?', lines: [1] }]]);
+                const contentLines = ['line 1', 'line 2', 'line 3'];
+
+                const result = formatFeedbackMessage(comments, questions, new Set([2]), contentLines);
+
+                expect(result).toContain('Do not act on the comments or deletions below');
+                expect(result).toContain('apply all the feedback below');
             });
         });
 
@@ -295,8 +346,8 @@ describe('feedback decision', () => {
                     contentLines,
                 );
 
-                expect(result).toContain('Comments on the plan:');
-                expect(result).toContain('Line 1: "undefined"');
+                expect(result).toContain('<comments>');
+                expect(result).toContain('<ref line="1">undefined</ref>');
             });
 
             test('handles line indices beyond contentLines bounds', () => {
@@ -311,8 +362,8 @@ describe('feedback decision', () => {
                     contentLines,
                 );
 
-                expect(result).toContain('Line 11: "undefined"');
-                expect(result).toContain('Line 21: "undefined"');
+                expect(result).toContain('<ref line="11">undefined</ref>');
+                expect(result).toContain('<ref line="21">undefined</ref>');
             });
         });
     });

@@ -28,6 +28,13 @@ export const sendDecisionViaSocket = (
     }
 };
 
+// Build XML ref elements for a set of line indices
+const buildRefs = (lines: number[], contentLines: string[]): string =>
+    lines
+        .sort((a, b) => a - b)
+        .map((line) => `    <ref line="${line + 1}">${contentLines[line]}</ref>`)
+        .join('\n');
+
 // Format feedback message for deny action
 export const formatFeedbackMessage = (
     comments: Map<number, FeedbackEntry>,
@@ -40,57 +47,45 @@ export const formatFeedbackMessage = (
     // Questions section FIRST (if present)
     if (questions.size > 0) {
         const questionEntries = [...questions.entries()].sort(([a], [b]) => a - b);
-        const questionBlocks: string[] = [];
-
-        questionEntries.forEach(([anchorLine, entry]) => {
-            const lines = entry.lines.sort((a, b) => a - b); // Ensure sorted
-
-            if (lines.length > 1) {
-                // Multi-line question: show range with all quoted line contents
-                const lineContents = lines.map((line) => `"${contentLines[line]}"`).join(' ');
-                questionBlocks.push(`Lines ${lines[0] + 1}-${lines.at(-1)! + 1}: ${lineContents}\n${entry.text}`);
-            } else {
-                // Single line question: existing format
-                questionBlocks.push(`Line ${anchorLine + 1}: "${contentLines[anchorLine]}"\n${entry.text}`);
-            }
+        const questionItems = questionEntries.map(([, entry]) => {
+            const lines = entry.lines.sort((a, b) => a - b);
+            return `  <question>\n${buildRefs(lines, contentLines)}\n    <feedback>${entry.text}</feedback>\n  </question>`;
         });
 
+        const holdParts: string[] = [];
+        if (comments.size > 0) holdParts.push('comments');
+        if (deletedLines.size > 0) holdParts.push('deletions');
+
+        const holdLine =
+            holdParts.length > 0
+                ? `\nDo not act on the ${holdParts.join(' or ')} below — hold them until the user confirms to proceed.`
+                : '';
+        const applyClause = holdParts.length > 0 ? ` — and when you do, apply all the feedback below` : '';
+
         messageParts.push(
-            `Questions about the plan:\n${questionBlocks.join('\n')}\n\n` +
-                `Please answer these questions. Do NOT call ExitPlanMode in this response — ` +
-                `just answer the questions with plain text and stop. ` +
-                `The user will read your answers and reply in chat. ` +
-                `Only call ExitPlanMode again after the user has explicitly asked you to proceed. ` +
-                `When you return to plan mode, still use the below feedback.`,
+            `<response_instructions>\n` +
+                `Respond with plain text only — this response must not call ExitPlanMode or any other tool.\n` +
+                `The reason: the user needs to read your answers and may ask follow-up questions before deciding to proceed.${holdLine}\n` +
+                `Only call ExitPlanMode after the user explicitly tells you to continue (e.g., "proceed", "continue", "go ahead")${applyClause}.\n` +
+                `</response_instructions>\n\n` +
+                `<questions>\n${questionItems.join('\n')}\n</questions>`,
         );
     }
 
     if (comments.size > 0) {
         const commentEntries = [...comments.entries()].sort(([a], [b]) => a - b);
-        const commentBlocks: string[] = [];
-
-        commentEntries.forEach(([anchorLine, entry]) => {
-            const lines = entry.lines.sort((a, b) => a - b); // Ensure sorted
-
-            if (lines.length > 1) {
-                // Multi-line comment: show range with all quoted line contents
-                const lineContents = lines.map((line) => `"${contentLines[line]}"`).join(' ');
-                commentBlocks.push(`Lines ${lines[0] + 1}-${lines.at(-1)! + 1}: ${lineContents}\n${entry.text}`);
-            } else {
-                // Single line comment: existing format
-                commentBlocks.push(`Line ${anchorLine + 1}: "${contentLines[anchorLine]}"\n${entry.text}`);
-            }
+        const commentItems = commentEntries.map(([, entry]) => {
+            const lines = entry.lines.sort((a, b) => a - b);
+            return `  <comment>\n${buildRefs(lines, contentLines)}\n    <feedback>${entry.text}</feedback>\n  </comment>`;
         });
-
-        messageParts.push(`Comments on the plan:\n${commentBlocks.join('\n')}`);
+        messageParts.push(`<comments>\n${commentItems.join('\n')}\n</comments>`);
     }
 
     if (deletedLines.size > 0) {
-        const deletedBlocks = [...deletedLines]
+        const deletionItems = [...deletedLines]
             .sort((a, b) => a - b)
-            .map((line) => `Line ${line + 1}: "${contentLines[line]}"`)
-            .join('\n');
-        messageParts.push(`Delete lines:\n${deletedBlocks}`);
+            .map((line) => `  <deletion>\n    <ref line="${line + 1}">${contentLines[line]}</ref>\n  </deletion>`);
+        messageParts.push(`<deletions>\n${deletionItems.join('\n')}\n</deletions>`);
     }
 
     if (messageParts.length > 0) {
