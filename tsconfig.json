@@ -8,11 +8,10 @@
         "esModuleInterop": true,
         "skipLibCheck": true,
         "types": ["bun-types", "node"],
-        "baseUrl": ".",
         "paths": {
-            "~/*": ["app/src/*"],
-            "~/lib/*": ["app/lib/*"],
-            "~/test-utils/*": ["app/test-utils/*"]
+            "~/*": ["./app/src/*"],
+            "~/lib/*": ["./app/lib/*"],
+            "~/test-utils/*": ["./app/test-utils/*"]
         }
     },
     "include": [".claude/**/*", "app/**/*", "integrations/**/*", "dev/**/*"],
