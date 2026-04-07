@@ -29,6 +29,32 @@ The installer:
 - Symlinks `~/.local/bin/planderson` → `~/.planderson/planderson`
 - Preserves existing `~/.planderson/settings.json` and `sockets/`
 
+> **Note:** `dev/install.sh` doesn't set up shell completions. Completions are managed by `planderson setup`, which writes to `~/.planderson/completions/` and runs against the prod binary. During dev, completions stay pointed at whatever was last configured via setup, there's no need to regenerate them per-worktree since the completion list rarely changes.
+>
+> To manually override with dev worktree completions (e.g. testing a new subcommand):
+>
+> ```bash
+> # zsh (from the worktree root)
+> bun run app/src/cli.ts completions > ~/.planderson/completions/planderson.zsh
+> source ~/.zshrc
+>
+> # bash (from the worktree root)
+> bun run app/src/cli.ts completions > ~/.planderson/completions/planderson.bash
+> source ~/.bashrc
+> ```
+>
+> To reset back to prod:
+>
+> ```bash
+> # zsh
+> planderson completions > ~/.planderson/completions/planderson.zsh
+> source ~/.zshrc
+>
+> # bash
+> planderson completions > ~/.planderson/completions/planderson.bash
+> source ~/.bashrc
+> ```
+
 ### Installation directory structure
 
 ```
