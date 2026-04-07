@@ -28,6 +28,38 @@ export const sendDecisionViaSocket = (
     }
 };
 
+/**
+ * Formats a deny message from the user's feedback to send back to Claude.
+ *
+ * When questions are present, prepends a `<response_instructions>` block telling
+ * Claude to answer conversationally and wait for the user before updating the plan.
+ * When questions are mixed with comments or deletions, adds a hold instruction so
+ * Claude doesn't act on them until the user confirms to proceed.
+ *
+ * @example
+ * ```
+ * <response_instructions>
+ * Respond with plain text only — this response must not call ExitPlanMode or any other tool.
+ * The reason: the questions below are for discussion — the user will read your answers and may
+ * ask follow-up questions before deciding whether to proceed with the plan. The comments and
+ * deletions are plan modifications that will be applied when you return to plan mode.
+ * Do not act on the comments or deletions below — hold them until the user confirms to proceed.
+ * Only update the plan after the user explicitly tells you to continue (e.g., "proceed",
+ * "continue", "go ahead") — and when you do, apply all the feedback below.
+ * </response_instructions>
+ *
+ * Questions about the plan:
+ * Line 2: "Step 2: Create the API endpoints"
+ * Why REST and not GraphQL here?
+ *
+ * Comments on the plan:
+ * Line 1: "Step 1: Set up the database schema"
+ * Use Postgres not SQLite
+ *
+ * Delete lines:
+ * Line 3: "Step 3: Add authentication middleware"
+ * ```
+ */
 // Format feedback message for deny action
 export const formatFeedbackMessage = (
     comments: Map<number, FeedbackEntry>,
@@ -55,13 +87,27 @@ export const formatFeedbackMessage = (
             }
         });
 
+        const holdParts: string[] = [];
+        if (comments.size > 0) holdParts.push('comments');
+        if (deletedLines.size > 0) holdParts.push('deletions');
+
+        const semanticLine =
+            holdParts.length > 0
+                ? ` The ${holdParts.join(' and ')} are plan modifications that will be applied when you return to plan mode.`
+                : '';
+        const holdLine =
+            holdParts.length > 0
+                ? `\nDo not act on the ${holdParts.join(' or ')} below — hold them until the user confirms to proceed.`
+                : '';
+        const applyClause = holdParts.length > 0 ? ` — and when you do, apply all the feedback below` : '';
+
         messageParts.push(
-            `Questions about the plan:\n${questionBlocks.join('\n')}\n\n` +
-                `Please answer these questions. Do NOT call ExitPlanMode in this response — ` +
-                `just answer the questions with plain text and stop. ` +
-                `The user will read your answers and reply in chat. ` +
-                `Only call ExitPlanMode again after the user has explicitly asked you to proceed. ` +
-                `When you return to plan mode, still use the below feedback.`,
+            `<response_instructions>\n` +
+                `Respond with plain text only — this response must not call ExitPlanMode or any other tool.\n` +
+                `The reason: the questions below are for discussion — the user will read your answers and may ask follow-up questions before deciding whether to proceed with the plan.${semanticLine}${holdLine}\n` +
+                `Only update the plan after the user explicitly tells you to continue (e.g., "proceed", "continue", "go ahead")${applyClause}.\n` +
+                `</response_instructions>\n\n` +
+                `Questions about the plan:\n${questionBlocks.join('\n')}`,
         );
     }
 

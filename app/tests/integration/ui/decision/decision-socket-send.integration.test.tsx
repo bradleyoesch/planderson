@@ -92,8 +92,8 @@ describe('decision decision-socket-send integration', () => {
         expect(message).toContain('Questions about the plan:');
         expect(message).toContain('Line 1: "Step 1"');
         expect(message).toContain('what is the timeline?');
-        expect(message).toContain('Please answer these questions');
-        expect(message).toContain('Do NOT call ExitPlanMode');
+        expect(message).toContain('<response_instructions>');
+        expect(message).toContain('must not call ExitPlanMode');
     });
 
     test('deny with deletion -> sendDecision called with formatted deletions section', async () => {

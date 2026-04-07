@@ -244,10 +244,9 @@ describe('feedback decision', () => {
                 expect(result).toContain('Why this approach?');
                 expect(result).toContain('Line 3: "line 3"');
                 expect(result).toContain('Is this needed?');
-                expect(result).toContain('Do NOT call ExitPlanMode in this response');
-                expect(result).toContain(
-                    'Only call ExitPlanMode again after the user has explicitly asked you to proceed',
-                );
+                expect(result).toContain('must not call ExitPlanMode');
+                expect(result).toContain('questions below are for discussion');
+                expect(result).toContain('Only update the plan after the user explicitly tells you to continue');
                 expect(result).not.toContain('Comments on the plan:');
             });
 
@@ -259,11 +258,9 @@ describe('feedback decision', () => {
 
                 const result = formatFeedbackMessage(comments, questions, deletedLines, contentLines);
 
-                // Questions section should appear before comments section
                 const questionsIndex = result!.indexOf('Questions about the plan:');
                 const commentsIndex = result!.indexOf('Comments on the plan:');
                 expect(questionsIndex).toBeLessThan(commentsIndex);
-                expect(result).toContain('still use the below feedback');
             });
 
             test('includes explicit instructions with questions', () => {
@@ -274,11 +271,66 @@ describe('feedback decision', () => {
 
                 const result = formatFeedbackMessage(comments, questions, deletedLines, contentLines);
 
-                expect(result).toContain('Do NOT call ExitPlanMode in this response');
-                expect(result).toContain(
-                    'Only call ExitPlanMode again after the user has explicitly asked you to proceed',
+                expect(result).toContain('<response_instructions>');
+                expect(result).toContain('must not call ExitPlanMode');
+                expect(result).toContain('Only update the plan after the user explicitly tells you to continue');
+            });
+
+            test('omits hold instruction when questions are present without comments or deletions', () => {
+                const questions = new Map<number, FeedbackEntry>([[0, { text: 'Question', lines: [0] }]]);
+                const contentLines = ['line 1'];
+
+                const result = formatFeedbackMessage(
+                    new Map<number, FeedbackEntry>(),
+                    questions,
+                    new Set(),
+                    contentLines,
                 );
-                expect(result).toContain('still use the below feedback');
+
+                expect(result).not.toContain('Do not act on');
+                expect(result).not.toContain('apply all the feedback below');
+            });
+
+            test('includes hold instruction for comments when questions are present', () => {
+                const comments = new Map<number, FeedbackEntry>([[0, { text: 'Fix this', lines: [0] }]]);
+                const questions = new Map<number, FeedbackEntry>([[1, { text: 'Why?', lines: [1] }]]);
+                const contentLines = ['line 1', 'line 2'];
+
+                const result = formatFeedbackMessage(comments, questions, new Set(), contentLines);
+
+                expect(result).toContain('comments are plan modifications');
+                expect(result).toContain('Do not act on the comments below');
+                expect(result).toContain('apply all the feedback below');
+                expect(result).not.toContain('Do not act on the deletions below');
+            });
+
+            test('includes hold instruction for deletions when questions are present', () => {
+                const questions = new Map<number, FeedbackEntry>([[0, { text: 'Why?', lines: [0] }]]);
+                const contentLines = ['line 1', 'line 2'];
+
+                const result = formatFeedbackMessage(
+                    new Map<number, FeedbackEntry>(),
+                    questions,
+                    new Set([1]),
+                    contentLines,
+                );
+
+                expect(result).toContain('deletions are plan modifications');
+                expect(result).toContain('Do not act on the deletions below');
+                expect(result).toContain('apply all the feedback below');
+                expect(result).not.toContain('Do not act on the comments below');
+            });
+
+            test('includes hold instruction for comments and deletions when all three are present', () => {
+                const comments = new Map<number, FeedbackEntry>([[0, { text: 'Fix this', lines: [0] }]]);
+                const questions = new Map<number, FeedbackEntry>([[1, { text: 'Why?', lines: [1] }]]);
+                const contentLines = ['line 1', 'line 2', 'line 3'];
+
+                const result = formatFeedbackMessage(comments, questions, new Set([2]), contentLines);
+
+                expect(result).toContain('comments and deletions are plan modifications');
+                expect(result).toContain('Do not act on the comments or deletions below');
+                expect(result).toContain('apply all the feedback below');
             });
         });
 
