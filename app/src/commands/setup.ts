@@ -1,7 +1,12 @@
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 import * as readline from 'readline';
 
 import { saveSettings, Settings } from '~/utils/config/settings';
 import { generateId } from '~/utils/id';
+
+import { BASH_SCRIPT, detectShell, ZSH_SCRIPT } from './completions';
 
 const TMUX_README_URL = 'https://github.com/bradleyoesch/planderson/blob/main/integrations/tmux/README.md';
 const TMUX_MOUSE_URL =
@@ -86,7 +91,30 @@ export const runSetup = async (): Promise<void> => {
         );
     }
 
-    // Step 3: approveAction
+    // Step 3: completions
+    const shell = detectShell();
+    if (shell) {
+        const wantsCompletions = await promptYN(rl, '\nSet up shell completions? (y/n): ');
+        if (wantsCompletions) {
+            const completionsDir = path.join(os.homedir(), '.planderson', 'completions');
+            const completionsFile = path.join(completionsDir, `planderson.${shell}`);
+            fs.mkdirSync(completionsDir, { recursive: true });
+            fs.writeFileSync(completionsFile, shell === 'zsh' ? ZSH_SCRIPT : BASH_SCRIPT);
+
+            const shellConfig = shell === 'zsh' ? '~/.zshrc' : '~/.bashrc';
+            console.log('');
+            console.log(`  Add to ${shellConfig}:`);
+            console.log(`    source ~/.planderson/completions/planderson.${shell}`);
+            console.log('');
+            console.log('  Then reload:');
+            console.log(`    source ${shellConfig}`);
+            summary.push({ step: 'completions', result: 'configured' });
+        } else {
+            summary.push({ step: 'completions', result: 'skipped' });
+        }
+    }
+
+    // Step 4: approveAction
     await runSettingStep(
         rl,
         sessionId,
@@ -97,7 +125,7 @@ export const runSetup = async (): Promise<void> => {
         summary,
     );
 
-    // Step 4: autoUpgrade
+    // Step 5: autoUpgrade
     await runSettingStep(rl, sessionId, 'autoUpgrade', 'always', 'never', 'Enable auto-upgrades?', summary);
 
     rl.close();
