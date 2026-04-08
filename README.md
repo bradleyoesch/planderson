@@ -1,4 +1,4 @@
-# Planderson - Plan Viewer TUI
+# Planderson
 
 [![CI](https://github.com/bradleyoesch/planderson/actions/workflows/ci.yml/badge.svg)](https://github.com/bradleyoesch/planderson/actions/workflows/ci.yml)
 [![GitHub Release](https://img.shields.io/github/v/release/bradleyoesch/planderson)](https://github.com/bradleyoesch/planderson/releases/latest)
@@ -10,7 +10,7 @@ The default plan mode in Claude involves scrolling up/down and copy/pasting part
 
 The goal is to provide a lightweight TUI to bridge the gap between "pure" terminal interactions and complex external user interfaces to support seamless plan iteration with Claude.
 
-`TODO: add screenshot`
+<video src="https://github.com/user-attachments/assets/80271a64-d472-4da9-8662-7b4dc88f1bf3" width="600" autoplay loop muted playsinline></video>
 
 ## Prerequisites
 
@@ -70,7 +70,10 @@ Basic controls while in the plan TUI:
 | `?`                     | Show full keybinding reference |
 
 1. Move up and down the plan to review.
-2. Add comments and questions, delete and undelete lines or blocks
+2. Add feedback
+    - Comment - feedback for Claude to address directly
+    - Question - question to discuss with Claude before returning to plan iteration
+    - Deletion - delete from the plan completely
 3. Hit `Enter` to submit that feedback and wait for Claude to modify plan to iterate again
    If no feedback to submit, `Enter` will approve the plan
 
