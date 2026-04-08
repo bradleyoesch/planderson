@@ -5,21 +5,25 @@ export const BASH_SCRIPT = `_planderson_complete() {
 complete -F _planderson_complete planderson`;
 
 export const ZSH_SCRIPT = `#compdef planderson
-_planderson() {
-    local -a commands
-    commands=(
-        'help:Show help and keybindings'
-        'hook:Process plan events from Claude Code hooks'
-        'settings:View and update settings'
-        'setup:Interactive onboarding and configuration'
-        'tui:Launch the plan viewer TUI'
-        'tmux:Replace current pane with TUI and restore on exit'
-        'upgrade:Upgrade planderson to the latest version'
-        'completions:Output shell completion script'
-    )
-    _describe 'command' commands
-}
-compdef _planderson planderson`;
+if (( $+functions[compdef] )); then
+    _planderson() {
+        local -a commands
+        commands=(
+            'help:Show help and keybindings'
+            'hook:Process plan events from Claude Code hooks'
+            'settings:View and update settings'
+            'setup:Interactive onboarding and configuration'
+            'tui:Launch the plan viewer TUI'
+            'tmux:Replace current pane with TUI and restore on exit'
+            'upgrade:Upgrade planderson to the latest version'
+            'completions:Output shell completion script'
+        )
+        _describe 'command' commands
+    }
+    compdef _planderson planderson
+else
+    compctl -k "(help hook settings setup tui tmux upgrade completions)" planderson
+fi`;
 
 export const detectShell = (): 'bash' | 'zsh' | null => {
     const shell = process.env.SHELL ?? '';

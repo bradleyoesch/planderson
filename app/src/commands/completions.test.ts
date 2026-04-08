@@ -109,6 +109,18 @@ describe('commands completions', () => {
             run(['zsh']);
             expect(output()).toContain('compdef _planderson planderson');
         });
+
+        test('falls back to compctl when compdef is unavailable', () => {
+            run(['zsh']);
+            const out = output();
+            expect(out).toContain('compctl -k');
+            expect(out).toContain('planderson');
+        });
+
+        test('checks for compdef availability', () => {
+            run(['zsh']);
+            expect(output()).toContain('$+functions[compdef]');
+        });
     });
 
     describe('installation hint', () => {
