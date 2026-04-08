@@ -1,4 +1,4 @@
-# planderson plugin
+# Planderson
 
 A terminal user interface (TUI) for reviewing Claude's plans before implementation. When Claude exits plan mode, Planderson intercepts the request and displays the plan fullscreen in terminal — accept, deny, or provide feedback.
 
