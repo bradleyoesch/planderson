@@ -51,7 +51,7 @@ const parseInlineFormatting = (text: string): TextSegment[] => {
         },
         // Bold with __ (supports nesting) - must check before single _
         {
-            regex: /__(.+?)__/g,
+            regex: /(?<=^|\W)__(.+?)__(?=$|\W)/g,
             process: (match) => {
                 return { text: match[1], bold: true, _isNested: true } as TextSegment & { _isNested: boolean };
             },
@@ -65,7 +65,7 @@ const parseInlineFormatting = (text: string): TextSegment[] => {
         },
         // Italic with _ (supports nesting) - use negative lookahead/behind to avoid matching __
         {
-            regex: /(?<!_)_(?!_)(.+?)(?<!_)_(?!_)/g,
+            regex: /(?<=^|\W)(?<!_)_(?!_)(.+?)(?<!_)_(?!_)(?=$|\W)/g,
             process: (match) => {
                 return { text: match[1], italic: true, _isNested: true } as TextSegment & { _isNested: boolean };
             },

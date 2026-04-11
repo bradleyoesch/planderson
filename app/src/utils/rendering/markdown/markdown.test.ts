@@ -54,6 +54,43 @@ describe('markdown markdown', () => {
             });
         });
 
+        test('parses italic with _ when space-bounded', () => {
+            const result = parseMarkdownLine('word _italic_ word');
+            expect(result).toEqual({
+                type: 'normal',
+                segments: [{ text: 'word ' }, { text: 'italic', italic: true }, { text: ' word' }],
+            });
+        });
+
+        test('parses bold with __ when space-bounded', () => {
+            const result = parseMarkdownLine('word __bold__ word');
+            expect(result).toEqual({
+                type: 'normal',
+                segments: [{ text: 'word ' }, { text: 'bold', bold: true }, { text: ' word' }],
+            });
+        });
+
+        test.each([
+            ['single snake_case', 'foo_bar_baz'],
+            ['many underscores', 'multiple_snake_case_words'],
+            ['mixed boundary start', '_foo_bar'],
+            ['mixed boundary end', 'foo_bar_'],
+        ])('does not italicize mid-word underscores: %s', (_, input) => {
+            const result = parseMarkdownLine(input);
+            expect(result).toEqual({
+                type: 'normal',
+                segments: [{ text: input }],
+            });
+        });
+
+        test('does not bold mid-word double underscores', () => {
+            const result = parseMarkdownLine('foo__bar__baz');
+            expect(result).toEqual({
+                type: 'normal',
+                segments: [{ text: 'foo__bar__baz' }],
+            });
+        });
+
         test('parses inline code with backticks', () => {
             const result = parseMarkdownLine('Use `code` here');
             expect(result).toEqual({
