@@ -1,4 +1,4 @@
-import { spawn, spawnSync } from 'child_process';
+import { spawn } from 'child_process';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
@@ -95,7 +95,25 @@ export const runUpgrade = async (): Promise<void> => {
     } else {
         console.log(`Updating planderson v${version} → v${latest}...`);
     }
-    spawnSync('bash', ['-c', `curl -fsSL ${INSTALL_URL} | bash`], { stdio: 'inherit' });
+    const success = await new Promise<boolean>((resolve) => {
+        const child = spawn('bash', ['-c', `curl -fsSL ${INSTALL_URL} | bash`], { stdio: 'pipe' });
+        const chunks: Buffer[] = [];
+        child.stdout.on('data', (data: Buffer) => chunks.push(data));
+        child.stderr.on('data', (data: Buffer) => chunks.push(data));
+        child.on('close', (code) => {
+            if (code !== 0) {
+                const output = Buffer.concat(chunks).toString();
+                if (output) console.error(output);
+                console.error('Upgrade failed.');
+            }
+            resolve(code === 0);
+        });
+    });
+    if (!success) {
+        process.exit(1);
+        return;
+    }
     regenerateCompletions();
+    console.log('Updated successfully.');
     console.log(`Releases: ${RELEASES_URL}`);
 };

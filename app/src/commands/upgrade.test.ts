@@ -198,15 +198,21 @@ describe('commands upgrade', () => {
     describe('runUpgrade', () => {
         let consoleLogs: string[];
         let consoleWarns: string[];
+        let consoleErrors: string[];
         let originalConsoleLog: typeof console.log;
         let originalConsoleWarn: typeof console.warn;
+        let originalConsoleError: typeof console.error;
+        let originalFetch: typeof globalThis.fetch;
         let originalProcessExit: typeof process.exit;
 
         beforeEach(() => {
             consoleLogs = [];
             consoleWarns = [];
+            consoleErrors = [];
             originalConsoleLog = console.log;
             originalConsoleWarn = console.warn;
+            originalConsoleError = console.error;
+            originalFetch = globalThis.fetch;
             originalProcessExit = process.exit;
 
             console.log = (msg: string) => {
@@ -214,6 +220,9 @@ describe('commands upgrade', () => {
             };
             console.warn = (msg: string) => {
                 consoleWarns.push(msg);
+            };
+            console.error = (msg: string) => {
+                consoleErrors.push(msg);
             };
             process.exit = mock(() => {
                 throw new Error('process.exit called');
@@ -223,6 +232,8 @@ describe('commands upgrade', () => {
         afterEach(() => {
             console.log = originalConsoleLog;
             console.warn = originalConsoleWarn;
+            console.error = originalConsoleError;
+            globalThis.fetch = originalFetch;
             process.exit = originalProcessExit;
             mock.restore();
         });
@@ -285,6 +296,91 @@ describe('commands upgrade', () => {
             }
 
             expect(consoleLogs.some((l) => l.includes('planderson settings --autoUpgrade always'))).toBe(false);
+        });
+
+        type Listener = (...args: unknown[]) => void;
+        const createMockChild = (exitCode: number, stdoutData?: string, stderrData?: string) => {
+            const stdoutListeners: Record<string, Listener[]> = {};
+            const stderrListeners: Record<string, Listener[]> = {};
+            const stdout = {
+                on(event: string, cb: Listener) {
+                    (stdoutListeners[event] ??= []).push(cb);
+                },
+            };
+            const stderr = {
+                on(event: string, cb: Listener) {
+                    (stderrListeners[event] ??= []).push(cb);
+                },
+            };
+            const child = {
+                stdout,
+                stderr,
+                on(event: string, cb: Listener) {
+                    if (event === 'close') {
+                        if (stdoutData) stdoutListeners['data']?.forEach((l) => l(Buffer.from(stdoutData)));
+                        if (stderrData) stderrListeners['data']?.forEach((l) => l(Buffer.from(stderrData)));
+                        cb(exitCode);
+                    }
+                },
+            };
+            return child;
+        };
+
+        const setupNewerVersionMocks = () => {
+            const tempDir = useTempDir();
+            spyOn(os, 'homedir').mockReturnValue(tempDir);
+            globalThis.fetch = mock(() =>
+                Promise.resolve({
+                    url: 'https://github.com/bradleyoesch/planderson/releases/tag/v99.0.0',
+                } as Response),
+            ) as unknown as typeof fetch;
+            spyOn(settingsModule, 'loadSettings').mockReturnValue(DEFAULT_SETTINGS);
+        };
+
+        test('prints "Updated successfully." on successful install', async () => {
+            setupNewerVersionMocks();
+            const mockChild = createMockChild(0, 'Installing planderson...\nINSTALL COMPLETE\n');
+            spyOn(childProcess, 'spawn').mockReturnValue(mockChild as unknown as ReturnType<typeof childProcess.spawn>);
+
+            await runUpgrade();
+
+            expect(consoleLogs.some((l) => l.includes('Updated successfully.'))).toBe(true);
+        });
+
+        test('does not print install script output on success', async () => {
+            setupNewerVersionMocks();
+            const mockChild = createMockChild(0, 'Installing planderson...\nINSTALL COMPLETE\n');
+            spyOn(childProcess, 'spawn').mockReturnValue(mockChild as unknown as ReturnType<typeof childProcess.spawn>);
+
+            await runUpgrade();
+
+            expect(consoleLogs.some((l) => l.includes('Installing planderson'))).toBe(false);
+            expect(consoleLogs.some((l) => l.includes('INSTALL COMPLETE'))).toBe(false);
+        });
+
+        test('prints releases link on successful install', async () => {
+            setupNewerVersionMocks();
+            const mockChild = createMockChild(0);
+            spyOn(childProcess, 'spawn').mockReturnValue(mockChild as unknown as ReturnType<typeof childProcess.spawn>);
+
+            await runUpgrade();
+
+            expect(consoleLogs.some((l) => l.includes(RELEASES_URL))).toBe(true);
+        });
+
+        test('prints full output and "Upgrade failed." on failed install', async () => {
+            setupNewerVersionMocks();
+            const installOutput = 'Installing planderson...\nChecksum verification failed!';
+            const mockChild = createMockChild(1, installOutput, 'some error');
+            spyOn(childProcess, 'spawn').mockReturnValue(mockChild as unknown as ReturnType<typeof childProcess.spawn>);
+
+            process.exit = mock(() => {}) as unknown as typeof process.exit;
+
+            await runUpgrade();
+
+            expect(consoleErrors.some((l) => l.includes(installOutput))).toBe(true);
+            expect(consoleErrors.some((l) => l.includes('Upgrade failed.'))).toBe(true);
+            expect(process.exit).toHaveBeenCalledWith(1);
         });
     });
 });
