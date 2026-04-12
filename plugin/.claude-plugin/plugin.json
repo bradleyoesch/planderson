@@ -1,6 +1,6 @@
 {
     "name": "planderson",
-    "version": "0.2.5",
+    "version": "0.2.6",
     "description": "Interactive plan review TUI — iterate on Claude's plans in the terminal before implementation begins.",
     "author": {
         "name": "bradleyoesch"
